@@ -22,11 +22,12 @@ function NavigationBar() {
 
             <NavDropdown style={{fontSize:"20px", marginRight:"8px"}} title="Student details" id="collasible-nav-dropdown">
               <NavDropdown.Item href="/studentReg" >Student registration</NavDropdown.Item>
+              <NavDropdown.Item href="/studentDetails" >Student details</NavDropdown.Item>
             </NavDropdown>
 
             <NavDropdown style={{fontSize:"20px", marginRight:"8px"}} title="Teacher details" id="collasible-nav-dropdown">
               <NavDropdown.Item href="/teacherReg" >Teacher Registration</NavDropdown.Item>
-              <NavDropdown.Item href="/our-teachers">Our teachers</NavDropdown.Item>
+              <NavDropdown.Item href="/teacherDetails" >Teacher details</NavDropdown.Item>
             </NavDropdown>
 
             <NavDropdown style={{fontSize:"20px", marginRight:"8px"}} title="About" id="collasible-nav-dropdown">

@@ -1,20 +1,106 @@
-import React from 'react'
-import Button from 'react-bootstrap/Button';
+import axios from "axios";
+import Box from '@mui/material/Box';
+import { DataGrid } from '@mui/x-data-grid';
+import { Row, Col } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
 
-export default function Teacher() {
+
+
+const columns = [
+  { field: 'id', headerName: 'ID', width: 90 },
+  {
+    field: 'teacherId',
+    headerName: 'Teacher Id',
+    width: 150,
+    editable: true,
+  },
+  {
+    field: 'fName',
+    headerName: 'First name',
+    width: 150,
+    editable: true,
+  },
+   {
+    field: 'lName',
+    headerName: 'Last name',
+    width: 150,
+    editable: true,
+  },
+  {
+    field: 'teacherNIC',
+    headerName: 'NIC number',
+    width: 150,
+    editable: true,
+  },
+   {
+    field: 'teacherNo',
+    headerName: 'Contact',
+    width: 150,
+    editable: true,
+  },
+  {
+    field: 'teacherEmail',
+    headerName: 'E-mail',
+    width: 210,
+    editable: true,
+  },
+  {
+    field: 'regDate',
+    headerName: 'Registered date',
+    type: 'Date',
+    width: 150,
+    editable: true,
+  },
+  
+];
+
+export default function TchTable() {
+  const [stdArray, setStdArray] = useState([]);
+
+
+  useEffect(() => {
+    axios
+      .get(`http://localhost:3001/teachers/teacherList`)
+      .then((response) => {
+        setStdArray(response.data);
+      })
+      .catch((error) => {
+        console.error("An error occurred:", error);
+      });
+
+      
+  }, []);
+
+
   return (
-  <>
-    <div style={{padding:"0px 10px"}}>
-    <Button variant="primary" href="/teacherReg" >Teacher registration</Button>{' '}
-    {/* <Button variant="secondary">Secondary</Button>{' '}
-    <Button variant="success">Success</Button>{' '}
-    <Button variant="warning">Warning</Button>{' '}
-    <Button variant="danger">Danger</Button>{' '}
-    <Button variant="info">Info</Button>{' '}
-    <Button variant="light">Light</Button>{' '}
-    <Button variant="dark">Dark</Button>
-    <Button variant="link">Link</Button> */}
-    </div>
-  </>
-  )
+    <>
+   
+    <div>
+     <Row>
+    
+     <center> <Col lg={10}>
+
+     <h1>Our teachers</h1>
+      <Box sx={{ height: 500, width: '100%' }}>
+      <DataGrid
+        rows={stdArray}
+        columns={columns}
+        initialState={{
+          pagination: {
+            paginationModel: {
+              pageSize: 5,
+            },
+          },
+        }}
+        pageSizeOptions={[5]}
+        checkboxSelection
+        disableRowSelectionOnClick
+      />
+    </Box>
+      </Col></center>
+     </Row>
+     </div>
+     </>
+   
+  );
 }

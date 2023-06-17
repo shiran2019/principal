@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Formik, Form, Field, ErrorMessage, isEmptyChildren } from "formik";
+import { Formik, Form, Field, ErrorMessage} from "formik";
 import axios, { isAxiosError } from "axios";
 import { Row, Col } from "react-bootstrap";
 import Table from "react-bootstrap/Table";
@@ -8,7 +8,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 export default function StdReg() {
   const [classCountArray, setClassCountArray] = useState([]);
   const [classArray, setClassArray] = useState([]);
-  
+
   const [divContent, setDivContent] = useState();
 
   const [submissionStatus, setSubmissionStatus] = useState(null);
@@ -36,6 +36,7 @@ export default function StdReg() {
     motherNo: "",
     pNote: "",
     ClassClassName: "",
+    regyear: "",
   };
 
   const onSubmit = (data, { resetForm }) => {
@@ -124,6 +125,25 @@ export default function StdReg() {
     onPageCount();
   }, []);
 
+
+  function renderYearOptions() {
+    const currentYear = new Date().getFullYear()+5;
+    const years = [];
+  
+
+    // Generate options for the last 10 years (adjust as needed)
+    for (let i = currentYear; i >= currentYear - 10; i--) {
+      years.push(
+        <option key={i} value={i}>
+          {i}
+        </option>
+      );
+    }
+  
+    return years;
+  }  
+
+
   const labelStyle = {
     marginBottom: "8px",
     fontSize: "14px",
@@ -159,8 +179,6 @@ export default function StdReg() {
     marginTop: "30px",
     backgroundColor: "#f9f9f9",
   };
-
-
 
   // const validateStudentId = (value) => {
   //   let error;
@@ -556,11 +574,32 @@ export default function StdReg() {
                 style={{ color: "red" }}
               />
             </Col>
+           
+          
+            <Col xs={12} lg={6}>
+
+            <label style={labelStyle}>Registration Year:</label>
+            <Field
+              as="select"
+              id="inputCreatePost"
+              name="regyear"
+              style={inputStyle}
+             // validate={validateRegistrationYear}
+            >
+              <option value="">Select Year</option>
+              {renderYearOptions()}
+            </Field>
+            <ErrorMessage
+              name="regyear"
+              component="div"
+              style={{ color: "red" }}
+            />
+            </Col>
           </Row>
           <Row>
             {" "}
             <Col lg={6}>
-              <Table >
+              <Table>
                 <thead>
                   <tr>
                     <th>Class name</th>
@@ -578,6 +617,9 @@ export default function StdReg() {
               </Table>
             </Col>
           </Row>
+
+         
+          
           <Row>
             <Col>
               <label style={labelStyle}>Additional Notes:</label>
