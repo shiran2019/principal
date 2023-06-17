@@ -19,13 +19,20 @@ function NavigationBar() {
             <Nav.Link href="/today" style={{fontSize:"20px", marginRight:"8px"}} >Today</Nav.Link>
             {/* <Nav.Link href="/term-evaluations" style={{fontSize:"20px", marginRight:"8px"}}>Term evaluations</Nav.Link> */}
             <Nav.Link href="/appointments" style={{fontSize:"20px", marginRight:"8px"}}>Appointments</Nav.Link>
-            <Nav.Link href="/studentDet" style={{fontSize:"20px", marginRight:"8px"}}>Student details</Nav.Link>
-            <Nav.Link href="/teacherDet" style={{fontSize:"20px", marginRight:"8px"}}>Teacher details</Nav.Link>
-            
+
+            <NavDropdown style={{fontSize:"20px", marginRight:"8px"}} title="Student details" id="collasible-nav-dropdown">
+              <NavDropdown.Item href="/studentReg" >Student registration</NavDropdown.Item>
+            </NavDropdown>
+
+            <NavDropdown style={{fontSize:"20px", marginRight:"8px"}} title="Teacher details" id="collasible-nav-dropdown">
+              <NavDropdown.Item href="/teacherReg" >Teacher Registration</NavDropdown.Item>
+              <NavDropdown.Item href="/our-teachers">Our teachers</NavDropdown.Item>
+            </NavDropdown>
+
             <NavDropdown style={{fontSize:"20px", marginRight:"8px"}} title="About" id="collasible-nav-dropdown">
               <NavDropdown.Item href="/news" >News</NavDropdown.Item>
-              <NavDropdown.Item href="/our-teachers">Our teachers</NavDropdown.Item>
               <NavDropdown.Item href="/contact">Contact</NavDropdown.Item>
+              <NavDropdown.Item href="/classAdd">Class details</NavDropdown.Item>
             </NavDropdown>
           </Nav>
 

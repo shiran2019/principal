@@ -14,6 +14,7 @@ import Std from "./Main pages/Student/Student";
 import StdReg from "./Main pages/Student/Registr";
 import Teacher from "./Main pages/Teacher/Teacher";
 import TchReg from "./Main pages/Teacher/TchReg";
+import ClsAdd from "./Main pages/Others/ClassRoom";
 
 export default function Paths() {
   return (
@@ -39,6 +40,7 @@ export default function Paths() {
             <Route path="/studentReg" element={<StdReg />}></Route>
             <Route path="/teacherDet" element={<Teacher />}></Route>
             <Route path="/teacherReg" element={<TchReg />}></Route>
+            <Route path="/classAdd" element={<ClsAdd />}></Route>
           </Routes>
         </Router>
       </div>

@@ -1,73 +1,87 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import axios from "axios";
 import { Row, Col } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 
-export default function TchReg() {
+export default function StdReg() {
+  const [classArray, setClassArray] = useState([]);
   const [divContent, setDivContent] = useState();
   const { id } = useParams();
   const [parents, setParents] = useState([]);
   const [newParentid, setNewParentid] = useState("");
   const [submissionStatus, setSubmissionStatus] = useState(null);
+  const [teacherrId, setTeacherrId] = useState("PDT000001");
 
-  const updateDivContent = (content) => {
-    setDivContent(content);
-  };
 
   const initialValues = {
-    studentId: "",
+    teacherId: "",
     fName: "",
     lName: "",
     fullname: "",
-    gender: "",
+    teacherNIC: "",
     address: "",
-    birthday: "",
-    nation: "",
-    religion: "",
-    fatherName: "",
-    fatherNIC: "",
-    fatherNo: "",
-    fatherEmail: "",
-    motherName: "",
-    motherNIC: "",
-    motherNo: "",
-    motherEmail: "",
-    pNote: "",
+    teacherNo: "",
+    teacherEmail: "",
+    regDate: "",
+   
   };
 
   const onSubmit = (data, { resetForm }) => {
-    // Submit the parent data
+    
+    const teacherData = {
+      ...data,
+      teacherId: teacherrId,
+      
+    };
+    
     axios
-      .post("http://localhost:3001/parents", data)
+      .post("http://localhost:3001/teachers", teacherData)
       .then((response) => {
         setSubmissionStatus("success");
-        resetForm();
-
-        // Fetch the last ParentId
-        return axios.get("http://localhost:3001/parents/lastId");
-      })
-      .then((response) => {
-        const lastParentId = response.data.id;
-        console.log("Last Parent ID:", lastParentId);
-
-        // Update the submitted Student row with the ParentId
-        const studentData = { ...data, ParentId: lastParentId };
-        return axios.post("http://localhost:3001/students", studentData);
-      })
-      .then(() => {
-        setSubmissionStatus("success");
-        resetForm();
-        console.log("Student and parent data submitted successfully");
+         resetForm();
+         onPageRefresh();
+         console.log("Teacher details submitted successfully");
+         alert("Teacher Id :" + String(teacherrId) + " submitted successfully" )
       })
       .catch((error) => {
         setSubmissionStatus("error");
         console.log(error);
+        alert("Error : " )
       });
   };
 
- 
+  const onPageRefresh = () => {
+    axios
+      .get("http://localhost:3001/teachers/lastId")
+      .then((response) => {
+        const lastId = response.data.id;
+        const lastIdSuffix = lastId.slice(-6);
+        const lastIdNumber = parseInt(lastIdSuffix, 10);
+        let newIdNumber;
   
+        if (isNaN(lastIdNumber)) {
+          // If the table is empty or lastIdNumber is not a number
+          newIdNumber = 1;
+        } else {
+          newIdNumber = lastIdNumber + 1;
+        }
+  
+        const newIdString = "PDT" + String(newIdNumber).padStart(6, "0");
+        setTeacherrId(newIdString); // Set the studentId state with the newIdString value
+  
+        // Additional logic on page refresh
+  
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  useEffect(() => {
+    onPageRefresh();
+  }, []);
+
   const labelStyle = {
     marginBottom: "8px",
     fontSize: "14px",
@@ -104,12 +118,22 @@ export default function TchReg() {
     backgroundColor: "#f9f9f9",
   };
 
-  const validateStudentId = (value) => {
+  // const validateStudentId = (value) => {
+  //   let error;
+  //   if (!value) {
+  //     error = "Student ID is required";
+  //   } else if (value.length !== 6) {
+  //     error = "Student ID should be 6 characters long";
+  //   }
+  //   return error;
+  // };
+
+  const validateEmail = (value) => {
     let error;
     if (!value) {
-      error = "Student ID is required";
-    } else if (value.length !== 6) {
-      error = "Student ID should be 6 characters long";
+      error = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+      error = "Invalid email format";
     }
     return error;
   };
@@ -128,6 +152,13 @@ export default function TchReg() {
     let error;
     if (!value) {
       error = "Gender is required";
+    }
+    return error;
+  };
+  const validateclass = (value) => {
+    let error;
+    if (!value) {
+      error = "Class room is required";
     }
     return error;
   };
@@ -182,7 +213,7 @@ export default function TchReg() {
     let error;
     if (!value) {
       error = "Parent NIC is required";
-    } else if (!/^[0-9]{9}[vVxX]$/.test(value)) {
+    } else if (!/^[0-9]{9}[vV]$/.test(value)) {
       error = "Invalid NIC format";
     }
     return error;
@@ -198,36 +229,34 @@ export default function TchReg() {
     return error;
   };
 
-  const validateParentEmail = (value) => {
-    let error;
-    if (!value) {
-      error = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-      error = "Invalid email format";
-    }
-    return error;
-  };
-
   return (
     <div>
-      <Formik initialValues={initialValues} onSubmit={onSubmit}>
+      <Formik
+        initialValues={{
+          teacherId: teacherrId,
+          inputId: teacherrId,
+          ...initialValues,
+        }}
+        onSubmit={onSubmit}
+      >
         <Form style={formStyle}>
           <center>
             {" "}
-            <h2 style={{ paddingBottom: "10px" }}>Student Registration Form</h2>
+            <h2 style={{ paddingBottom: "10px" }}>Teacher Registration Form</h2>
           </center>
 
           <Row>
-            <label style={labelStyle}>Student ID:</label>
+            <label style={labelStyle}>Teacher ID:</label>
             <Field
-              id="inputCreatePost"
-              name="studentId"
-              placeholder="(Ex. 000001)"
+              id="inputId"
+              name="teacherId"
+              placeholder={teacherrId}
               style={inputStyle}
-              validate={validateStudentId}
+              readOnly={true}
+              //validate={validateStudentId}
             />
             <ErrorMessage
-              name="studentId"
+              name="teacherId"
               component="div"
               style={{ color: "red" }}
             />
@@ -237,7 +266,7 @@ export default function TchReg() {
             <Field
               id="inputCreatePost"
               name="fName"
-              placeholder="First Name"
+             // placeholder="First Name"
               style={inputStyle}
               validate={validateName}
             />
@@ -253,7 +282,7 @@ export default function TchReg() {
             <Field
               id="inputCreatePost"
               name="lName"
-              placeholder="Last Name"
+            //  placeholder="Last Name"
               style={inputStyle}
               validate={validateName}
             />
@@ -268,7 +297,7 @@ export default function TchReg() {
             <Field
               id="inputCreatePost"
               name="fullname"
-              placeholder="Full Name"
+             // placeholder="Full Name"
               style={inputStyle}
               validate={validateName}
             />
@@ -284,7 +313,7 @@ export default function TchReg() {
             <Field
               id="inputCreatePost"
               name="address"
-              placeholder="Address"
+             // placeholder="Address"
               style={inputStyle}
               validate={validateAddress}
             />
@@ -296,224 +325,77 @@ export default function TchReg() {
           </Row>
 
           <Row>
+           
             <Col xs={12} lg={6}>
-              <label style={labelStyle}>Gender:</label>
-              <Field
-                as="select"
-                id="inputCreatePost"
-                name="gender"
-                style={inputStyle}
-                validate={validateGender}
-              >
-                <option value="male">Select item</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-              </Field>
-              <ErrorMessage
-                name="gender"
-                component="div"
-                style={{ color: "red" }}
-              />
-            </Col>
-            <Col xs={12} lg={6}>
-              <label style={labelStyle}>Birthday:</label>
+              <label style={labelStyle}>Register Date:</label>
               <Field
                 type="date"
                 id="inputCreatePost"
-                name="birthday"
+                name="regDate"
                 style={inputStyle}
                 validate={validateBirthday}
               />
               <ErrorMessage
-                name="birthday"
+                name="regDate"
                 component="div"
                 style={{ color: "red" }}
               />
             </Col>
-          </Row>
-
-          <Row>
             <Col xs={12} lg={6}>
-              <label style={labelStyle}>Race:</label>
+              <label style={labelStyle}>NIC:</label>
               <Field
                 id="inputCreatePost"
-                name="nation"
-                placeholder="Nationality"
-                style={inputStyle}
-                validate={validateNation}
-              />
-              <ErrorMessage
-                name="nation"
-                component="div"
-                style={{ color: "red" }}
-              />
-            </Col>
-
-            <Col xs={12} lg={6}>
-              <label style={labelStyle}>Religion:</label>
-              <Field
-                id="inputCreatePost"
-                name="religion"
-                placeholder="Religion"
-                style={inputStyle}
-                validate={validateReligion}
-              />
-              <ErrorMessage
-                name="religion"
-                component="div"
-                style={{ color: "red" }}
-              />
-            </Col>
-          </Row>
-
-          <hr />
-          <Row>
-            <label style={labelStyle}>Father's Name:</label>
-            <Field
-              id="inputCreatePost"
-              name="fatherName"
-              placeholder="Father's Name"
-              style={inputStyle}
-              validate={validateParentName}
-            />
-            <ErrorMessage
-              name="fatherName"
-              component="div"
-              style={{ color: "red" }}
-            />
-          </Row>
-
-          <Row>
-            <Col xs={12} lg={6}>
-              <label style={labelStyle}>Father's NIC:</label>
-              <Field
-                id="inputCreatePost"
-                name="fatherNIC"
-                placeholder="Father's NIC"
+                name="teacherNIC"
+              //  placeholder="NIC number"
                 style={inputStyle}
                 validate={validateParentNIC}
               />
               <ErrorMessage
-                name="fatherNIC"
+                name="teacherNIC"
                 component="div"
                 style={{ color: "red" }}
               />
             </Col>
+          </Row>
+
+        
+         
+
+          <Row>
+           
             <Col xs={12} lg={6}>
-              <label style={labelStyle}>Father's Contact No:</label>
+              <label style={labelStyle}>Contact No:</label>
               <Field
                 id="inputCreatePost"
-                name="fatherNo"
-                placeholder="Father's Contact No"
+                name="teacherNo"
+              //  placeholder="Contact No"
                 style={inputStyle}
                 validate={validateParentContactNo}
               />
               <ErrorMessage
-                name="fatherNo"
-                component="div"
-                style={{ color: "red" }}
-              />
-            </Col>
-          </Row>
-
-          <Col>
-            <label style={labelStyle}>Father's Email:</label>
-            <Field
-              id="inputCreatePost"
-              name="fatherEmail"
-              placeholder="Father's Email"
-              style={inputStyle}
-              validate={validateParentEmail}
-            />
-            <ErrorMessage
-              name="fatherEmail"
-              component="div"
-              style={{ color: "red" }}
-            />
-          </Col>
-
-          <hr />
-
-          <Row>
-            <label style={labelStyle}>Mother's Name:</label>
-            <Field
-              id="inputCreatePost"
-              name="motherName"
-              placeholder="Mother's Name"
-              style={inputStyle}
-              validate={validateParentName}
-            />
-            <ErrorMessage
-              name="motherName"
-              component="div"
-              style={{ color: "red" }}
-            />
-          </Row>
-
-          <Row>
-            <Col xs={12} lg={6}>
-              <label style={labelStyle}>Mother's NIC:</label>
-              <Field
-                id="inputCreatePost"
-                name="motherNIC"
-                placeholder="Mother's NIC"
-                style={inputStyle}
-                validate={validateParentNIC}
-              />
-              <ErrorMessage
-                name="motherNIC"
+                name="teacherNo"
                 component="div"
                 style={{ color: "red" }}
               />
             </Col>
             <Col xs={12} lg={6}>
-              <label style={labelStyle}>Mother's Contact No:</label>
-              <Field
-                id="inputCreatePost"
-                name="motherNo"
-                placeholder="Mother's Contact No"
-                style={inputStyle}
-                validate={validateParentContactNo}
-              />
-              <ErrorMessage
-                name="motherNo"
+            <label style={labelStyle}>Email:</label>
+                <Field
+                  id="inputCreatePost"
+                  name="teacherEmail"
+               //   placeholder="(Enter your full name)"
+                  style={inputStyle}
+                  validate={validateEmail}
+                />
+                 <ErrorMessage
+                name="teacherEmail"
                 component="div"
                 style={{ color: "red" }}
               />
-            </Col>
-          </Row>
+                </Col>
+            
 
-          <Row>
-            <Col>
-              <label style={labelStyle}>Mother's Email:</label>
-              <Field
-                id="inputCreatePost"
-                name="motherEmail"
-                placeholder="Mother's Email"
-                style={inputStyle}
-                validate={validateParentEmail}
-              />
-              <ErrorMessage
-                name="motherEmail"
-                component="div"
-                style={{ color: "red" }}
-              />
-            </Col>
           </Row>
-
-          <Row>
-            <Col>
-              <label style={labelStyle}>Additional Notes:</label>
-              <Field
-                as="textarea"
-                id="inputCreatePost"
-                name="pNote"
-                placeholder="Additional Notes"
-                style={inputStyle}
-              />
-            </Col>
-          </Row>
-
           <Row>
             {" "}
             <div style={{ textAlign: "center", marginTop: "20px" }}>

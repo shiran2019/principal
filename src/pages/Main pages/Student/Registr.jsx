@@ -1,16 +1,18 @@
-import React, { useState ,useEffect} from "react";
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import axios from "axios";
+import React, { useState, useEffect } from "react";
+import { Formik, Form, Field, ErrorMessage, isEmptyChildren } from "formik";
+import axios, { isAxiosError } from "axios";
 import { Row, Col } from "react-bootstrap";
-import { useParams } from "react-router-dom";
+import Table from "react-bootstrap/Table";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function StdReg() {
+  const [classCountArray, setClassCountArray] = useState([]);
   const [classArray, setClassArray] = useState([]);
+  
   const [divContent, setDivContent] = useState();
-  const { id } = useParams();
-  const [parents, setParents] = useState([]);
-  const [newParentid, setNewParentid] = useState("");
+
   const [submissionStatus, setSubmissionStatus] = useState(null);
+  const [studenttId, setStudenttId] = useState("PD000001");
 
   const updateDivContent = (content) => {
     setDivContent(content);
@@ -29,42 +31,82 @@ export default function StdReg() {
     fatherName: "",
     fatherNIC: "",
     fatherNo: "",
-    fatherEmail: "",
     motherName: "",
     motherNIC: "",
     motherNo: "",
-    motherEmail: "",
     pNote: "",
     ClassClassName: "",
   };
 
   const onSubmit = (data, { resetForm }) => {
-    // Submit the parent data
     axios
       .post("http://localhost:3001/parents", data)
       .then((response) => {
         setSubmissionStatus("success");
-        resetForm();
+        // resetForm();
 
-        // Fetch the last ParentId
         return axios.get("http://localhost:3001/parents/lastId");
       })
       .then((response) => {
         const lastParentId = response.data.id;
         console.log("Last Parent ID:", lastParentId);
 
-        // Update the submitted Student row with the ParentId
-        const studentData = { ...data, ParentId: lastParentId };
+        const studentData = {
+          ...data,
+          ParentId: lastParentId,
+          studentId: studenttId,
+        };
         return axios.post("http://localhost:3001/students", studentData);
       })
       .then(() => {
         setSubmissionStatus("success");
         resetForm();
+        onPageRefresh();
+        onPageCount();
         console.log("Student and parent data submitted successfully");
+        alert("Student Id :" + String(studenttId) + " submitted successfully");
       })
       .catch((error) => {
         setSubmissionStatus("error");
         console.log(error);
+        alert("Error : ");
+      });
+  };
+
+  const onPageRefresh = () => {
+    axios
+      .get("http://localhost:3001/students/lastId")
+      .then((response) => {
+        const lastId = response.data.id;
+        const lastIdSuffix = lastId.slice(-6);
+        const lastIdNumber = parseInt(lastIdSuffix, 10);
+        let newIdNumber;
+
+        if (isNaN(lastIdNumber)) {
+          // If the table is empty or lastIdNumber is not a number
+          newIdNumber = 1;
+        } else {
+          newIdNumber = lastIdNumber + 1;
+        }
+
+        const newIdString = "PD" + String(newIdNumber).padStart(6, "0");
+        setStudenttId(newIdString); // Set the studentId state with the newIdString value
+
+        // Additional logic on page refresh
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const onPageCount = () => {
+    axios
+      .get(`http://localhost:3001/students/classCount`)
+      .then((response) => {
+        setClassCountArray(response.data);
+      })
+      .catch((error) => {
+        console.error("An error occurred:", error);
       });
   };
 
@@ -77,9 +119,10 @@ export default function StdReg() {
       .catch((error) => {
         console.error("An error occurred:", error);
       });
+
+    onPageRefresh();
+    onPageCount();
   }, []);
-  
-  
 
   const labelStyle = {
     marginBottom: "8px",
@@ -117,15 +160,17 @@ export default function StdReg() {
     backgroundColor: "#f9f9f9",
   };
 
-  const validateStudentId = (value) => {
-    let error;
-    if (!value) {
-      error = "Student ID is required";
-    } else if (value.length !== 6) {
-      error = "Student ID should be 6 characters long";
-    }
-    return error;
-  };
+
+
+  // const validateStudentId = (value) => {
+  //   let error;
+  //   if (!value) {
+  //     error = "Student ID is required";
+  //   } else if (value.length !== 6) {
+  //     error = "Student ID should be 6 characters long";
+  //   }
+  //   return error;
+  // };
 
   const validateName = (value) => {
     let error;
@@ -202,7 +247,7 @@ export default function StdReg() {
     let error;
     if (!value) {
       error = "Parent NIC is required";
-    } else if (!/^[0-9]{9}[vVxX]$/.test(value)) {
+    } else if (!/^[0-9]{9}[vV]$/.test(value)) {
       error = "Invalid NIC format";
     }
     return error;
@@ -218,19 +263,16 @@ export default function StdReg() {
     return error;
   };
 
-  const validateParentEmail = (value) => {
-    let error;
-    if (!value) {
-      error = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-      error = "Invalid email format";
-    }
-    return error;
-  };
-
   return (
     <div>
-      <Formik initialValues={initialValues} onSubmit={onSubmit}>
+      <Formik
+        initialValues={{
+          studentId: studenttId,
+          inputId: studenttId,
+          ...initialValues,
+        }}
+        onSubmit={onSubmit}
+      >
         <Form style={formStyle}>
           <center>
             {" "}
@@ -240,11 +282,12 @@ export default function StdReg() {
           <Row>
             <label style={labelStyle}>Student ID:</label>
             <Field
-              id="inputCreatePost"
+              id="inputId"
               name="studentId"
-              placeholder="(Ex. 000001)"
+              placeholder={studenttId}
               style={inputStyle}
-              validate={validateStudentId}
+              readOnly={true}
+              //validate={validateStudentId}
             />
             <ErrorMessage
               name="studentId"
@@ -325,7 +368,7 @@ export default function StdReg() {
                 style={inputStyle}
                 validate={validateGender}
               >
-                <option value="male">Select item</option>
+                <option value="">Select item</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
               </Field>
@@ -436,22 +479,6 @@ export default function StdReg() {
             </Col>
           </Row>
 
-          <Col>
-            <label style={labelStyle}>Father's Email:</label>
-            <Field
-              id="inputCreatePost"
-              name="fatherEmail"
-              placeholder="Father's Email"
-              style={inputStyle}
-              validate={validateParentEmail}
-            />
-            <ErrorMessage
-              name="fatherEmail"
-              component="div"
-              style={{ color: "red" }}
-            />
-          </Col>
-
           <hr />
 
           <Row>
@@ -503,26 +530,10 @@ export default function StdReg() {
             </Col>
           </Row>
 
-          <Row>
-            <Col>
-              <label style={labelStyle}>Mother's Email:</label>
-              <Field
-                id="inputCreatePost"
-                name="motherEmail"
-                placeholder="Mother's Email"
-                style={inputStyle}
-                validate={validateParentEmail}
-              />
-              <ErrorMessage
-                name="motherEmail"
-                component="div"
-                style={{ color: "red" }}
-              />
-            </Col>
-          </Row>
+          <Row></Row>
           <hr />
           <Row>
-          <Col xs={12} lg={6}>
+            <Col xs={12} lg={6}>
               <label style={labelStyle}>Class room:</label>
               <Field
                 as="select"
@@ -532,22 +543,41 @@ export default function StdReg() {
                 validate={validateclass}
               >
                 <option value="">Select item</option>
-                
-    {classArray.map((classItem) => (
-      <option key={classItem.className} value={classItem.className}>
-        {classItem.className}
-      </option>
-    ))}
- 
+
+                {classArray.map((classItem) => (
+                  <option key={classItem.className} value={classItem.className}>
+                    {classItem.className}
+                  </option>
+                ))}
               </Field>
               <ErrorMessage
-                name="class"
+                name="ClassClassName"
                 component="div"
                 style={{ color: "red" }}
               />
             </Col>
           </Row>
-
+          <Row>
+            {" "}
+            <Col lg={6}>
+              <Table >
+                <thead>
+                  <tr>
+                    <th>Class name</th>
+                    <th>Student count</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {classCountArray.map((item) => (
+                    <tr key={item.className}>
+                      <td>{item.className}</td>
+                      <td>{item.count}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </Col>
+          </Row>
           <Row>
             <Col>
               <label style={labelStyle}>Additional Notes:</label>
