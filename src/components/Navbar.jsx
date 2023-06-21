@@ -3,7 +3,7 @@ import {Nav} from 'react-bootstrap';
 import { Navbar } from 'react-bootstrap';
 import {NavDropdown} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import pr from '../images/pr.jpg'
+
 
 function NavigationBar() {
   return (
@@ -20,20 +20,24 @@ function NavigationBar() {
             {/* <Nav.Link href="/term-evaluations" style={{fontSize:"20px", marginRight:"8px"}}>Term evaluations</Nav.Link> */}
             <Nav.Link href="/appointments" style={{fontSize:"20px", marginRight:"8px"}}>Appointments</Nav.Link>
 
-            <NavDropdown style={{fontSize:"20px", marginRight:"8px"}} title="Student details" id="collasible-nav-dropdown">
-              <NavDropdown.Item href="/studentReg" >Student registration</NavDropdown.Item>
-              <NavDropdown.Item href="/studentDetails" >Student details</NavDropdown.Item>
+            <NavDropdown style={{fontSize:"20px", marginRight:"8px"}} title="Students" id="collasible-nav-dropdown">
+             <NavDropdown.Item href="/studentDetails" >Our students</NavDropdown.Item>
+             <NavDropdown.Item href="/studentReg" >Student registration</NavDropdown.Item>
+             <NavDropdown.Item href="/termEvoluations " >Term evaluations</NavDropdown.Item>
+             
+              
             </NavDropdown>
 
-            <NavDropdown style={{fontSize:"20px", marginRight:"8px"}} title="Teacher details" id="collasible-nav-dropdown">
+            <NavDropdown style={{fontSize:"20px", marginRight:"8px"}} title="Teachers" id="collasible-nav-dropdown">
+              <NavDropdown.Item href="/teacherDetails" >Our teachers</NavDropdown.Item>
               <NavDropdown.Item href="/teacherReg" >Teacher Registration</NavDropdown.Item>
-              <NavDropdown.Item href="/teacherDetails" >Teacher details</NavDropdown.Item>
+              
             </NavDropdown>
 
             <NavDropdown style={{fontSize:"20px", marginRight:"8px"}} title="About" id="collasible-nav-dropdown">
               <NavDropdown.Item href="/news" >News</NavDropdown.Item>
-              <NavDropdown.Item href="/contact">Contact</NavDropdown.Item>
-              <NavDropdown.Item href="/classAdd">Class details</NavDropdown.Item>
+              <NavDropdown.Item href="/contact">Contacts</NavDropdown.Item>
+              <NavDropdown.Item href="/classAdd">Classes</NavDropdown.Item>
             </NavDropdown>
           </Nav>
 

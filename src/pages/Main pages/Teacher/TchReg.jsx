@@ -28,29 +28,69 @@ export default function StdReg() {
   };
 
   const onSubmit = (data, { resetForm }) => {
-    
     const teacherData = {
       ...data,
       teacherId: teacherrId,
-      
     };
-    
+  
+    // Check if email, NIC, and contact number already exist
     axios
-      .post("http://localhost:3001/teachers", teacherData)
+      .get("http://localhost:3001/teachers", {
+        params: {
+          teacherEmail: teacherData.teacherEmail,
+          teacherNIC: teacherData.teacherNIC,
+          teacherNo: teacherData.teacherNo,
+        },
+      })
       .then((response) => {
-        setSubmissionStatus("success");
-         resetForm();
-         onPageRefresh();
-         console.log("Teacher details submitted successfully");
-         alert("Teacher Id :" + String(teacherrId) + " submitted successfully" )
+        const existingTeachers = response.data;
+        const existingEmail = existingTeachers.find(
+          (teacher) => teacher.teacherEmail === teacherData.teacherEmail
+        );
+        const existingNIC = existingTeachers.find(
+          (teacher) => teacher.teacherNIC === teacherData.teacherNIC
+        );
+        const existingContactNo = existingTeachers.find(
+          (teacher) => teacher.teacherNo === teacherData.teacherNo
+        );
+  
+        if (existingEmail) {
+          alert("Teacher with this email already exists.");
+          return;
+        }
+  
+        if (existingNIC) {
+          alert("Teacher with this NIC already exists.");
+          return;
+        }
+  
+        if (existingContactNo) {
+          alert("Teacher with this contact number already exists.");
+          return;
+        }
+  
+        // If no existing records found, proceed with submission
+        axios
+          .post("http://localhost:3001/teachers", teacherData)
+          .then((response) => {
+            setSubmissionStatus("success");
+            resetForm();
+            onPageRefresh();
+            console.log("Teacher details submitted successfully");
+            alert("Teacher Id: " + String(teacherrId) + " submitted successfully");
+          })
+          .catch((error) => {
+            setSubmissionStatus("error");
+            // console.log(error);
+            alert(error);
+          });
       })
       .catch((error) => {
         setSubmissionStatus("error");
         console.log(error);
-        alert("Error : " )
       });
   };
-
+  
   const onPageRefresh = () => {
     axios
       .get("http://localhost:3001/teachers/lastId")
@@ -148,20 +188,7 @@ export default function StdReg() {
     return error;
   };
 
-  const validateGender = (value) => {
-    let error;
-    if (!value) {
-      error = "Gender is required";
-    }
-    return error;
-  };
-  const validateclass = (value) => {
-    let error;
-    if (!value) {
-      error = "Class room is required";
-    }
-    return error;
-  };
+
 
   const validateAddress = (value) => {
     let error;
@@ -171,40 +198,19 @@ export default function StdReg() {
     return error;
   };
 
-  const validateBirthday = (value) => {
+
+  const validatRegDay = (value) => {
     let error;
     if (!value) {
       error = "Birthday is required";
-    }
-    return error;
-  };
-
-  const validateNation = (value) => {
-    let error;
-    if (!value) {
-      error = "Nationality is required";
-    } else if (!/^[a-zA-Z]+$/.test(value)) {
-      error = "Only letters are allowed";
-    }
-    return error;
-  };
-
-  const validateReligion = (value) => {
-    let error;
-    if (!value) {
-      error = "Religion is required";
-    } else if (!/^[a-zA-Z]+$/.test(value)) {
-      error = "Only letters are allowed";
-    }
-    return error;
-  };
-
-  const validateParentName = (value) => {
-    let error;
-    if (!value) {
-      error = "Parent Name is required";
-    } else if (!/^[a-zA-Z\s]+$/.test(value)) {
-      error = "Only letters and spaces are allowed";
+    } else {
+      const selectedDate = new Date(value);
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+  
+      if (selectedDate > tomorrow) {
+        error = "Registration date cannot be a future date";
+      }
     }
     return error;
   };
@@ -333,7 +339,7 @@ export default function StdReg() {
                 id="inputCreatePost"
                 name="regDate"
                 style={inputStyle}
-                validate={validateBirthday}
+                validate={validatRegDay}
               />
               <ErrorMessage
                 name="regDate"

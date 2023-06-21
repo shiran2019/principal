@@ -40,6 +40,11 @@ export default function StdReg() {
   };
 
   const onSubmit = (data, { resetForm }) => {
+
+    if (data.motherNIC === data.fatherNIC) {
+      alert("Mother's NIC and Father's NIC cannot be the same");
+      return; // Stop execution if the NICs are the same
+    }
     axios
       .post("http://localhost:3001/parents", data)
       .then((response) => {
@@ -227,10 +232,18 @@ export default function StdReg() {
     let error;
     if (!value) {
       error = "Birthday is required";
+    } else {
+      const selectedDate = new Date(value);
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+  
+      if (selectedDate > tomorrow) {
+        error = "Birthday cannot be a future date";
+      }
     }
     return error;
   };
-
+  
   const validateNation = (value) => {
     let error;
     if (!value) {
@@ -261,12 +274,24 @@ export default function StdReg() {
     return error;
   };
 
-  const validateParentNIC = (value) => {
+  const validateFathertNIC = (value) => {
     let error;
     if (!value) {
       error = "Parent NIC is required";
     } else if (!/^[0-9]{9}[vV]$/.test(value)) {
       error = "Invalid NIC format";
+    }
+    return error;
+  };
+
+  const validateMotherNIC = (value, allValues) => {
+    let error;
+    if (!value) {
+      error = "Parent NIC is required";
+    } else if (!/^[0-9]{9}[vV]$/.test(value)) {
+      error = "Invalid NIC format";
+    } else if (allValues && allValues.fatherNIC && value === allValues.motherNIC) {
+      error = "Father's and Mother's NIC cannot be the same";
     }
     return error;
   };
@@ -472,7 +497,7 @@ export default function StdReg() {
                 name="fatherNIC"
                 placeholder="Father's NIC"
                 style={inputStyle}
-                validate={validateParentNIC}
+                validate={validateFathertNIC}
               />
               <ErrorMessage
                 name="fatherNIC"
@@ -523,7 +548,7 @@ export default function StdReg() {
                 name="motherNIC"
                 placeholder="Mother's NIC"
                 style={inputStyle}
-                validate={validateParentNIC}
+                validate={validateMotherNIC}
               />
               <ErrorMessage
                 name="motherNIC"
