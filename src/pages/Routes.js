@@ -18,6 +18,7 @@ import ClsAdd from "./Main pages/Others/ClassRoom";
 import StdTable from "./Main pages/Student/Student";
 import TchTable from "./Main pages/Teacher/Teacher";
 import TermEvos from "./Main pages/Student/TermEvoluations/TermEvos";
+import Attendance from "./Main pages/Student/Attendance";
 
 export default function Paths() {
   return (
@@ -47,6 +48,7 @@ export default function Paths() {
             <Route path="/studentDetails" element={<StdTable />}></Route>
             <Route path="/teacherDetails" element={<TchTable />}></Route>
             <Route path="/termEvoluations" element={<TermEvos />}></Route>
+            <Route path="/attendance" element={<Attendance />}></Route>
           </Routes>
         </Router>
       </div>

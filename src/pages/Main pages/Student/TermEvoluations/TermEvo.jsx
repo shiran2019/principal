@@ -5,296 +5,130 @@ import { Row, Col, Alert } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import Table from "react-bootstrap/Table";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FormControl } from "react-bootstrap";
 
 export default function TermEvo() {
-  const [teacherArray, setTeacherArray] = useState([]);
-  const [tableArray, setTableArray] = useState([]);
-  const { id } = useParams();
-  const [parents, setParents] = useState([]);
-  const [newParentid, setNewParentid] = useState("");
-  const [submissionStatus, setSubmissionStatus] = useState(null);
-  const [teacherrId, setTeacherrId] = useState("");
+  const [lists, setLists] = useState([]);
+  const [array, setArray] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredTableArray, setFilteredTableArray] = useState([]);
-
-  const initialValues = {
-    EvoType: "",
-    Activity: "",
-    Day: "",
-    Note: "",
-  };
-
-  const onSubmit = (data, { resetForm }) => {
-    axios
-      .post("http://localhost:3001/createEvoluations", data)
-      .then((response) => {
-        setSubmissionStatus("success");
-        resetForm();
-        tableData();
-        alert("Added new class successfully");
-      })
-      .catch((error) => {
-        setSubmissionStatus("error");
-        console.log(error);
-        alert("Error: " + error.message);
-      });
-  };
-
-  const tableData = () => {
-    axios
-      .get("http://localhost:3001/createEvoluations")
-      .then((response) => {
-        setTableArray(response.data);
-      })
-      .catch((error) => {
-        console.error("An error occurred:", error);
-      });
-  };
+  const [selectedRowId, setSelectedRowId] = useState(null);
 
   useEffect(() => {
     axios
-      .get("http://localhost:3001/teachers/tch")
+      .get("http://localhost:3001/createEvoluations")
       .then((response) => {
-        setTeacherArray(response.data);
+        setArray(response.data);
       })
       .catch((error) => {
         console.error("An error occurred:", error);
       });
-
-    tableData();
-
   }, []);
-
-
-useEffect(() => {
-  handleSearch();
-}, [searchTerm]);
-
-
-  const handleSearch = () => {
-    axios
-      .get(`http://localhost:3001/students/class/${searchTerm}`)
-      .then((response) => {
-        setFilteredTableArray(response.data);
-        Alert("Search successfull");
-      })
-      .catch((error) => {
-        console.error("An error occurred:", error);
-        
-      });
-  };
 
   const labelStyle = {
     marginBottom: "8px",
-    fontSize: "14px",
+    fontSize: "20px",
     fontWeight: "bold",
   };
 
   const inputStyle = {
     padding: "10px",
-    marginBottom: "20px",
+    marginBottom: "50px",
     width: "100%",
     border: "1px solid #ccc",
     borderRadius: "4px",
     fontSize: "16px",
   };
 
-  const buttonStyle = {
-    padding: "10px 40px",
-    backgroundColor: "#007bff",
-    color: "#fff",
-    border: "none",
-    borderRadius: "4px",
-    fontSize: "16px",
-    cursor: "pointer",
-    align: "right",
-  };
+  const handleRowClick = (rowId) => {
+    setSelectedRowId(rowId);
+    const selectedRow = filteredTableArray.find((item) => item.id === rowId);
+    console.log(selectedRow);
 
-  const formStyle = {
-    margin: "0 auto",
-    padding: "20px",
-    border: "1px solid #ddd",
-    borderRadius: "4px",
-    // maxWidth: "60%",
-    marginTop: "30px",
-    backgroundColor: "#f9f9f9",
-  };
-
-  const validate1 = (value) => {
-    let error;
-    if (!value) {
-      error = "Type is required";
+    if (selectedRow) {
+      const createEvoId = selectedRow.id;
+      axios
+        .get(`http://localhost:3001/termEvoluations/${createEvoId}`)
+        .then((response) => {
+          setLists(response.data);
+          console.log(response);
+        })
+        .catch((error) => {
+          console.error("An error occurred:", error);
+        });
     }
-    return error;
   };
 
-  const validate2 = (value) => {
-    let error;
-    if (!value) {
-      error = "Details are required";
-    }
-    return error;
-  };
-
-  const validate3 = (value) => {
-    let error;
-    if (!value) {
-      error = "Activity is required";
-    }
-    return error;
-  };
+  useEffect(() => {
+    const filteredData = array.filter((item) =>
+      item.EvoType.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredTableArray(filteredData);
+  }, [searchTerm, array]);
 
   return (
     <>
-      <div style={{ padding: "1px 20px" }}>
+    <div style={{width:"100%"}}>
+      <Row>
+        <Col xs={12} lg={6}>
+          <label style={labelStyle}>Search term evaluation here:</label>
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={inputStyle}
+            placeholder="Search by EvoType"
+            
+          />
+        </Col>
+        </Row>
         <Row>
-          <Col lg={7} xs={12}>
-            <center>
-              <h2 style={{ paddingBottom: "10px" }}>Evoluation types</h2>
-            </center>
-            <Table style={formStyle}>
+        <Col xs={12} lg={6}>
+          <label style={labelStyle}>Term Evaluations</label>
+          <Table  bordered hover>
+            <thead>
+              <tr>
+                <th>Evoluation Type</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredTableArray.map((item) => (
+                <tr
+                  key={item.id}
+                  onClick={() => handleRowClick(item.id)}
+                  className={selectedRowId === item.id ? "selected" : ""}
+                >
+                  <td>{item.EvoType}</td>
+                  <td>{item.Day}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </Col>
+        <Col xs={12} lg={6}>
+        <label style={labelStyle}>Student Marks</label>
+          {lists.length > 0 && (
+            <Table striped bordered hover>
               <thead>
                 <tr>
-                  <th>ID</th>
-                  <th>Evoluation</th>
-                  <th>Activity</th>
-                  <th>Day</th>
-                  <th>Details</th>
+                  <th>Student ID</th>
+                  <th>Mark</th>
                 </tr>
               </thead>
               <tbody>
-                {tableArray.map((item) => (
+                {lists.map((item) => (
                   <tr key={item.id}>
-                    <td>{item.id}</td>
-                    <td>{item.EvoType}</td>
-                    <td>{item.Activity}</td>
-                    <td>{item.Day}</td>
-                    <td>{item.Note}</td>
+                    <td>{item.StudentId}</td>
+                    <td>{item.Mark}</td>
                   </tr>
                 ))}
               </tbody>
             </Table>
-          </Col>
-
-          <Col lg={5} xs={12}>
-            <Formik initialValues={{ ...initialValues }}>
-              <Form>
-                <FormControl
-                  type="text"
-                  placeholder="Search Class name"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  style={{ marginBottom: "20px" }}
-                />
-
-                <Table style={formStyle}>
-                  <thead>
-                    <tr>
-                      <th>Student ID</th>
-                      <th>First Name</th>
-                      <th>Note</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredTableArray.map((student) => (
-                      <tr key={student.studentId}>
-                        <td>{student.studentId}</td>
-                        <td>{student.fName}</td>
-                        <td>{student.pNote}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </Table>
-              </Form>
-            </Formik>
-          </Col>
-        </Row>
-        <Row style={{ marginTop: "2%" }}>
-          <Col lg={7} xs={12}>
-            <center>
-              <h2 style={{ paddingBottom: "10px" }}>
-                Add new Evoluation type
-              </h2>
-            </center>
-            <Formik initialValues={initialValues} onSubmit={onSubmit}>
-              <Form style={formStyle}>
-                <Row>
-                  <Col xs={12} lg={6}>
-                    <label style={labelStyle}>Type :</label>
-                    <Field
-                      id="inputCreatePost"
-                      name="EvoType"
-                      style={inputStyle}
-                      validate={validate1}
-                    />
-                    <ErrorMessage
-                      name="EvoType"
-                      component="div"
-                      style={{ color: "red" }}
-                    />
-                  </Col>
-                  <Col xs={12} lg={6}>
-                    <label style={labelStyle}>Activity:</label>
-                    <Field
-                      id="inputCreatePost"
-                      name="Activity"
-                      style={inputStyle}
-                      validate={validate3}
-                    />
-                    <ErrorMessage
-                      name="Activity"
-                      component="div"
-                      style={{ color: "red" }}
-                    />
-                  </Col>
-                </Row>
-                <Row>
-                  <Col  xs={12} lg={6}>
-                    <label style={labelStyle}>Date:</label>
-                    <Field
-                      type="date"
-                      id="inputCreatePost"
-                      name="Day"
-                      style={inputStyle}
-                    />
-                    <ErrorMessage
-                      name="Day"
-                      component="div"
-                      style={{ color: "red" }}
-                    />
-                  </Col>
-                </Row>
-                <Row>
-                  <Col xs={12} lg={12}>
-                    <label style={labelStyle}>Details:</label>
-                    <Field
-                      as="textarea"
-                      id="inputCreatePost"
-                      name="Note"
-                      style={inputStyle}
-                      validate={validate2}
-                    />
-                    <ErrorMessage
-                      name="Note"
-                      component="div"
-                      style={{ color: "red" }}
-                    />
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <div style={{ textAlign: "right" }}>
-                      <button type="submit" style={buttonStyle}>
-                        Add
-                      </button>
-                    </div>
-                  </Col>
-                </Row>
-              </Form>
-            </Formik>
-          </Col>
-        </Row>
+          )}
+        </Col>
+       
+      </Row>
+      
       </div>
     </>
   );

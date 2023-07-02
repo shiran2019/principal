@@ -9,19 +9,14 @@ import { FormControl } from "react-bootstrap";
 
 export default function Marks() {
   const [marks, setMarks] = useState({}); // Updated marks state
-
-  const [mark, SetMark] = useState("");
   const [idd, SetIdd] = useState("");
   const [array, setArray] = useState([]);
-  const [teacherArray, setTeacherArray] = useState([]);
-  const [tableArray, setTableArray] = useState([]);
+  const [temp, setTemp] = useState("");
   const { id } = useParams();
-  const [parents, setParents] = useState([]);
-  const [newParentid, setNewParentid] = useState("");
   const [submissionStatus, setSubmissionStatus] = useState(null);
-  const [teacherrId, setTeacherrId] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredTableArray, setFilteredTableArray] = useState([]);
+  const [allSubmissionStatus, setAllSubmissionStatus] = useState(null); // Added allSubmissionStatus state
 
   const initialValues = {
     Mark: "",
@@ -29,12 +24,12 @@ export default function Marks() {
     StudentId: "",
   };
 
-  const onSubmit = (data, { resetForm }) => {
+  const onSubmit = (data, resetForm, resetAllForms) => {
     axios
       .post("http://localhost:3001/termEvoluations", data)
       .then((response) => {
         setSubmissionStatus("success");
-       resetForm();
+        resetForm();
         //setMarks({}); // Reset the marks object
         alert("Added new class successfully");
       })
@@ -42,6 +37,9 @@ export default function Marks() {
         setSubmissionStatus("error");
         console.log(error);
         alert("Error: " + error.message);
+      })
+      .finally(() => {
+        resetAllForms(); // Reset all the forms after submission
       });
   };
 
@@ -87,6 +85,7 @@ export default function Marks() {
   };
 
   const buttonStyle = {
+    
     padding: "8px 10px",
     backgroundColor: "#007bff",
     color: "#fff",
@@ -115,13 +114,24 @@ export default function Marks() {
     return error;
   };
 
-
   const validate3 = (value) => {
     let error;
     if (!value) {
-      error = "Activity is required";
+      error = "Mark is required";
     }
     return error;
+  };
+
+  const handleAddAll = () => {
+    // Iterate over each student and submit their marks
+    filteredTableArray.forEach((student) => {
+      const data = {
+        Mark: marks[student.studentId], // Accessed the mark value from the marks object using the student ID
+        CreateEvoId: parseInt(idd),
+        StudentId: student.studentId,
+      };
+      onSubmit(data, () => {}, () => {}); // Pass empty resetForm and resetAllForms functions as placeholders
+    });
   };
 
   return (
@@ -140,39 +150,47 @@ export default function Marks() {
               />
             </Col>
             <Col xs={12} lg={6}>
-            <label style={labelStyle}>Type:</label>
-<Field
-  as="select" // Render the field as a select dropdown
-  id="inputCreatePost"
-  name="CreateEvoId"
-  style={inputStyle}
-  validate={validate1}
-  value={idd}
-  onChange={(e) => {
-    const selectedEvoType = e.target.value;
-    const selectedEvo = array.find((item) => item.EvoType === selectedEvoType);
-    SetIdd(selectedEvo ? selectedEvo.id : ""); // Set the ID of the selected EvoType
-  }}
->
-  <option value="">Select Type</option>
-  {array.map((item) => (
-    <option key={item.EvoType} value={item.EvoType}>
-      {item.EvoType}
-    </option>
-  ))}
-</Field>
+              <label style={labelStyle}>Type:</label>
+              <Field
+                as="select"
+                id="inputCreatePost"
+                name="CreateEvoId"
+                style={inputStyle}
+                validate={validate1}
+                value={temp}
+                placeholder={temp}
+                onChange={(e) => {
+                  const selectedEvoType = e.target.value;
+                  setTemp(selectedEvoType);
+                  const selectedEvo = array.find(
+                    (item) => item.EvoType === selectedEvoType
+                  );
+                  SetIdd(selectedEvo ? selectedEvo.id : "");
+                }}
+              >
+                <option value="">Select Type</option>
+                {array.map((item) => {
+                  if (item.EvoType !== idd) {
+                    return (
+                      <option key={item.EvoType} value={item.EvoType}>
+                        {item.EvoType}
+                      </option>
+                    );
+                  }
+                  return null;
+                })}
+              </Field>
 
-<ErrorMessage
-  name="CreateEvoId"
-  component="div"
-  style={{ color: "red" }}
-/>
-
-
+              <ErrorMessage
+                name="CreateEvoId"
+                component="div"
+                style={{ color: "red" }}
+              />
             </Col>
           </Row>
-          <Row>
-            <Table style={formStyle}>
+          <Row >
+           
+            <Table style={formStyle} >
               <thead>
                 <tr>
                   <th>Student ID</th>
@@ -182,62 +200,53 @@ export default function Marks() {
                 </tr>
               </thead>
               <tbody>
-                {filteredTableArray.map((student) => (
+                {filteredTableArray.map((student, index) => (
                   <tr key={student.studentId}>
                     <td>{student.studentId}</td>
                     <td>{student.fName}</td>
                     <td>{student.pNote}</td>
                     <td>
-        <Field
-          as="select" // Render the field as a select dropdown
-          id="inputCreatePost"
-          name={`Mark[${student.studentId}]`}
-          style={{ width: "80px" }}
-          validate={validate3}
-          value={marks[student.studentId] || ""} // Accessed the mark value from the marks object using the student ID
-          onChange={(e) =>
-            setMarks({
-              ...marks,
-              [student.studentId]: e.target.value, // Updated the specific mark value in the marks object using the student ID
-            })
-          }
-        >
-          <option value="">Select</option>
-          <option value="very bad">Very Bad</option>
-          <option value="bad">Bad</option>
-          <option value="medium">Medium</option>
-          <option value="good">Good</option>
-          <option value="very good">Very Good</option>
-        </Field>
+                      <Field
+                        as="select" // Render the field as a select dropdown
+                        id="inputCreatePost"
 
-        <ErrorMessage
-          name={`Mark[${student.studentId}]`}
-          component="div"
-          style={{ color: "red" }}
-        />
-      </td>
-                    
-                      <button
-                        type="submit"
-                        style={buttonStyle}
-                        onClick={() => {
-                          // Handle form submission for the specific student
-
-                          const data = {
-                            Mark: marks[student.studentId], // Accessed the mark value from the marks object using the student ID
-                            CreateEvoId: parseInt(idd),
-                            StudentId: student.studentId,
-                          };
-                          onSubmit(data, { resetForm: () => {} }); // Pass an empty resetForm function as a placeholder
-                        }}
+                        name={`Mark[${student.studentId}]`}
+                        style={{ width:"120px", height: "30px"}}
+                        validate={validate3}
+                        value={marks[student.studentId] || ""} // Accessed the mark value from the marks object using the student ID
+                        onChange={(e) =>
+                          setMarks({
+                            ...marks,
+                            [student.studentId]: e.target.value, // Updated the specific mark value in the marks object using the student ID
+                          })
+                        }
                       >
-                        Add
-                      </button>
-                  
+                        <option value="">Select</option>
+                        <option value="very bad">Very Bad</option>
+                        <option value="bad">Bad</option>
+                        <option value="medium">Medium</option>
+                        <option value="good">Good</option>
+                        <option value="very good">Very Good</option>
+                      </Field>
+
+                      <ErrorMessage
+                        name={`Mark[${student.studentId}]`}
+                        component="div"
+                        style={{ color: "red" }}
+                      />
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </Table>
+            <button
+              type="button"
+              style={buttonStyle}
+              onClick={handleAddAll} // Call handleAddAll function on button click
+            >
+              Add All
+            </button>
+         
           </Row>
         </Form>
       </Formik>

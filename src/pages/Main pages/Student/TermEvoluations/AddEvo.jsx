@@ -11,12 +11,8 @@ export default function AddEvo() {
   const [teacherArray, setTeacherArray] = useState([]);
   const [tableArray, setTableArray] = useState([]);
   const { id } = useParams();
-  const [parents, setParents] = useState([]);
-  const [newParentid, setNewParentid] = useState("");
   const [submissionStatus, setSubmissionStatus] = useState(null);
-  const [teacherrId, setTeacherrId] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filteredTableArray, setFilteredTableArray] = useState([]);
+
 
   const initialValues = {
     EvoType: "",
@@ -162,7 +158,7 @@ export default function AddEvo() {
       
           <Col  xs={12}style={{ paddingBottom: "10px" }}>
             <center>
-              <h2 style={{ paddingBottom: "10px" }}>
+              <h2 style={{ paddingTop: "40px" }}>
                 Add new Evoluation type
               </h2>
             </center>

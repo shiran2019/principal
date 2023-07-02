@@ -23,9 +23,8 @@ function NavigationBar() {
             <NavDropdown style={{fontSize:"20px", marginRight:"8px"}} title="Students" id="collasible-nav-dropdown">
              <NavDropdown.Item href="/studentDetails" >Our students</NavDropdown.Item>
              <NavDropdown.Item href="/studentReg" >Student registration</NavDropdown.Item>
-             <NavDropdown.Item href="/termEvoluations " >Term evaluations</NavDropdown.Item>
-             
-              
+             <NavDropdown.Item href="/termEvoluations" >Term evaluations</NavDropdown.Item>
+             <NavDropdown.Item href="/attendance" >Attendance</NavDropdown.Item>
             </NavDropdown>
 
             <NavDropdown style={{fontSize:"20px", marginRight:"8px"}} title="Teachers" id="collasible-nav-dropdown">
