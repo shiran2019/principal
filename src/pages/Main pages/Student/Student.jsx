@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
 import { Row, Col } from "react-bootstrap";
 import React, { useState, useEffect } from "react";
-
+import NavigationBar from "../../../components/Navbar";
 
 
 const columns = [
@@ -80,7 +80,9 @@ export default function StdTable() {
 
   return (
     <>
-   <div></div>
+      <div className="App">
+        <NavigationBar />
+      </div>
     <div>
      <Row>
     

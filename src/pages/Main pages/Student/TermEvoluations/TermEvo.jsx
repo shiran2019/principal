@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom";
 import Table from "react-bootstrap/Table";
 import "bootstrap/dist/css/bootstrap.min.css";
 
+
 export default function TermEvo() {
   const [lists, setLists] = useState([]);
   const [array, setArray] = useState([]);
@@ -67,6 +68,7 @@ export default function TermEvo() {
 
   return (
     <>
+       
     <div style={{width:"100%"}}>
       <Row>
         <Col xs={12} lg={6}>

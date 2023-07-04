@@ -13,6 +13,9 @@ export default function StdReg() {
   const [submissionStatus, setSubmissionStatus] = useState(null);
   const [teacherrId, setTeacherrId] = useState("PDT000001");
 
+  const [pwd1, setPwd1] = useState("");
+  const [pwd2, setPwd2] = useState("");
+  const [pwd3, setPwd3] = useState("");
 
   const initialValues = {
     teacherId: "",
@@ -24,10 +27,21 @@ export default function StdReg() {
     teacherNo: "",
     teacherEmail: "",
     regDate: "",
+    password: "",
+    confirmPassword: "",
    
   };
 
   const onSubmit = (data, { resetForm }) => {
+
+
+    const { password, confirmPassword } = data;
+  
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    } 
+
     const teacherData = {
       ...data,
       teacherId: teacherrId,
@@ -73,6 +87,16 @@ export default function StdReg() {
         axios
           .post("http://localhost:3001/teachers", teacherData)
           .then((response) => {
+      
+
+              const reg = {
+                password: password,
+                role: "Teacher",
+                user: teacherrId,
+              };
+              return axios.post("http://localhost:3001/users", reg);
+            })
+              .then(() => {
             setSubmissionStatus("success");
             resetForm();
             onPageRefresh();
@@ -234,6 +258,28 @@ export default function StdReg() {
     }
     return error;
   };
+
+  const validatePwd = (value) => {
+    let error;
+    if (!value) {
+      error = "Password is required";
+    } else if (!/^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]{6}$/.test(value)) {
+      error =
+        "Password should be 6 characters long and should contain numbers and letters";
+    }
+    return error;
+  };
+
+  const checkPwd = (value) => {
+    let error;
+    if (pwd1 !== pwd2) {
+      error = "Wrong password";
+    } else {
+      setPwd3(pwd2);
+    }
+    return error;
+  };
+
 
   return (
     <div>
@@ -401,6 +447,39 @@ export default function StdReg() {
                 </Col>
             
 
+          </Row>
+          <Row>
+            <label style={labelStyle}>Password:</label>
+            <Field
+              type="password"
+              id="inputCreatePost"
+              name="password"
+              placeholder="Password"
+              style={inputStyle}
+              validate={validatePwd}
+            />
+            <ErrorMessage
+              name="password"
+              component="div"
+              style={{ color: "red" }}
+            />
+          </Row>
+
+          <Row>
+            <label style={labelStyle}>Confirm Password:</label>
+            <Field
+              type="password"
+              id="inputCreatePost"
+              name="confirmPassword"
+              placeholder="Confirm Password"
+              style={inputStyle}
+              validate={checkPwd}
+            />
+            <ErrorMessage
+              name="confirmPassword"
+              component="div"
+              style={{ color: "red" }}
+            />
           </Row>
           <Row>
             {" "}

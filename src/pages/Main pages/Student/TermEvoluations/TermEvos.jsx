@@ -7,11 +7,13 @@ import Box from "@mui/material/Box";
 import AddEvo from "./AddEvo";
 import Marks from "./Marks";
 import TermEvo from "./TermEvo";
+import NavigationBar from "../../../../components/Navbar";
 
 export const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
 
   return (
+    
     <div
       role="tabpanel"
       hidden={value !== index}
@@ -49,6 +51,11 @@ export default function TermEvos() {
   };
 
   return (
+    <>
+       <div className="App">
+        <NavigationBar />
+      </div>
+    <div>
     <Box sx={{ display: "flex", height: "100%" }}>
       <Box sx={{ borderRight: 5, borderColor: "divider" }}>
         <Tabs
@@ -77,5 +84,7 @@ export default function TermEvos() {
         </TabPanel>
       </div>
     </Box>
+    </div>
+    </>
   );
 }

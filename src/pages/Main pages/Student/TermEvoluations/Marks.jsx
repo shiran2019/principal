@@ -31,7 +31,7 @@ export default function Marks() {
         setSubmissionStatus("success");
         resetForm();
         //setMarks({}); // Reset the marks object
-        alert("Added new class successfully");
+       
       })
       .catch((error) => {
         setSubmissionStatus("error");
@@ -39,6 +39,7 @@ export default function Marks() {
         alert("Error: " + error.message);
       })
       .finally(() => {
+        alert("Added new class successfully");
         resetAllForms(); // Reset all the forms after submission
       });
   };
@@ -57,6 +58,7 @@ export default function Marks() {
   useEffect(() => {
     handleSearch();
   }, [searchTerm]);
+
 
   const handleSearch = () => {
     axios
@@ -114,13 +116,7 @@ export default function Marks() {
     return error;
   };
 
-  const validate3 = (value) => {
-    let error;
-    if (!value) {
-      error = "Mark is required";
-    }
-    return error;
-  };
+
 
   const handleAddAll = () => {
     // Iterate over each student and submit their marks
@@ -135,7 +131,7 @@ export default function Marks() {
   };
 
   return (
-    <>
+ 
       <Formik initialValues={initialValues} onSubmit={onSubmit}>
         <Form>
           <Row>
@@ -212,7 +208,7 @@ export default function Marks() {
 
                         name={`Mark[${student.studentId}]`}
                         style={{ width:"120px", height: "30px"}}
-                        validate={validate3}
+                       // validate={validate3}
                         value={marks[student.studentId] || ""} // Accessed the mark value from the marks object using the student ID
                         onChange={(e) =>
                           setMarks({
@@ -250,6 +246,7 @@ export default function Marks() {
           </Row>
         </Form>
       </Formik>
-    </>
+     
+    
   );
 }

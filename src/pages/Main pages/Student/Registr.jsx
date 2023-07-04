@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { Formik, Form, Field, ErrorMessage} from "formik";
+import { Formik, Form, Field, ErrorMessage } from "formik";
 import axios, { isAxiosError } from "axios";
 import { Row, Col } from "react-bootstrap";
 import Table from "react-bootstrap/Table";
 import "bootstrap/dist/css/bootstrap.min.css";
+import NavigationBar from "../../../components/Navbar";
 
 export default function StdReg() {
   const [classCountArray, setClassCountArray] = useState([]);
   const [classArray, setClassArray] = useState([]);
 
   const [divContent, setDivContent] = useState();
-
+  const [pwd1, setPwd1] = useState("");
+  const [pwd2, setPwd2] = useState("");
+  const [pwd3, setPwd3] = useState("");
   const [submissionStatus, setSubmissionStatus] = useState(null);
   const [studenttId, setStudenttId] = useState("PD000001");
 
@@ -37,26 +40,35 @@ export default function StdReg() {
     pNote: "",
     ClassClassName: "",
     regyear: "",
+    password: "",
+    confirmPassword: "",
   };
 
   const onSubmit = (data, { resetForm }) => {
-
+    const { password, confirmPassword } = data;
+  
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+  
     if (data.motherNIC === data.fatherNIC) {
       alert("Mother's NIC and Father's NIC cannot be the same");
       return; // Stop execution if the NICs are the same
     }
+  
     axios
       .post("http://localhost:3001/parents", data)
       .then((response) => {
         setSubmissionStatus("success");
         // resetForm();
-
+  
         return axios.get("http://localhost:3001/parents/lastId");
       })
       .then((response) => {
         const lastParentId = response.data.id;
         console.log("Last Parent ID:", lastParentId);
-
+  
         const studentData = {
           ...data,
           ParentId: lastParentId,
@@ -64,11 +76,21 @@ export default function StdReg() {
         };
         return axios.post("http://localhost:3001/students", studentData);
       })
+      .then((response) => {
+        const reg = {
+          password: password,
+          role: "Student",  
+          user: studenttId,
+        };
+        return axios.post("http://localhost:3001/users", reg);
+      })
+
       .then(() => {
         setSubmissionStatus("success");
-        resetForm();
+        resetForm(); // Reset the form including password fields
         onPageRefresh();
         onPageCount();
+  
         console.log("Student and parent data submitted successfully");
         alert("Student Id :" + String(studenttId) + " submitted successfully");
       })
@@ -78,6 +100,7 @@ export default function StdReg() {
         alert("Error : ");
       });
   };
+  
 
   const onPageRefresh = () => {
     axios
@@ -130,11 +153,9 @@ export default function StdReg() {
     onPageCount();
   }, []);
 
-
   function renderYearOptions() {
-    const currentYear = new Date().getFullYear()+5;
+    const currentYear = new Date().getFullYear() + 5;
     const years = [];
-  
 
     // Generate options for the last 10 years (adjust as needed)
     for (let i = currentYear; i >= currentYear - 10; i--) {
@@ -144,15 +165,20 @@ export default function StdReg() {
         </option>
       );
     }
-  
-    return years;
-  }  
 
+    return years;
+  }
 
   const labelStyle = {
     marginBottom: "8px",
     fontSize: "14px",
     fontWeight: "bold",
+  };
+
+  const noteStyle = {
+    marginBottom: "8px",
+    fontSize: "14px",
+    fontWeight: "italic",
   };
 
   const inputStyle = {
@@ -236,14 +262,14 @@ export default function StdReg() {
       const selectedDate = new Date(value);
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
-  
+
       if (selectedDate > tomorrow) {
         error = "Birthday cannot be a future date";
       }
     }
     return error;
   };
-  
+
   const validateNation = (value) => {
     let error;
     if (!value) {
@@ -290,7 +316,11 @@ export default function StdReg() {
       error = "Parent NIC is required";
     } else if (!/^[0-9]{9}[vV]$/.test(value)) {
       error = "Invalid NIC format";
-    } else if (allValues && allValues.fatherNIC && value === allValues.motherNIC) {
+    } else if (
+      allValues &&
+      allValues.fatherNIC &&
+      value === allValues.motherNIC
+    ) {
       error = "Father's and Mother's NIC cannot be the same";
     }
     return error;
@@ -305,8 +335,32 @@ export default function StdReg() {
     }
     return error;
   };
+  const validatePwd = (value) => {
+    let error;
+    if (!value) {
+      error = "Password is required";
+    } else if (!/^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]{6}$/.test(value)) {
+      error =
+        "Password should be 6 characters long and should contain numbers and letters";
+    }
+    return error;
+  };
+
+  const checkPwd = (value) => {
+    let error;
+    if (pwd1 !== pwd2) {
+      error = "Wrong password";
+    } else {
+      setPwd3(pwd2);
+    }
+    return error;
+  };
 
   return (
+    <>
+       <div className="App">
+        <NavigationBar />
+      </div>
     <div>
       <Formik
         initialValues={{
@@ -599,26 +653,24 @@ export default function StdReg() {
                 style={{ color: "red" }}
               />
             </Col>
-           
-          
-            <Col xs={12} lg={6}>
 
-            <label style={labelStyle}>Registration Year:</label>
-            <Field
-              as="select"
-              id="inputCreatePost"
-              name="regyear"
-              style={inputStyle}
-             // validate={validateRegistrationYear}
-            >
-              <option value="">Select Year</option>
-              {renderYearOptions()}
-            </Field>
-            <ErrorMessage
-              name="regyear"
-              component="div"
-              style={{ color: "red" }}
-            />
+            <Col xs={12} lg={6}>
+              <label style={labelStyle}>Registration Year:</label>
+              <Field
+                as="select"
+                id="inputCreatePost"
+                name="regyear"
+                style={inputStyle}
+                // validate={validateRegistrationYear}
+              >
+                <option value="">Select Year</option>
+                {renderYearOptions()}
+              </Field>
+              <ErrorMessage
+                name="regyear"
+                component="div"
+                style={{ color: "red" }}
+              />
             </Col>
           </Row>
           <Row>
@@ -643,8 +695,40 @@ export default function StdReg() {
             </Col>
           </Row>
 
-         
-          
+          <Row>
+            <label style={labelStyle}>Password:</label>
+            <Field
+              type="password"
+              id="inputCreatePost"
+              name="password"
+              placeholder="Password"
+              style={inputStyle}
+              validate={validatePwd}
+            />
+            <ErrorMessage
+              name="password"
+              component="div"
+              style={{ color: "red" }}
+            />
+          </Row>
+
+          <Row>
+            <label style={labelStyle}>Confirm Password:</label>
+            <Field
+              type="password"
+              id="inputCreatePost"
+              name="confirmPassword"
+              placeholder="Confirm Password"
+              style={inputStyle}
+              validate={checkPwd}
+            />
+            <ErrorMessage
+              name="confirmPassword"
+              component="div"
+              style={{ color: "red" }}
+            />
+          </Row>
+
           <Row>
             <Col>
               <label style={labelStyle}>Additional Notes:</label>
@@ -669,5 +753,6 @@ export default function StdReg() {
         </Form>
       </Formik>
     </div>
+    </>
   );
 }

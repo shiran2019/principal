@@ -5,7 +5,7 @@ import { Row, Col, Alert } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import Table from "react-bootstrap/Table";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FormControl } from "react-bootstrap";
+
 
 export default function AddEvo() {
   const [teacherArray, setTeacherArray] = useState([]);
@@ -23,12 +23,18 @@ export default function AddEvo() {
 
   const onSubmit = (data, { resetForm }) => {
     axios
-      .post("http://localhost:3001/createEvoluations", data)
+      .post("http://localhost:3001/createEvoluations", data,{headers :{accessToken :sessionStorage.getItem("accessToken")}} )
       .then((response) => {
+        if (response.data.error) {
+          alert(response.data.error);
+          setSubmissionStatus("error");
+        }else
+        {
         setSubmissionStatus("success");
         resetForm();
         tableData();
         alert("Added new class successfully");
+        }
       })
       .catch((error) => {
         setSubmissionStatus("error");
@@ -125,6 +131,7 @@ export default function AddEvo() {
 
   return (
     <>
+       
       <div style={{ padding: "1px 20px" }}>
         <Row>
           <Col  xs={12}>

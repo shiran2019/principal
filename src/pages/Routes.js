@@ -19,6 +19,7 @@ import StdTable from "./Main pages/Student/Student";
 import TchTable from "./Main pages/Teacher/Teacher";
 import TermEvos from "./Main pages/Student/TermEvoluations/TermEvos";
 import Attendance from "./Main pages/Student/Attendance";
+import Login from "./Login";
 
 export default function Paths() {
   return (
@@ -26,7 +27,8 @@ export default function Paths() {
       <div>
         <Router>
           <Routes>
-            <Route exact path="/" element={<Profile />}></Route>
+            <Route path="/login" element={<Login />}></Route>
+            <Route path="/" element={<Profile />}></Route>
             <Route path="/art-gallery" element={<Artgal />}></Route>
             <Route path="/talent-page" element={<TalentPage />}></Route>
             <Route path="/today" element={<Today />}></Route>
