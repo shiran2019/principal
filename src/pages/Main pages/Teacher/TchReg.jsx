@@ -3,6 +3,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import axios from "axios";
 import { Row, Col } from "react-bootstrap";
 import { useParams } from "react-router-dom";
+import NavigationBar from "../../../components/Navbar";
 
 export default function StdReg() {
   const [classArray, setClassArray] = useState([]);
@@ -282,6 +283,10 @@ export default function StdReg() {
 
 
   return (
+    <>
+    <div className="App">
+        <NavigationBar />
+      </div>
     <div>
       <Formik
         initialValues={{
@@ -492,5 +497,6 @@ export default function StdReg() {
         </Form>
       </Formik>
     </div>
+    </>
   );
 }

@@ -9,19 +9,8 @@ function NavigationBar() {
     user: "",
     status: false,
     id: 0,
-    
+    role: "",
   });
-
-  const buttonStyle = {
-    padding: "8px 20px",
-    backgroundColor: "white",
-    color: "#5b5ea6",
-    border: "none",
-    borderRadius: "4px",
-    fontSize: "16px",
-    cursor: "pointer",
-    align: "right",
-  };
 
   useEffect(() => {
     axios
@@ -31,26 +20,39 @@ function NavigationBar() {
         },
       })
       .then((response) => {
-        console.log(response);
+        console.log(response.data.role);
         if (response.data.error) {
           setAuthState({ ...authState, status: false });
-          
-        } else {
+        } else if(response.data.role == "Student"){
           setAuthState({
             user: response.data.user,
             status: true,
-            id: response.data.id,
-
-            
-          });
-         
+            id: 1,
+            role: response.data.role,
+          })
         }
+        else if(response.data.role == "Admin"){
+          setAuthState({
+            user: response.data.user,
+            status: true,
+            id: 2,
+            role: response.data.role,
+          })
+        }else if(response.data.role == "Teacher"){
+          setAuthState({
+            user: response.data.user,
+            status: true,
+            id: 3,
+            role: response.data.role,
+          })
+        }
+        else console.log("fsgfgfg")
       });
   }, []);
 
   const logout = () => {
     localStorage.removeItem("accessToken");
-    setAuthState({ ...authState, status: false });
+    setAuthState({ ...authState, user: "", status: false, role: "" });
   };
 
   return (
@@ -59,8 +61,10 @@ function NavigationBar() {
         <Navbar
           collapseOnSelect
           expand="xl"
+          
           style={{
             backgroundColor: "#5b5ea6",
+            zIndex: 2,
             position: "fixed",
             top: 0,
             width: "100%",
@@ -71,40 +75,72 @@ function NavigationBar() {
             <Navbar.Toggle aria-controls="responsive-navbar-nav" />
             <Navbar.Collapse id="responsive-navbar-nav">
               <Nav className="me-auto">
-                <Nav.Link
-                  href="/today"
-                  style={{ fontSize: "20px", marginRight: "8px" }}
-                >
-                  Today
-                </Nav.Link>
+                {authState.status && (
+                  <>
+                    <Nav.Link
+                      href="/today"
+                      style={{ fontSize: "20px", marginRight: "8px" }}
+                    >
+                      Today
+                    </Nav.Link>
+                  </>
+                )}
 
-                
-                <Nav.Link
-                  href="/appointments"
-                  style={{ fontSize: "20px", marginRight: "8px" }}
-                >
-                  Appointments
-                </Nav.Link>
-                <NavDropdown
-                  style={{ fontSize: "20px", marginRight: "8px" }}
-                  title="Students"
-                  id="collasible-nav-dropdown"
-                >
-                  <NavDropdown.Item href="/studentDetails">
-                    Our students
-                  </NavDropdown.Item>
-                  <NavDropdown.Item href="/studentReg">
-                    Student registration
-                  </NavDropdown.Item>
-                  <NavDropdown.Item href="/termEvoluations">
-                    Term evaluations
-                  </NavDropdown.Item>
-                  <NavDropdown.Item href="/attendance">
-                    Attendance
-                  </NavDropdown.Item>
-                </NavDropdown>
 
+<Nav.Link
+                      href="/art-gallery"
+                      style={{ fontSize: "20px", marginRight: "8px" }}
+                    >
+                     Art Gallery
+                    </Nav.Link>
+                 
                 {!authState.status && (
+                  <>
+                    <Nav.Link
+                      href="/login"
+                      style={{ fontSize: "20px", marginRight: "8px" }}
+                    >
+                      Login
+                    </Nav.Link>
+                  </>
+                )}
+
+                {authState.status && (
+                  <>
+                    <Nav.Link
+                      href="/appointments"
+                      style={{ fontSize: "20px", marginRight: "8px" }}
+                    >
+                      Appointments
+                    </Nav.Link>
+                  </>
+                )}
+                {authState.status && (
+                  <>
+                    <NavDropdown
+                      style={{ fontSize: "20px", marginRight: "8px" }}
+                      title="Students"
+                      id="collasible-nav-dropdown"
+                    >
+                      <NavDropdown.Item href="/studentDetails">
+                        Our students
+                      </NavDropdown.Item>
+                      <NavDropdown.Item href="/studentReg">
+                        Student registration
+                      </NavDropdown.Item>
+                      <NavDropdown.Item href="/termEvoluations">
+                        Term evaluations
+                      </NavDropdown.Item>
+                      <NavDropdown.Item href="/Studentattendance">
+                        Attendance
+                      </NavDropdown.Item>
+                      <NavDropdown.Item href="/payments">
+                        Payment Details
+                      </NavDropdown.Item>
+                    </NavDropdown>
+                  </>
+                )}
+                {authState.status && (
                   <>
                     <NavDropdown
                       style={{ fontSize: "20px", marginRight: "8px" }}
@@ -116,6 +152,9 @@ function NavigationBar() {
                       </NavDropdown.Item>
                       <NavDropdown.Item href="/teacherReg">
                         Teacher Registration
+                      </NavDropdown.Item>
+                      <NavDropdown.Item href="/teacherattendance">
+                        Attendance
                       </NavDropdown.Item>
                     </NavDropdown>
                   </>
@@ -131,26 +170,13 @@ function NavigationBar() {
                   <NavDropdown.Item href="/classAdd">Classes</NavDropdown.Item>
                 </NavDropdown>
               </Nav>
-              <h1>{authState.user}</h1>
-              {!authState.status ? (
-                <Nav.Link
-                  href="/login"
-                  style={{ fontSize: "20px", marginRight: "8px" }}
-                >
-                  LOGIN
-                </Nav.Link>
-              ) : (
-                <button style={buttonStyle} onClick={logout}>
-                  Logout
-                </button>
-              )}
 
               <table>
                 <Nav>
                   <tr>
                     <td>
                       <NavDropdown
-                        title="PRINCIPAL"
+                        title={authState.user}
                         id="collasible-nav-dropdown"
                       >
                         <NavDropdown.Item exact href="/">
@@ -159,8 +185,29 @@ function NavigationBar() {
                         <NavDropdown.Item href="/payments">
                           Payments
                         </NavDropdown.Item>
-                        <NavDropdown.Item href="/#">Logout</NavDropdown.Item>
+
+                        {authState.status ? (
+                          <NavDropdown.Item onClick={logout} href="/#">
+                            Logout
+                          </NavDropdown.Item>
+                        ) : (
+                          <NavDropdown.Item href="/login">
+                            Login
+                          </NavDropdown.Item>
+                        )}
                       </NavDropdown>
+                    </td>
+                    <td>
+                      {authState.status && (
+                        <>
+                          <Nav.Link
+                            href="/profile"
+                            style={{ fontSize: "20px", marginRight: "8px" }}
+                          >
+                            {authState.role}
+                          </Nav.Link>
+                        </>
+                      )}
                     </td>
                     <td>
                       <Nav.Link

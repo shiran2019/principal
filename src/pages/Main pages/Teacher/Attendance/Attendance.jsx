@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import axios from "axios";
@@ -7,8 +8,9 @@ import Table from "react-bootstrap/Table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FormControl } from "react-bootstrap";
 
-export default function Marks() {
-  const [marks, setMarks] = useState({}); // Updated marks state
+
+const Attendance = () => {
+  const [attendance, setAttendance] = useState({}); // Updated marks state
   const [idd, SetIdd] = useState("");
   const [array, setArray] = useState([]);
   const [temp, setTemp] = useState("");
@@ -17,25 +19,29 @@ export default function Marks() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredTableArray, setFilteredTableArray] = useState([]);
   const [allSubmissionStatus, setAllSubmissionStatus] = useState(null); // Added allSubmissionStatus state
+  
 
   const initialValues = {
-    Mark: "",
-    EvoId: "",
-    StudetId: "",
+    Attendance: "",
+    Day: "",
+    teacherId: "",
+    
   };
 
   const onSubmit = (data, resetForm, resetAllForms) => {
-
-    console.log(data);
     axios
-      .post("http://localhost:3001/termEvoluations", data)
+      .post("http://localhost:3001/TeacherAttendance", data)
       .then((response) => {
-       
+        console.log(response.data.error);
+
+        if(response.data.error==="Attendance for the given student and day already exists."){
+          alert("Attendance already added for this student on this day");}
+        else{
         setSubmissionStatus("success");
         resetForm();
         alert("Added new class successfully");
         //setMarks({}); // Reset the marks object
-       
+        }
       })
       .catch((error) => {
         setSubmissionStatus("error");
@@ -50,7 +56,7 @@ export default function Marks() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3001/createEvoluations/evo")
+      .get("http://localhost:3001/teachers/teacherList")
       .then((response) => {
         setArray(response.data);
       })
@@ -59,22 +65,9 @@ export default function Marks() {
       });
   }, []);
 
-  useEffect(() => {
-    handleSearch();
-  }, [searchTerm]);
+  
 
-
-  const handleSearch = () => {
-    axios
-      .get(`http://localhost:3001/students/class/${searchTerm}`)
-      .then((response) => {
-        setFilteredTableArray(response.data);
-       
-      })
-      .catch((error) => {
-        console.error("An error occurred:", error);
-      });
-  };
+ 
 
   const labelStyle = {
     marginBottom: "8px",
@@ -103,7 +96,7 @@ export default function Marks() {
     textAlign: "right",
   };
 
-  const formStyle = {
+    const formStyle = {
 
     margin: "0 auto",
     padding: "20px",
@@ -115,126 +108,95 @@ export default function Marks() {
   };
 
 
-
-  const validate1 = (value) => {
-    let error;
-    if (!idd) {
-      error = "Type is required";
-    }
-    return error;
-  };
-
-
+  // const validate3 = (idd) => {
+  //   let error;
+  //   if (!idd) {
+  //     error = "Type is required";
+  //   }
+  //   return error;
+  // };
 
   const handleAddAll = () => {
     // Iterate over each student and submit their marks
-    filteredTableArray.forEach((student) => {
+    array.forEach((teacher) => {
       const data = {
-        Mark: marks[student.StudentId], // Accessed the mark value from the marks object using the student ID
-        EvoId: parseInt(idd),
-        StudentId: student.StudentId,
+        Attendance: attendance[teacher.teacherId], // Accessed the mark value from the marks object using the student ID
+        Day:idd,
+        teacherId: teacher.teacherId,
       };
       onSubmit(data, () => {}, () => {}); // Pass empty resetForm and resetAllForms functions as placeholders
     });
   };
 
   return (
- 
-      <Formik initialValues={initialValues} onSubmit={onSubmit}>
+    <>
+    <h1>Teacher,</h1>
+ <div><Formik initialValues={initialValues} onSubmit={onSubmit}>
         <Form>
           <Row>
-            <Col xs={12} lg={6}>
-              <label style={labelStyle}>Search Class Room:</label>
-              <FormControl
-                type="text"
-                placeholder="Search Class name"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                style={{ marginBottom: "20px" }}
-              />
-            </Col>
-            <Col xs={12} lg={6}>
-              <label style={labelStyle}>Type:</label>
+           
+            <Col xs={12} lg={4}>
+              <label style={labelStyle}>Date:</label>
               <Field
-                as="select"
+                type="date"
                 id="inputCreatePost"
-                name="EvoId"
+                name="Day"
                 style={inputStyle}
-                validate={validate1}
-                value={temp}
-                placeholder={temp}
-                onChange={(e) => {
-                  const selectedEvoType = e.target.value;
-                  setTemp(selectedEvoType);
-                  const selectedEvo = array.find(
-                    (item) => item.EvoType === selectedEvoType
-                  );
-                  SetIdd(selectedEvo ? selectedEvo.EvoId : "");
-                }}
-              >
-                <option value="">Select Type</option>
-                {array.map((item) => {
-                  if (item.EvoType !== idd) {
-                    return (
-                      <option key={item.EvoType} value={item.EvoType}>
-                        {item.EvoType}
-                      </option>
-                    );
-                  }
-                  return null;
-                })}
-              </Field>
-
+                value={idd}
+               //validate={validateBirthday}
+               onChange={(e) => SetIdd(e.target.value)}
+               
+              />
               <ErrorMessage
-                name="CreateEvoId"
+                name="Day"
                 component="div"
                 style={{ color: "red" }}
               />
             </Col>
+           
           </Row>
           <Row >
            
             <Table style={formStyle} >
               <thead>
                 <tr>
-                  <th>Student ID</th>
+                  <th>Teacher ID</th>
                   <th>First Name</th>
-                  <th>Note</th>
-                  <th>Marks</th>
+                 
+                  <th>Attendance</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredTableArray.map((student, index) => (
-                  <tr key={student.StudentId}>
-                    <td>{student.StudentId}</td>
-                    <td>{student.fName}</td>
-                    <td>{student.pNote}</td>
+                {array.map((teacher, index) => (
+                  <tr key={teacher.teacherId}>
+                    <td>{teacher.teacherId}</td>
+                    <td>{teacher.fName}</td>
+                    
+
                     <td>
                       <Field
                         as="select" // Render the field as a select dropdown
                         id="inputCreatePost"
 
-                        name={`Mark[${student.StudentId}]`}
+                        name={`Attendance[${teacher.teacherId}]`}
                         style={{ width:"120px", height: "30px"}}
-                       // validate={validate3}
-                        value={marks[student.StudentId] || ""} // Accessed the mark value from the marks object using the student ID
+                     //  validate={validate3}
+                        value={attendance[teacher.teacherId] || ""} // Accessed the mark value from the marks object using the student ID
                         onChange={(e) =>
-                          setMarks({
-                            ...marks,
-                            [student.StudentId]: e.target.value, // Updated the specific mark value in the marks object using the student ID
+                          setAttendance({
+                            ...attendance,
+                            [teacher.teacherId]: e.target.value, // Updated the specific mark value in the marks object using the student ID
                           })
                         }
                       >
                         <option value="">Select</option>
-                        <option value="very bad">Very Bad</option>
-                        <option value="bad">Bad</option>
-                        <option value="medium">Medium</option>
-                        <option value="good">Good</option>
-                        <option value="very good">Very Good</option>
+                        <option value="Present">Present</option>
+                        <option value="Absent">Absent</option>
+                     
                       </Field>
 
                       <ErrorMessage
-                        name={`Mark[${student.StudentId}]`}
+                        name={`Attendance[${teacher.teacherId}]`}
                         component="div"
                         style={{ color: "red" }}
                       />
@@ -253,8 +215,8 @@ export default function Marks() {
          
           </Row>
         </Form>
-      </Formik>
-     
-    
+      </Formik></div>
+      </>
   );
 }
+export default Attendance

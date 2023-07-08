@@ -9,7 +9,7 @@ import NavigationBar from "../../../components/Navbar";
 const columns = [
   { field: 'id', headerName: 'ID', width: 90 },
   {
-    field: 'studentId',
+    field: 'StudentId',
     headerName: 'Student Id',
     width: 150,
     editable: true,

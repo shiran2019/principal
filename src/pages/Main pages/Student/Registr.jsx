@@ -22,7 +22,7 @@ export default function StdReg() {
   };
 
   const initialValues = {
-    studentId: "",
+    StudentId: "",
     fName: "",
     lName: "",
     fullname: "",
@@ -38,7 +38,7 @@ export default function StdReg() {
     motherNIC: "",
     motherNo: "",
     pNote: "",
-    ClassClassName: "",
+    className: "",
     regyear: "",
     password: "",
     confirmPassword: "",
@@ -66,14 +66,15 @@ export default function StdReg() {
         return axios.get("http://localhost:3001/parents/lastId");
       })
       .then((response) => {
-        const lastParentId = response.data.id;
+        const lastParentId = response.data.parentId;
         console.log("Last Parent ID:", lastParentId);
   
         const studentData = {
           ...data,
-          ParentId: lastParentId,
-          studentId: studenttId,
+          parentId: lastParentId,
+          StudentId: studenttId,
         };
+        console.log("Student Data:", studentData);
         return axios.post("http://localhost:3001/students", studentData);
       })
       .then((response) => {
@@ -358,13 +359,14 @@ export default function StdReg() {
 
   return (
     <>
+    
        <div className="App">
         <NavigationBar />
       </div>
     <div>
       <Formik
         initialValues={{
-          studentId: studenttId,
+          StudentId: studenttId,
           inputId: studenttId,
           ...initialValues,
         }}
@@ -380,7 +382,7 @@ export default function StdReg() {
             <label style={labelStyle}>Student ID:</label>
             <Field
               id="inputId"
-              name="studentId"
+              name="StudentId"
               placeholder={studenttId}
               style={inputStyle}
               readOnly={true}
@@ -635,7 +637,7 @@ export default function StdReg() {
               <Field
                 as="select"
                 id="inputCreatePost"
-                name="ClassClassName"
+                name="className"
                 style={inputStyle}
                 validate={validateclass}
               >
@@ -648,7 +650,7 @@ export default function StdReg() {
                 ))}
               </Field>
               <ErrorMessage
-                name="ClassClassName"
+                name="className"
                 component="div"
                 style={{ color: "red" }}
               />
@@ -694,6 +696,7 @@ export default function StdReg() {
               </Table>
             </Col>
           </Row>
+          
 
           <Row>
             <label style={labelStyle}>Password:</label>

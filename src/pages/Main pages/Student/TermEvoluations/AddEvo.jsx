@@ -150,8 +150,8 @@ export default function AddEvo() {
               </thead>
               <tbody>
                 {tableArray.map((item) => (
-                  <tr key={item.id}>
-                    <td>{item.id}</td>
+                  <tr key={item.EvoId}>
+                    <td>{item.EvoId}</td>
                     <td>{item.EvoType}</td>
                     <td>{item.Activity}</td>
                     <td>{item.Day}</td>

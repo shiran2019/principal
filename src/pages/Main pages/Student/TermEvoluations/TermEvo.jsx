@@ -19,6 +19,7 @@ export default function TermEvo() {
       .get("http://localhost:3001/createEvoluations")
       .then((response) => {
         setArray(response.data);
+        
       })
       .catch((error) => {
         console.error("An error occurred:", error);
@@ -42,16 +43,19 @@ export default function TermEvo() {
 
   const handleRowClick = (rowId) => {
     setSelectedRowId(rowId);
-    const selectedRow = filteredTableArray.find((item) => item.id === rowId);
-    console.log(selectedRow);
 
+   // console.log(filteredTableArray);
+    const selectedRow = filteredTableArray.find((item) => item.EvoId === rowId);
+    //console.log(selectedRow);
     if (selectedRow) {
-      const createEvoId = selectedRow.id;
+      const EvoId = selectedRow.EvoId;
       axios
-        .get(`http://localhost:3001/termEvoluations/${createEvoId}`)
+        .get(`http://localhost:3001/termEvoluations/${EvoId}`)
         .then((response) => {
           setLists(response.data);
-          console.log(response);
+         
+          
+          
         })
         .catch((error) => {
           console.error("An error occurred:", error);
@@ -96,9 +100,9 @@ export default function TermEvo() {
             <tbody>
               {filteredTableArray.map((item) => (
                 <tr
-                  key={item.id}
-                  onClick={() => handleRowClick(item.id)}
-                  className={selectedRowId === item.id ? "selected" : ""}
+                  key={item.EvoId}
+                  onClick={() => handleRowClick(item.EvoId)}
+                  className={selectedRowId === item.EvoId ? "selected" : ""}
                 >
                   <td>{item.EvoType}</td>
                   <td>{item.Day}</td>

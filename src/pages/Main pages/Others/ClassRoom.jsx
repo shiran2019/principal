@@ -18,7 +18,7 @@ export default function ClsAdd() {
 
   const initialValues = {
     className: "",
-    TeacherTeacherId: "",
+    teacherId: "",
   };
 
   const onSubmit = (data, { resetForm }) => {
@@ -128,7 +128,7 @@ export default function ClsAdd() {
                 {clsaaArray.map((item) => (
                   <tr key={item.className}>
                     <td>{item.className}</td>
-                    <td>{item.TeacherTeacherId}</td>
+                    <td>{item.teacherId}</td>
                   </tr>
                 ))}
               </tbody>
@@ -172,7 +172,7 @@ export default function ClsAdd() {
                   <Field
                     as="select"
                     id="inputCreatePost"
-                    name="TeacherTeacherId"
+                    name="teacherId"
                     style={inputStyle}
                     // validate={validateclass}
                   >
@@ -184,7 +184,7 @@ export default function ClsAdd() {
                     ))}
                   </Field>
                   <ErrorMessage
-                    name="TeacherTeacherId"
+                    name="teacherId"
                     component="div"
                     style={{ color: "red" }}
                   />

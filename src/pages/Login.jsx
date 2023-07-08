@@ -3,6 +3,7 @@ import axios from "axios";
 import { BrowserRouter as Router, useNavigate } from "react-router-dom";
 import NavigationBar from "../components/Navbar";
 import { AuthContext } from "../helpers/AuthContext";
+import "./Login.css"; 
 
 function Login() {
   const [username, setUsername] = useState("");
@@ -26,6 +27,9 @@ function Login() {
     });
   };
 
+
+
+  
   return (
     <>
     <div className="App">
