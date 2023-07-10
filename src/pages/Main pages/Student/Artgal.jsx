@@ -4,25 +4,146 @@ import NavigationBar from "../../../components/Navbar";
 import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
-import pr from '../../../images/pr.jpg'
 import { FormControl, Modal, Button } from "react-bootstrap";
+import { getDownloadURL, listAll, ref, uploadBytesResumable, deleteObject } from "firebase/storage";
+import CircularIndeterminate from "../../../components/Skelton";
+import { storage } from "../../../Firebase";
 
 // Popup Component
-const PopupComponent = ({ show, handleClose, cardId }) => {
+const PopupComponent = ({ show, cardId, handleClosePopup }) => {
+  const [progress, setProgress] = useState(0);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [imageId, setImageId] = useState('');
+  const [imageUrls, setImageUrls] = useState([]);
+
+  const fileChangeHandler = (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
+
+  const formSubmitHandler = async (e) => {
+    e.preventDefault();
+    if (selectedFile) {
+      uploadFile(selectedFile);
+    } else {
+      console.log('No file selected.');
+      alert('No file selected.');
+    }
+  };
+
+  const uploadFile = (file) => {
+    const imageId = generateImageId(cardId);
+    setImageId(imageId);
+
+    const storageRef = ref(storage, `images/${imageId}/${imageId}/${file.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    uploadTask.on(
+      'state_changed',
+      (snapshot) => {
+        const prog = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+        setProgress(prog);
+      },
+      (error) => console.log(error),
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref)
+          .then((url) => {
+            setImageUrls((prevUrls) => [...prevUrls, url]);
+            console.log(url);
+            alert('Image uploaded successfully');
+            setSelectedFile(null); // Clear the selected file
+          })
+          .catch((error) => console.log(error));
+      }
+    );
+  };
+
+  const retrieveImages = async () => {
+    if (cardId) {
+      const storageRef = ref(storage, `images/${cardId}/${cardId}`);
+      try {
+        const res = await listAll(storageRef);
+        const urls = [];
+        for (const itemRef of res.items) {
+          try {
+            const url = await getDownloadURL(itemRef);
+            urls.push(url);
+          } catch (error) {
+            console.log(error);
+          }
+        }
+        setImageUrls(urls);
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      console.log('No image ID found.');
+    }
+  };
+
+  const generateImageId = (cardId) => {
+    return cardId; // Use the studentId as the imageId
+  };
+
+  const handleClose = () => {
+    setSelectedFile(null);
+    setImageId('');
+    setImageUrls([]);
+    setProgress(0);
+    handleClosePopup();
+  };
+
+  const deleteImage = async (imageUrl) => {
+    const imageRef = ref(storage, imageUrl);
+
+    try {
+      await deleteObject(imageRef);
+      setImageUrls((prevUrls) => prevUrls.filter((url) => url !== imageUrl));
+      console.log('Image deleted successfully');
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    retrieveImages();
+  }, [imageId, cardId]);
+
   return (
-    <Modal show={show} onHide={handleClose}>
+    <Modal
+      show={show}
+      onHide={handleClose}
+      size="lg"
+      aria-labelledby="contained-modal-title-vcenter"
+      centered
+    >
       <Modal.Header closeButton>
         <Modal.Title>Student ID: {cardId}</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
-        <p>Popup content goes here.</p>
+      <Modal.Body style={{ width: '100%', maxHeight: '100%' }}>
+        <div>
+          <h3>My Gallery,</h3>
+          <form onSubmit={formSubmitHandler}>
+            <input type="file" className="input" onChange={fileChangeHandler} />
+            <button type="submit">Upload</button>
+          </form>
+          <hr />
+          <h5>Uploaded {progress} %</h5>
+          {imageUrls.length > 0 ? (
+            imageUrls.map((url, index) => (
+              <div key={index}>
+                <img src={url} style={{ maxWidth: '100%' }} alt="Uploaded" />
+                <button onClick={() => deleteImage(url)}>Delete</button>
+              </div>
+            ))
+          ) : (
+            <div><CircularIndeterminate/></div>
+          )}
+          <button onClick={retrieveImages}>Retrieve Image</button>
+        </div>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>
           Close
-        </Button>
-        <Button variant="primary" onClick={handleClose}>
-          Save Changes
         </Button>
       </Modal.Footer>
     </Modal>
@@ -36,6 +157,31 @@ export default function Artgal() {
   const [array, setArray] = useState([]);
   const [selectedCard, setSelectedCard] = useState(null);
   const [isShow, setIsShow] = useState(false);
+  const [imageUrls, setImageUrls] = useState({});
+
+  const retrieveImage = (id) => {
+    if (id) {
+      const storageRef = ref(storage, `images/${id}`);
+      listAll(storageRef)
+        .then((res) => {
+          const urls = [];
+          res.items.forEach((itemRef) => {
+            getDownloadURL(itemRef)
+              .then((url) => {
+                urls.push(url);
+              })
+              .catch((error) => console.log(error));
+          });
+          setImageUrls((prevUrls) => ({
+            ...prevUrls,
+            [id]: urls,
+          }));
+        })
+        .catch((error) => console.log(error));
+    } else {
+      console.log("No image ID found.");
+    }
+  };
 
   const handleClosePopup = () => {
     setSelectedCard(null);
@@ -80,7 +226,7 @@ export default function Artgal() {
     const filteredData = array.filter((item) =>
       item.className.toLowerCase().includes(searchTerm1.toLowerCase())
     );
-    setFilteredTableArray(filteredData);
+      setFilteredTableArray(filteredData);
   };
 
   const labelStyle = {
@@ -134,10 +280,25 @@ export default function Artgal() {
         </Row>
 
         <Row style={{ padding: "1% 5%" }}>
-          {filteredTableArray.map((Item) => (
-            <Col key={Item.StudentId} xs={12} md={6} lg={3} style={{ padding: "1% 1%" }}>
+          {filteredTableArray.map((Item) => {
+            const cardImageId = Item.StudentId;
+            if (!imageUrls[cardImageId]) {
+              retrieveImage(cardImageId);
+            }
+            return (
+              <Col key={Item.StudentId} xs={12} md={6} lg={3} style={{ padding: "1% 1%" }}>
               <Card onClick={() => handleCardClick(Item.StudentId)}>
-                <Card.Img variant="top" src={pr} />
+                <div style={{ height: "200px", overflow: "hidden", cursor: "pointer" }}>
+                  {imageUrls[cardImageId] ? (
+                    <Card.Img
+                      variant="top"
+                      src={imageUrls[cardImageId][0]}
+                      style={{ objectFit: "cover", height: "100%" }}
+                    />
+                  ) : (
+                    <div>Loading...</div>
+                  )}
+                </div>
                 <Card.Body>
                   <Card.Title>{Item.StudentId} : {Item.fName}</Card.Title>
                   <Card.Text>
@@ -146,14 +307,21 @@ export default function Artgal() {
                 </Card.Body>
               </Card>
             </Col>
-          ))}
+            
+            );
+          })}
         </Row>
 
         <Row>
           <Button variant="success" onClick={() => setIsShow(true)}>
-            Open Modal
+           
           </Button>
-          <PopupComponent show={isShow} handleClose={handleClosePopup} cardId={selectedCard} />
+          <PopupComponent
+            show={isShow}
+            handleClosePopup={handleClosePopup}
+            cardId={selectedCard}
+            storage={storage}
+          />
         </Row>
       </div>
     </>

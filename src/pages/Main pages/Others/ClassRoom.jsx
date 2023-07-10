@@ -5,6 +5,7 @@ import { Row, Col } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import Table from "react-bootstrap/Table";
 import "bootstrap/dist/css/bootstrap.min.css";
+import NavigationBar from "../../../components/Navbar";
 
 export default function ClsAdd() {
   const [teacherArray, setTeacherArray] = useState([]);
@@ -31,9 +32,13 @@ export default function ClsAdd() {
         alert("Added new class successfully");
       })
       .catch((error) => {
-        setSubmissionStatus("error");
-        console.log(error);
-        alert("Error : ");
+        if (error.response && error.response.status === 400) {
+          alert("Teacher already asigned.");
+        } else {
+          console.log(error);
+          setSubmissionStatus("error");
+          alert("Network error: Data not submitted");
+        }
       });
   };
 
@@ -108,6 +113,9 @@ export default function ClsAdd() {
 
   return (
     <>
+     <div className="App">
+        <NavigationBar />
+      </div>
       <div>
         <Row>
 

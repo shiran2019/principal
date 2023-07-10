@@ -1,0 +1,448 @@
+import React, { useState, useEffect } from "react";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import axios from "axios";
+import { Row, Col } from "react-bootstrap";
+import { useParams } from "react-router-dom";
+
+import "bootstrap/dist/css/bootstrap.min.css";
+import NavigationBar from "../../../components/Navbar";
+//import { use } from "../../../../../Server/routes/Students";
+
+export default function Salary() {
+  const [teacherArray, setTeacherArray] = useState([]);
+
+  const { id } = useParams();
+  const [submissionStatus, setSubmissionStatus] = useState(null);
+  const [teacherrId, setTeacherrId] = useState("");
+
+  const [epfRate, setEpfRate] = useState("");
+  const [basic, setBasic] = useState("");
+  const [allowance, setAllowance] = useState("");
+  const [salary, setSalary] = useState("");
+
+  const [classNameArray, setClassNametArray] = useState("");
+  const [countArray, setCountArray] = useState([]);
+
+  const StoreEPF = () => {
+    if (epfRate) {
+      localStorage.setItem("epfRate", epfRate);
+    }
+  };
+
+  const StoreAllowance = () => {
+    if (allowance) {
+      localStorage.setItem("allowance", allowance);
+    }
+  };
+
+  const StoreBasic = () => {
+    if (basic) {
+      localStorage.setItem("basic", basic);
+    }
+  };
+
+  useEffect(() => {
+    setEpfRate(localStorage.getItem("epfRate"));
+    setAllowance(localStorage.getItem("allowance"));
+    setBasic(localStorage.getItem("basic"));
+  }, []);
+
+  useEffect(() => {
+    StoreEPF();
+    StoreBasic();
+    StoreAllowance();
+  }, [basic, allowance, epfRate]);
+
+  const initialValues = {
+    teacherId: "",
+    Day: "",
+    Month: "",
+    Salary: "",
+    StdCount: "",
+    epfRate: "",
+    Allowance: "",
+    Basic: "",
+  };
+
+  const onSubmit = (data, { resetForm }) => {
+    const data1 = {
+      ...data,
+      epfRate: epfRate,
+      Allowance: allowance,
+      Basic: basic,
+      Salary: salary,
+      teacherId: teacherrId,
+    };
+
+    console.log(data1);
+    axios
+      .post("http://localhost:3001/teacherSalary", data1)
+      .then((response) => {
+        setSubmissionStatus("success");
+        resetForm();
+        setSalary(0);
+        alert("Added new data successfully");
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 400) {
+          alert("This data already exists.");
+        } else {
+          console.log(error);
+          setSubmissionStatus("error");
+          alert("Network error: Data not submitted");
+        }
+      });
+  };
+
+  const onPageCount = () => {
+    axios
+      .get(`http://localhost:3001/students/StdCount/${classNameArray}`)
+      .then((response) => {
+        setCountArray(response.data);
+      })
+      .catch((error) => {
+        console.error("An error occurred:", error);
+      });
+  };
+
+  useEffect(() => {
+    axios
+      .get(`http://localhost:3001/classes/clsDetails`)
+      .then((response) => {
+        setTeacherArray(response.data);
+        //  console.log(response.data);
+      })
+      .catch((error) => {
+        console.error("An error occurred:", error);
+      });
+  }, []);
+
+  useEffect(() => {
+    onPageCount();
+    console.log(countArray.classCount);
+  }, [classNameArray]);
+
+  const CalculateSalary = () => {
+    const sal = parseInt(basic) + parseInt(allowance) - (parseInt(basic) * parseInt(epfRate)) / 100;
+    setSalary(sal);
+  };
+
+  const labelStyle = {
+    marginBottom: "8px",
+    fontSize: "14px",
+    fontWeight: "bold",
+  };
+
+  const inputStyle = {
+    padding: "10px",
+    marginBottom: "20px",
+    width: "100%",
+    border: "1px solid #ccc",
+    borderRadius: "4px",
+    fontSize: "16px",
+  };
+
+  const buttonStyle = {
+    padding: "10px 40px",
+    backgroundColor: "#007bff",
+    color: "#fff",
+    border: "none",
+    borderRadius: "4px",
+    fontSize: "16px",
+    cursor: "pointer",
+    align: "right",
+  };
+
+  const formStyle = {
+    margin: "0 auto",
+    padding: "20px",
+    border: "1px solid #ddd",
+    borderRadius: "4px",
+    maxWidth: "60%",
+    marginTop: "30px",
+    backgroundColor: "#f9f9f9",
+  };
+
+  const validate = (values) => {
+    if (!values) {
+      return "Required";
+    }
+  };
+
+  const validateBasic = () => {
+    if (!basic) {
+      return "Required";
+    }
+  };
+
+  const validateAllowance = () => {
+    if (!allowance) {
+      return "Required";
+    }
+  };
+
+  const validateEPF = () => {
+    if (!epfRate) {
+      return "Required";
+    }
+  };
+
+  const validateSalary = () => {
+    if (!salary) {
+      return "Calculate Salary before submit";
+    }
+  };
+
+  return (
+    <>
+      <div>
+        <div className="App">
+          <NavigationBar />
+        </div>
+      </div>
+      <div>
+        {/* <hr style={{margin: "20px 0" ,height:"5px", backgroundColor:"#5b5ea6"}} /> */}
+        <Row style={{ marginTop: "2%" }}>
+          <Formik
+            initialValues={{
+              ...initialValues,
+            }}
+            onSubmit={onSubmit}
+          >
+            <Form style={formStyle}>
+              <center>
+                {" "}
+                <h2 style={{ paddingBottom: "10px" }}>
+                  Teacher Salary calculater,
+                </h2>
+              </center>
+
+              <Row>
+                <Col xs={12} lg={6}>
+                  <label style={labelStyle}>Teacher Id:</label>
+                  <Field
+                    as="select"
+                    id="inputCreatePost"
+                    name="teacherId"
+                    value={teacherrId}
+                    style={inputStyle}
+                    onChange={(e) => {
+                      const teacherId = e.target.value;
+                      const teacher = teacherArray.find(
+                        (item) => item.teacherId === teacherId
+                      );
+                      if (teacher) {
+                        setTeacherrId(teacherId);
+                        setClassNametArray(teacher.className);
+                      }
+                    }}
+                  >
+                    <option value="">Select item</option>
+                    {teacherArray.map((item) => (
+                      <option key={item.teacherId} value={item.teacherId}>
+                        {item.teacherId}
+                      </option>
+                    ))}
+                  </Field>
+                  <ErrorMessage
+                    name="teacherId"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </Col>
+
+                <Col xs={12} lg={6}>
+                  <label style={labelStyle}>Student Count :</label>
+                  <Field
+                    id="inputCreatePost"
+                    name="StdCount"
+                    // placeholder="class name"
+                    style={inputStyle}
+                    
+                    value={countArray.classCount}
+                  />
+                  <ErrorMessage
+                    name="StdCount"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </Col>
+
+                <Col xs={12} lg={6}>
+                  <label style={labelStyle}>Date :</label>
+                  <Field
+                    type="date"
+                    id="inputCreatePost"
+                    name="Day"
+                    // placeholder="class name"
+                    style={inputStyle}
+                    validate={validate}
+                  />
+                  <ErrorMessage
+                    name="Day"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </Col>
+
+                <Col xs={12} lg={6}>
+                  <label style={labelStyle}>Month:</label>
+                  <Field
+                    id="inputCreatePost"
+                    name="Month"
+                    component="select" // Use the select component
+                    style={inputStyle}
+                    validate={validate}
+                  >
+                    <option value="">Select a month</option>
+                    option
+                    <option value="January">January</option>
+                    <option value="February">February</option>
+                    <option value="March">March</option>
+                    <option value="April">April</option>
+                    <option value="May">May</option>
+                    <option value="June">June</option>
+                    <option value="July">July</option>
+                    <option value="August">August</option>
+                    <option value="September">September</option>
+                    <option value="October">October</option>
+                    <option value="November">November</option>
+                    <option value="December">December</option>
+                  </Field>
+                  <ErrorMessage
+                    name="Month"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </Col>
+                <hr
+                  style={{
+                    margin: "20px 0",
+                    height: "5px",
+                    backgroundColor: "#5b5ea6",
+                  }}
+                />
+                <Col xs={12} lg={4}>
+                  <label style={labelStyle}>Basic Salary : Rs.</label>
+                  <Field
+                    id="inputCreatePost"
+                    name="Basic"
+                    // placeholder="class name"
+                    style={inputStyle}
+                    validate={validateBasic}
+                    value={basic}
+                    onChange={(e) => setBasic(e.target.value)}
+                  />
+                  <ErrorMessage
+                    name="Basic"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </Col>
+
+                <Col xs={12} lg={4}>
+                  <label style={labelStyle}>Allowance : Rs.</label>
+                  <Field
+                    id="inputCreatePost"
+                    name="Allowance"
+                    // placeholder="class name"
+                    style={inputStyle}
+                    validate={validateAllowance}
+                    value={allowance}
+                    onChange={(e) => setAllowance(e.target.value)}
+                  />
+                  <ErrorMessage
+                    name="Allowance"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </Col>
+
+                <Col xs={12} lg={4}>
+                  <label style={labelStyle}>EPF rate : %</label>
+                  <Field
+                    id="inputCreatePost"
+                    name="epfRate"
+                    // placeholder="class name"
+                    style={inputStyle}
+                    validate={validateEPF}
+                    value={epfRate}
+                    onChange={(e) => setEpfRate(e.target.value)}
+                  />
+                  <ErrorMessage
+                    name="epfRate"
+                    component="div"
+                    style={{ color: "red" }}
+                  />
+                </Col>
+                <hr
+                  style={{
+                    margin: "20px 0",
+                    height: "5px",
+                    backgroundColor: "#5b5ea6",
+                  }}
+                />
+                <Row>
+                  <Col xs={12} lg={6}>
+                    <label style={labelStyle}>Salary :</label>
+                    <Field
+                      id="inputCreatePost"
+                      name="Salary"
+                      readOnly={true}
+                      // placeholder="class name"
+                      style={inputStyle}
+                      validate={validateSalary}
+                      value={salary}
+                    />
+                    <ErrorMessage
+                      name="Salary"
+                      component="div"
+                      style={{ color: "red" }}
+                    />
+                  </Col>
+                  <Col>
+                    {" "}
+                    <div
+                      style={{
+                        textAlign: "right",
+                        marginTop: "7%",
+                        align: "right",
+                      }}
+                    >
+                      <button onClick={CalculateSalary} style={buttonStyle}>
+                        Calculate Salary
+                      </button>
+                    </div>
+                  </Col>
+                </Row>
+                <hr
+                  style={{
+                    margin: "20px 0",
+                    height: "5px",
+                    backgroundColor: "#5b5ea6",
+                  }}
+                />
+                <Row>
+                  <Col>
+                    {" "}
+                    <div
+                      style={{
+                        textAlign: "right",
+                        // marginTop: "5%",
+                        align: "right",
+                      }}
+                    >
+                      <button type="submit" style={buttonStyle}>
+                        Add
+                      </button>
+                    </div>
+                  </Col>
+                </Row>
+              </Row>
+            </Form>
+          </Formik>
+        </Row>
+      </div>
+    </>
+  );
+}

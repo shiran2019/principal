@@ -8,7 +8,7 @@ import { Testimg } from "./Testimg";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <Testimg />
+    <App />
   </React.StrictMode>
 );
 

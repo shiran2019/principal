@@ -156,6 +156,9 @@ function NavigationBar() {
                       <NavDropdown.Item href="/teacherattendance">
                         Attendance
                       </NavDropdown.Item>
+                      <NavDropdown.Item href="/teacherSalary">
+                        Salary
+                      </NavDropdown.Item>
                     </NavDropdown>
                   </>
                 )}

@@ -22,6 +22,7 @@ import axios from "axios";
 import StudentAttendance from "./Main pages/Student/Attendance/StudentAttendance";
 import TeacherAttendance from "./Main pages/Teacher/Attendance/TeacherAttendance";
 import Paymnt from "./Main pages/Student/Payments/Paymnt";
+import Salary from "./Main pages/Teacher/Salary";
 
 export default function Paths() {
   const [authState, setAuthState] = useState({
@@ -105,6 +106,7 @@ export default function Paths() {
               <Route path="/studentDetails" element={<StdTable />}></Route>
               <Route path="/teacherDetails" element={<TchTable />}></Route>
               <Route path="/termEvoluations" element={<TermEvos />}></Route>
+              <Route path="/teacherSalary" element={<Salary />}></Route>
 
               <Route
                 path="/Studentattendance"
