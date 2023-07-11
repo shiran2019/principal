@@ -3,12 +3,18 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import axios from "axios";
 import { Row, Col } from "react-bootstrap";
 import { useParams } from "react-router-dom";
+import jsPDF from "jspdf";
+import DownloadPDFButton from "../../../components/PDFgenerator";
+
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import NavigationBar from "../../../components/Navbar";
 //import { use } from "../../../../../Server/routes/Students";
 
 export default function Salary() {
+
+  const currentDate = new Date().toLocaleDateString("en-US");
+
   const [teacherArray, setTeacherArray] = useState([]);
 
   const { id } = useParams();
@@ -22,6 +28,13 @@ export default function Salary() {
 
   const [classNameArray, setClassNametArray] = useState("");
   const [countArray, setCountArray] = useState([]);
+
+  const [month, setMonth] = useState("");
+
+  const [pdfValues, setPdfValues] = useState({});
+
+ 
+
 
   const StoreEPF = () => {
     if (epfRate) {
@@ -45,6 +58,7 @@ export default function Salary() {
     setEpfRate(localStorage.getItem("epfRate"));
     setAllowance(localStorage.getItem("allowance"));
     setBasic(localStorage.getItem("basic"));
+    console.log(currentDate);
   }, []);
 
   useEffect(() => {
@@ -65,6 +79,12 @@ export default function Salary() {
   };
 
   const onSubmit = (data, { resetForm }) => {
+
+    setMonth(data.Month);
+ 
+
+
+
     const data1 = {
       ...data,
       epfRate: epfRate,
@@ -72,16 +92,22 @@ export default function Salary() {
       Basic: basic,
       Salary: salary,
       teacherId: teacherrId,
+      Day:currentDate,
+      Month:month,
     };
 
-    console.log(data1);
+   
     axios
       .post("http://localhost:3001/teacherSalary", data1)
       .then((response) => {
         setSubmissionStatus("success");
         resetForm();
         setSalary(0);
-        alert("Added new data successfully");
+        alert("Click Download button to download the salary receipt");
+      })
+      .then((response) => {
+        PdfGen();
+        
       })
       .catch((error) => {
         if (error.response && error.response.status === 400) {
@@ -119,13 +145,51 @@ export default function Salary() {
 
   useEffect(() => {
     onPageCount();
-    console.log(countArray.classCount);
+    
   }, [classNameArray]);
 
-  const CalculateSalary = () => {
+  useEffect(() => {
     const sal = parseInt(basic) + parseInt(allowance) - (parseInt(basic) * parseInt(epfRate)) / 100;
     setSalary(sal);
-  };
+ 
+}, [basic, allowance, epfRate, month, teacherrId])
+
+
+const PdfGen = () => {
+  // const doc = new jsPDF();
+  // doc.text("Salary Receipt", 80, 10);
+  // doc.text("Teacher Id   : " + teacherrId, 20, 30);
+
+  // doc.text("Salary Month : " + month, 20, 50);
+  // doc.text("Basic Salary : " + basic, 20, 60);
+  // doc.text("Allowance    : " + allowance, 20, 70);
+  // doc.text("EPF Rate     : " + epfRate, 20, 80);
+  // doc.text("---------------------------------------" , 20, 90);
+  // doc.text("Total Salary : " + salary, 20, 100);
+  // doc.text("---------------------------------------" , 20, 110);
+ 
+  // doc.text("Signature of the Principal" , 20, 140); 
+  // doc.text("Date: " + currentDate, 100, 140);
+  // doc.text("--------------------------" , 20, 150);
+  // doc.save("Salary Receipt"+"_"+teacherrId+"_"+month+".pdf");
+
+ const Values = {
+  teacherId: teacherrId,
+  Month: month,
+  Basic: basic,
+  Allowance: allowance,
+  epfRate: epfRate,
+  Salary: salary,
+  Day: currentDate,
+ };
+
+ setPdfValues(Values);
+ 
+
+
+
+
+};
 
   const labelStyle = {
     marginBottom: "8px",
@@ -152,6 +216,7 @@ export default function Salary() {
     cursor: "pointer",
     align: "right",
   };
+
 
   const formStyle = {
     margin: "0 auto",
@@ -193,6 +258,11 @@ export default function Salary() {
     }
   };
 
+  const validateMonth = () => {
+    if(!month){
+      return "Required";
+    }
+  };
   return (
     <>
       <div>
@@ -258,7 +328,7 @@ export default function Salary() {
                     name="StdCount"
                     // placeholder="class name"
                     style={inputStyle}
-                    
+                    readOnly={true}
                     value={countArray.classCount}
                   />
                   <ErrorMessage
@@ -269,21 +339,20 @@ export default function Salary() {
                 </Col>
 
                 <Col xs={12} lg={6}>
-                  <label style={labelStyle}>Date :</label>
-                  <Field
-                    type="date"
-                    id="inputCreatePost"
-                    name="Day"
-                    // placeholder="class name"
-                    style={inputStyle}
-                    validate={validate}
-                  />
-                  <ErrorMessage
-                    name="Day"
-                    component="div"
-                    style={{ color: "red" }}
-                  />
-                </Col>
+      <label style={labelStyle}>Date:</label>
+      <Field
+       // type="date"
+        id="inputCreatePost"
+        name="Day"
+        readOnly={true}
+        style={inputStyle}
+       // validate={validate}
+       // defaultValue={currentDate}
+        value={currentDate}
+      />
+      <ErrorMessage name="Day" component="div" style={{ color: "red" }} />
+    </Col>
+
 
                 <Col xs={12} lg={6}>
                   <label style={labelStyle}>Month:</label>
@@ -292,7 +361,9 @@ export default function Salary() {
                     name="Month"
                     component="select" // Use the select component
                     style={inputStyle}
-                    validate={validate}
+                    validate={validateMonth}
+                    value={month}
+                    onChange={(e) => setMonth(e.target.value)}
                   >
                     <option value="">Select a month</option>
                     option
@@ -409,9 +480,7 @@ export default function Salary() {
                         align: "right",
                       }}
                     >
-                      <button onClick={CalculateSalary} style={buttonStyle}>
-                        Calculate Salary
-                      </button>
+                    
                     </div>
                   </Col>
                 </Row>
@@ -432,15 +501,18 @@ export default function Salary() {
                         align: "right",
                       }}
                     >
-                      <button type="submit" style={buttonStyle}>
-                        Add
+                      <button  style={buttonStyle}>
+                        Submit 
                       </button>
+                      <DownloadPDFButton values={pdfValues} />  
                     </div>
                   </Col>
                 </Row>
               </Row>
+            
             </Form>
           </Formik>
+ 
         </Row>
       </div>
     </>
