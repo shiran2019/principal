@@ -23,30 +23,28 @@ function NavigationBar() {
         console.log(response.data.role);
         if (response.data.error) {
           setAuthState({ ...authState, status: false });
-        } else if(response.data.role == "Student"){
+        } else if (response.data.role == "Student") {
           setAuthState({
             user: response.data.user,
             status: true,
             id: 1,
             role: response.data.role,
-          })
-        }
-        else if(response.data.role == "Admin"){
+          });
+        } else if (response.data.role == "Admin") {
           setAuthState({
             user: response.data.user,
             status: true,
             id: 2,
             role: response.data.role,
-          })
-        }else if(response.data.role == "Teacher"){
+          });
+        } else if (response.data.role == "Teacher") {
           setAuthState({
             user: response.data.user,
             status: true,
             id: 3,
             role: response.data.role,
-          })
-        }
-        else console.log("fsgfgfg")
+          });
+        } else console.log("fsgfgfg");
       });
   }, []);
 
@@ -61,7 +59,6 @@ function NavigationBar() {
         <Navbar
           collapseOnSelect
           expand="xl"
-          
           style={{
             backgroundColor: "#5b5ea6",
             zIndex: 2,
@@ -86,14 +83,11 @@ function NavigationBar() {
                   </>
                 )}
 
+             
+           
+             
+              
 
-<Nav.Link
-                      href="/art-gallery"
-                      style={{ fontSize: "20px", marginRight: "8px" }}
-                    >
-                     Art Gallery
-                    </Nav.Link>
-                 
                 {!authState.status && (
                   <>
                     <Nav.Link
@@ -105,7 +99,47 @@ function NavigationBar() {
                   </>
                 )}
 
-                {authState.status && (
+                {authState.role === "Teacher" && (
+                  <>
+                    <Nav.Link
+                      href="/appointmentsTeacher"
+                      style={{ fontSize: "20px", marginRight: "8px" }}
+                    >
+                      Appointments
+                    </Nav.Link>
+                    <Nav.Link
+                  href="/art-gallery"
+                  style={{ fontSize: "20px", marginRight: "8px" }}
+                >
+                  Art Gallery
+                </Nav.Link>
+                  </>
+                )}
+
+
+
+
+                {authState.role === "Admin" && (
+                  <>
+                    <Nav.Link
+                      href="/adminAppointments"
+                      style={{ fontSize: "20px", marginRight: "8px" }}
+                    >
+                      Appointments
+                    </Nav.Link>
+                    <Nav.Link
+                  href="/art-gallery"
+                  style={{ fontSize: "20px", marginRight: "8px" }}
+                >
+                  Art Gallery
+                </Nav.Link>
+                  </>
+                )}
+
+
+
+
+                {authState.role === "Student" && (
                   <>
                     <Nav.Link
                       href="/appointments"
@@ -115,6 +149,10 @@ function NavigationBar() {
                     </Nav.Link>
                   </>
                 )}
+
+
+
+
                 {authState.status && (
                   <>
                     <NavDropdown

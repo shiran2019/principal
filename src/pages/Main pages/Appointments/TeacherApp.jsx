@@ -5,12 +5,63 @@ import Table from "react-bootstrap/Table";
 import axios from "axios";
 import { Alert } from "react-bootstrap";
 import { Button } from "react-bootstrap";
-import ConfirmationPopup from "./ConfirmationPopup"; 
 import NavigationBar from "../../../components/Navbar";
+import { AuthContext } from "../../../helpers/AuthContext";
+import ConfirmationPopup from "./ConfirmationPopup"; 
 
 
 
-const Appointments = () => {
+const TeacherApp = () => {
+
+
+
+    const [authState, setAuthState] = useState({
+        user: "",
+        status: false,
+        id: 0,
+        role: "",
+      });
+    
+      useEffect(() => {
+        axios
+          .get("http://localhost:3001/users/auth", {
+            headers: {
+              accessToken: localStorage.getItem("accessToken"),
+            },
+          })
+          .then((response) => {
+            console.log(response.data.role);
+            if (response.data.error) {
+              setAuthState({ ...authState, status: false });
+            } else if(response.data.role == "Student"){
+              setAuthState({
+                user: response.data.user,
+                status: true,
+                id: 1,
+                role: response.data.role,
+              })
+            }
+            else if(response.data.role == "Admin"){
+              setAuthState({
+                user: response.data.user,
+                status: true,
+                id: 2,
+                role: response.data.role,
+              })
+            }else if(response.data.role == "Teacher"){
+              setAuthState({
+                user: response.data.user,
+                status: true,
+                id: 3,
+                role: response.data.role,
+              })
+            }
+            else console.log("fsgfgfg")
+          });
+
+         
+      }, []);
+    
   const labelStyle = {
     marginBottom: "8px",
     fontSize: "14px",
@@ -37,10 +88,6 @@ const Appointments = () => {
 
   const calendarRef = useRef();
 
-  const [showConfirmation, setShowConfirmation] = useState(false); // State for showing/hiding the confirmation popup
-  const [selectedRequestId, setSelectedRequestId] = useState(""); // State for tracking the selected request ID
-
-
   const [viewEvent, setViewEvent] = useState([]);
   const [updatedEvents, setUpdatedEvents] = useState([]);
   const [selectedItem2, setSelectedItem2] = useState("");
@@ -52,10 +99,11 @@ const Appointments = () => {
   const [deleted, setDeleted] = useState("");
 
   const [reqArray, setReqArray] = useState([]);
- 
+
+  const [showConfirmation, setShowConfirmation] = useState(false); // State for showing/hiding the confirmation popup
+  const [selectedRequestId, setSelectedRequestId] = useState(""); // State for tracking the selected request ID
+
   const handleRejectConfirmation = (requestId) => {
-    alert(requestId);
-    
     setSelectedRequestId(requestId);
     setShowConfirmation(true);
   };
@@ -68,28 +116,24 @@ const Appointments = () => {
     DeleteRequests(selectedRequestId);
     setShowConfirmation(false);
   };
+ 
 
-  const StoreTeacher = (selectedItem) => {
-    if (selectedItem) {
-      localStorage.setItem("TeacherId", selectedItem);
-    }
-  };
+useEffect(() => {   
+    localStorage.setItem("user", authState.user);
+    UpdCalender();
+      ShowRequests();
+}, [authState.user]);
 
-  const Teachers = () => {
+
+
+
+  const UpdCalender = () => {
+    
+    
     axios
-      .get(`http://localhost:3001/teachers/tch`)
+      .get(`http://localhost:3001/appointments/Appointments/${localStorage.getItem("user")}`)
       .then((response) => {
-        setTeacherArray(response.data);
-      })
-      .catch((error) => {
-        console.error("An error occurred:", error);
-      });
-  };
-
-  const UpdCalender = (x) => {
-    axios
-      .get(`http://localhost:3001/appointments/Appointments/${x}`)
-      .then((response) => {
+        console.log(response.data);
         const newEvents = response.data.map((item) => ({
           start: item.start,
           end: item.end,
@@ -98,12 +142,12 @@ const Appointments = () => {
           backColor: item.backColor,
         }));
         setEvents(newEvents);
-        StoreTeacher(selectedItem);
       })
       .catch((error) => {
         console.error("An error occurred:", error);
       });
   };
+
 
   const ShowRequests = () => {
     axios
@@ -118,7 +162,6 @@ const Appointments = () => {
 
   
 
-  
   const UpdateRequests = (x) => {
 const data = {
   Status: "Approved",
@@ -126,7 +169,7 @@ const data = {
     axios
     .post(`http://localhost:3001/appointmentRequest/${x}/updateStatus`, data)
     .then((response) => {
-      alert("updated successfully");
+      ShowRequests();
     })
     .catch((error) => {
         alert("Network error: Data not updated");
@@ -138,35 +181,21 @@ const data = {
     try {
       await axios.delete(`http://localhost:3001/appointmentRequest/delete/${x}`);
       alert("Deleted successfully");
+      ShowRequests();
     } catch (error) {
       console.error("An error occurred:", error);
     }
   };
 
+
   useEffect(() => {
     deleteEvent(localStorage.getItem("deleted"));
   }, [deleted]);
 
-  useEffect(() => {
-    Teachers();
-    const x = localStorage.getItem("TeacherId");
-    UpdCalender(x);
-    ShowRequests();
-  }, []);
+
 
   useEffect(() => {
-    if (selectedItem) {
-      localStorage.setItem("Teachername", selectedItem2);
-    }
-  }, [selectedItem2]);
-
-  useEffect(() => {
-    UpdCalender(selectedItem);
-    StoreTeacher(selectedItem);
-  }, [selectedItem]);
-
-  useEffect(() => {
-    console.log("updatedEvents", updatedEvents);
+    
     updatedEvents.forEach(async (item) => {
       const data = {
         start: item.start,
@@ -178,16 +207,16 @@ const data = {
 
       try {
         const response = await axios.post("http://localhost:3001/appointments/Appointments", data);
-        const x = localStorage.getItem("TeacherId");
-        UpdCalender(x);
+        
+        UpdCalender(authState.user);
       } catch (error) {
         console.error("An error occurred:", error);
       }
     });
   }, [updatedEvents, events]);
 
+
   const onSubmit = async (data) => {
-    console.log("data", data);
 
     const updateDETA = {
       start: data.start.value,
@@ -195,13 +224,13 @@ const data = {
       id: data.id,
       text: data.text,
       backColor: data.backColor,
-      teacherId: localStorage.getItem("TeacherId"),
+      teacherId: authState.user,
     };
 
     try {
       const response = await axios.post("http://localhost:3001/appointments/Appointments", updateDETA);
-      const x = localStorage.getItem("TeacherId");
-      UpdCalender(x);
+      
+      UpdCalender(authState.user);
     } catch (error) {
       console.error("An error occurred:", error);
     }
@@ -369,51 +398,14 @@ const data = {
 
   return (
     <>
-
-<div className="App">
-        <NavigationBar />
-      </div>
-    <div>
-     
+     <AuthContext.Provider value={{ authState, setAuthState }}>
+     <div style={{padding:"2% 2%"}}>
+      <h3 style={{ color: "#5b5ea6", marginBottom:"3%" }}>Requests</h3>
       <center>
-        <h2 style={{ color: "#5b5ea6" }}>Teacher Name   : {localStorage.getItem("Teachername")},</h2>
-      </center>
-      <div style={{ display: "flex" }}>
-        <div style={{ marginRight: "10px" }}>
-          <div>
-            <label style={labelStyle}>Select Teacher:</label>
-            <select
-              style={inputStyle}
-              onChange={(e) => {
-                setSelectedItem(e.target.value);
-                const selectedTeacher = teacherArray.find((teacher) => teacher.teacherId === e.target.value);
-                setSelectedItem2(selectedTeacher ? selectedTeacher.fName : "");
-              }}
-            >
-              <option value="">Select</option>
-              {teacherArray.map((teacher) => (
-                <option value={teacher.teacherId} key={teacher.teacherId}>
-                  {teacher.fName}
-                </option>
-              ))}
-            </select>
-          </div>
-          <DayPilotNavigator {...navigatorConfig} />
-        </div>
-        <div style={{ flexGrow: "1" }}>
-          <DayPilotCalendar {...calendarConfig} ref={calendarRef} events={events} />
-        </div>
-      </div>
-    </div>
-
-    <div>
-      <h3 style={{ color: "#5b5ea6", marginTop:"5%", marginBottom:"3%" }}>Requests</h3>
-      <center>
-    <Table  >
+    <Table style={{  marginBottom:"3%" }} >
               <thead>
                 <tr>
                   <th>Student ID</th>
-                  <th>Teacher ID</th>
                   <th>Date</th>
                   <th>Time</th>
                   <th>Note</th>
@@ -424,7 +416,7 @@ const data = {
                 {reqArray.map((requests) => (
                   <tr key={requests.id}>
                     <td>{requests.StudentId}</td>
-                    <td>{requests.teacherId}</td>
+                   
                     <td>{requests.Day}</td>
                     <td>{requests.time}</td>
                     <td>{requests.Note}</td>
@@ -451,8 +443,30 @@ const data = {
               </tbody>
             </Table>
             </center>
-
     </div>
+      <div className="App">
+        <NavigationBar />
+      </div>
+    <div style={{padding:"2% 2%"}}>
+     
+      <center>
+      </center>
+      <div style={{ display: "flex" }}>
+        <div style={{ marginRight: "10px" }}>
+          <div>
+           
+          </div>
+          <DayPilotNavigator {...navigatorConfig} />
+        </div>
+        <div style={{ flexGrow: "1" }}>
+          <DayPilotCalendar {...calendarConfig} ref={calendarRef} events={events} />
+        </div>
+      </div>
+    </div>
+
+ 
+    </AuthContext.Provider>
+
     {showConfirmation && (
         <ConfirmationPopup
           message="Are you sure you want to reject this request?"
@@ -464,4 +478,4 @@ const data = {
   );
 };
 
-export default Appointments;
+export default TeacherApp;

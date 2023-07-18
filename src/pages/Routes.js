@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Artgal from "./Main pages/Student/Artgal";
 import TalentPage from "./Talentpage";
-import Appointments from "./Main pages/Appointments/Appointments";
+
 import Today from "./Today";
 import News from "./Main pages/Others/News";
 import Ourteachers from "./Ourteachers";
@@ -23,6 +23,9 @@ import StudentAttendance from "./Main pages/Student/Attendance/StudentAttendance
 import TeacherAttendance from "./Main pages/Teacher/Attendance/TeacherAttendance";
 import Paymnt from "./Main pages/Student/Payments/Paymnt";
 import Salary from "./Main pages/Teacher/Salary";
+import ApointmentDetails from "./Main pages/Appointments/ApointmentDetails";
+import TeacherApp from "./Main pages/Appointments/TeacherApp";
+import Appointments from "./Main pages/Appointments/Appointments";
 
 export default function Paths() {
   const [authState, setAuthState] = useState({
@@ -76,11 +79,39 @@ export default function Paths() {
             <Routes>
               <Route path="/login" element={<Login />}></Route>
               <Route path="/" element={<Profile />}></Route>
-              <Route path="/art-gallery" element={<Artgal />}></Route>
+           
               <Route path="/talent-page" element={<TalentPage />}></Route>
               <Route path="/today" element={<Today />}></Route>
 
-              <Route path="/appointments" element={<Appointments />}></Route>
+              {authState.role === "Admin" && (
+                <>
+                  <Route
+                    path="/adminAppointments"
+                    element={<Appointments />}
+                  ></Route>
+                     <Route path="/art-gallery" element={<Artgal />}></Route>
+                </>
+              )}
+
+              {authState.role === "Teacher" && (
+                <>
+                  <Route
+                    path="/appointmentsTeacher"
+                    element={<TeacherApp />}
+                  ></Route>
+                     <Route path="/art-gallery" element={<Artgal />}></Route>
+                </>
+              )}
+
+              {authState.role == "Student" && (
+                <>
+                  <Route
+                    path="/appointments"
+                    element={<ApointmentDetails />}
+                  ></Route>
+                  <Route path="/contact" element={<Contact />}></Route>
+                </>
+              )}
 
               <Route path="/news" element={<News />}></Route>
               <Route path="/our-teachers" element={<Ourteachers />}></Route>
@@ -88,11 +119,6 @@ export default function Paths() {
               <Route path="/payments" element={<Paymnt />}></Route>
               <Route path="/studentDet" element={<Std />}></Route>
 
-              {authState.role == "Student" && (
-                <>
-                  <Route path="/contact" element={<Contact />}></Route>
-                </>
-              )}
               <Route path="/studentReg" element={<StdReg />}></Route>
               <Route path="/teacherDet" element={<Teacher />}></Route>
               <Route path="/teacherReg" element={<TchReg />}></Route>
