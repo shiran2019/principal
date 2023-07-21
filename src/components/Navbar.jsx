@@ -118,7 +118,7 @@ function NavigationBar() {
                 >
                   Art Gallery
                 </Nav.Link>
-
+                
                 <NavDropdown
                       style={{ fontSize: "20px", marginRight: "8px" }}
                       title="Students"
@@ -130,6 +130,9 @@ function NavigationBar() {
                      
                       <NavDropdown.Item href="/termEvoluations">
                         Term evaluations
+                      </NavDropdown.Item>
+                      <NavDropdown.Item href="/bestKids">
+                        Best kids
                       </NavDropdown.Item>
                       <NavDropdown.Item href="/Studentattendance">
                         Attendance
@@ -168,6 +171,7 @@ function NavigationBar() {
                       <NavDropdown.Item href="/teacherReg">
                         Teacher Registration
                       </NavDropdown.Item>
+
                       <NavDropdown.Item href="/teacherattendance">
                         Attendance
                       </NavDropdown.Item>
@@ -189,6 +193,9 @@ function NavigationBar() {
                       </NavDropdown.Item>
                       <NavDropdown.Item href="/termEvoluations">
                         Term evaluations
+                      </NavDropdown.Item>
+                      <NavDropdown.Item href="/bestKids">
+                        Best kids
                       </NavDropdown.Item>
                       <NavDropdown.Item href="/Studentattendance">
                         Attendance
@@ -225,12 +232,15 @@ function NavigationBar() {
                     >
                       Term evaluations
                     </Nav.Link>
-                    <Nav.Link
-                      href="/myArts"
+ <NavDropdown
                       style={{ fontSize: "20px", marginRight: "8px" }}
+                      title="Talents"
+                      id="collasible-nav-dropdown"
                     >
-                      My Arts
-                    </Nav.Link>
+                      <NavDropdown.Item href="/myArts">
+                        My arts
+                      </NavDropdown.Item>
+                    </NavDropdown>
                     <Nav.Link
                       href="/myPayments"
                       style={{ fontSize: "20px", marginRight: "8px" }}
@@ -277,9 +287,6 @@ function NavigationBar() {
                       >
                         <NavDropdown.Item exact href="/">
                           Profile
-                        </NavDropdown.Item>
-                        <NavDropdown.Item href="/payments">
-                          Payments
                         </NavDropdown.Item>
 
                         {authState.status ? (

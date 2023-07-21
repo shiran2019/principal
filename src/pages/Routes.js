@@ -32,6 +32,7 @@ import { AdminProf } from "./Main pages/Admin/AdminProf";
 import { EvoResult } from "./Main pages/Student/Other/EvoResult";
 import { MyArts } from "./Main pages/Student/Other/MyArts";
 import { Payments } from "./Main pages/Student/Other/Payments";
+import { BestKid } from "./Main pages/Teacher/BestKid";
 
 export default function Paths() {
   const [authState, setAuthState] = useState({
@@ -116,6 +117,7 @@ export default function Paths() {
 
                   <Route path="/termEvoluations" element={<TermEvos />}></Route>
                   <Route path="/" element={<AdminProf/>}></Route>
+                  <Route path="/bestKids" element={<BestKid/>}></Route>
                 </>
               )}
 
@@ -132,6 +134,7 @@ export default function Paths() {
 
                   <Route path="/termEvoluations" element={<TermEvos />}></Route>
                   <Route path="/" element={<TchProfile/>}></Route>
+                  <Route path="/bestKids" element={<BestKid/>}></Route>
                 </>
               )}
 

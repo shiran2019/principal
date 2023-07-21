@@ -4,6 +4,13 @@ import axios from "axios";
 import { Row, Col } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import NavigationBar from "../../../components/Navbar";
+import { storage } from "../../..//Firebase";
+import {
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+  listAll,
+} from "@firebase/storage";
 
 export default function StdReg() {
   const [classArray, setClassArray] = useState([]);
@@ -17,6 +24,89 @@ export default function StdReg() {
   const [pwd1, setPwd1] = useState("");
   const [pwd2, setPwd2] = useState("");
   const [pwd3, setPwd3] = useState("");
+
+  const [progress, setProgress] = useState(0);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [imageId, setImageId] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const [imageUrl2, setImageUrl2] = useState("");
+
+
+
+  const fileChangeHandler = (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
+
+  const formSubmitHandler = async (e) => {
+    e.preventDefault();
+    if (selectedFile) {
+      uploadFile(selectedFile);
+    } else {
+      console.log("No file selected.");
+      alert("No file selected.");
+    }
+  };
+
+  const uploadFile = (file) => {
+    const imageId = generateImageId(teacherrId);
+    setImageId(imageId);
+  
+    const storageRef = ref(storage, `images/${imageId}/${file.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+  
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const prog = Math.round(
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+        );
+        setProgress(prog);
+      },
+      (error) => console.log(error),
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref)
+          .then((url) => {
+            setImageUrl(url);
+            console.log(url);
+            alert("Image uploaded successfully");
+            setSelectedFile(null); // Clear the selected file
+            
+
+          })
+          .catch((error) => console.log(error));
+      }
+    );
+  };
+  
+
+  const generateImageId = (teacherrId) => {
+    return teacherrId; // Use the studenttId as the imageId
+  };
+
+  const retrieveImage = () => {
+    if (teacherrId) {
+      const storageRef = ref(storage, `images/${teacherrId}`);
+      listAll(storageRef)
+        .then((res) => {
+          res.items.forEach((itemRef) => {
+            getDownloadURL(itemRef)
+              .then((url) => {
+                setImageUrl(url);
+                console.log(url);
+
+              })
+              .catch((error) => console.log(error));
+          });
+        })
+        .catch((error) => console.log(error));
+    } else {
+      console.log("No image ID found.");
+    }
+  };
+
+  const updateDivContent = (content) => {
+    setDivContent(content);
+  };
 
   const initialValues = {
     teacherId: "",
@@ -37,6 +127,10 @@ export default function StdReg() {
 
 
     const { password, confirmPassword } = data;
+
+    if(progress !== 100){ 
+      alert("Please upload the image");
+      return;}
   
     if (password !== confirmPassword) {
       alert("Passwords do not match");
@@ -115,7 +209,7 @@ export default function StdReg() {
         console.log(error);
       });
   };
-  
+   
   const onPageRefresh = () => {
     axios
       .get("http://localhost:3001/teachers/lastId")
@@ -494,6 +588,45 @@ export default function StdReg() {
               </button>
             </div>
           </Row>
+
+          <Row>
+         
+         <Col>
+         
+        
+         <label style={labelStyle}>Upload Profile picture :   </label>
+       
+
+      
+        <input type="file" className="input" onChange={fileChangeHandler} />
+        </Col>
+
+       <button style={buttonStyle} onClick={formSubmitHandler}>Upload</button>
+
+   <hr />
+   <h3>Uploaded {progress} %</h3>
+
+   <hr />
+   {imageUrl && (
+     <img
+       src={imageUrl}
+       style={{ width: "40%", height: "40%" }}
+       alt="Uploaded"
+     />
+   )} 
+         </Row>
+        
+
+         <Row>
+         {" "}
+         <div style={{ textAlign: "center", marginTop: "20px" }}>
+           <button type="submit" style={buttonStyle}>
+             Submit
+           </button>
+         </div>
+       </Row>
+        
+
         </Form>
       </Formik>
     </div>
