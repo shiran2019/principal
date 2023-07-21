@@ -212,6 +212,7 @@ export default function Artgal() {
       setFilteredTableArray(array);
       return;
     }
+    
     const filteredData = filteredTableArray.filter((item) =>
       item.fName.toLowerCase().includes(searchTerm2.toLowerCase())
     );
@@ -268,7 +269,7 @@ export default function Artgal() {
             />
           </Col>
           <Col xs={12} lg={4}>
-            <label style={labelStyle}>Search ID here:</label>
+            <label style={labelStyle}>Search Student name here:</label>
             <input
               type="text"
               value={searchTerm2}

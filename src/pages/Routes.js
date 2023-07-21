@@ -6,7 +6,7 @@ import Today from "./Today";
 import News from "./Main pages/Others/News";
 import Ourteachers from "./Ourteachers";
 import Contact from "./Main pages/Others/contact";
-import Profile from "./Main pages/Profile/Profile";
+
 import Std from "./Main pages/Student/Student";
 import StdReg from "./Main pages/Student/Registr";
 import Teacher from "./Main pages/Teacher/Teacher";
@@ -26,6 +26,12 @@ import Salary from "./Main pages/Teacher/Salary";
 import ApointmentDetails from "./Main pages/Appointments/ApointmentDetails";
 import TeacherApp from "./Main pages/Appointments/TeacherApp";
 import Appointments from "./Main pages/Appointments/Appointments";
+import Profile from "./Main pages/Student/Profile/Profile";
+import TchProfile from "./Main pages/Teacher/Profile/Profile";
+import { AdminProf } from "./Main pages/Admin/AdminProf";
+import { EvoResult } from "./Main pages/Student/Other/EvoResult";
+import { MyArts } from "./Main pages/Student/Other/MyArts";
+import { Payments } from "./Main pages/Student/Other/Payments";
 
 export default function Paths() {
   const [authState, setAuthState] = useState({
@@ -77,9 +83,10 @@ export default function Paths() {
         <div>
           <Router>
             <Routes>
+
               <Route path="/login" element={<Login />}></Route>
-              <Route path="/" element={<Profile />}></Route>
-           
+             
+
               <Route path="/talent-page" element={<TalentPage />}></Route>
               <Route path="/today" element={<Today />}></Route>
 
@@ -89,7 +96,26 @@ export default function Paths() {
                     path="/adminAppointments"
                     element={<Appointments />}
                   ></Route>
-                     <Route path="/art-gallery" element={<Artgal />}></Route>
+                  <Route path="/teacherSalary" element={<Salary />}></Route>
+                  <Route path="/teacherReg" element={<TchReg />}></Route>
+                  <Route path="/teacherDetails" element={<TchTable />}></Route>
+                  <Route
+                    path="/teacherattendance"
+                    element={<TeacherAttendance />}
+                  ></Route>
+                  <Route path="/art-gallery" element={<Artgal />}></Route>
+
+                  <Route path="/payments" element={<Paymnt />}></Route>
+
+                  <Route path="/studentReg" element={<StdReg />}></Route>
+
+                  <Route path="/classAdd" element={<ClsAdd />}></Route>
+                  <Route path="/our-teachers" element={<Ourteachers />}></Route>
+                  <Route path="/teacherDet" element={<Teacher />}></Route>
+                  <Route path="/studentDetails" element={<StdTable />}></Route>
+
+                  <Route path="/termEvoluations" element={<TermEvos />}></Route>
+                  <Route path="/" element={<AdminProf/>}></Route>
                 </>
               )}
 
@@ -99,40 +125,37 @@ export default function Paths() {
                     path="/appointmentsTeacher"
                     element={<TeacherApp />}
                   ></Route>
-                     <Route path="/art-gallery" element={<Artgal />}></Route>
+
+                  <Route path="/art-gallery" element={<Artgal />}></Route>
+
+                  <Route path="/studentDetails" element={<StdTable />}></Route>
+
+                  <Route path="/termEvoluations" element={<TermEvos />}></Route>
+                  <Route path="/" element={<TchProfile/>}></Route>
                 </>
               )}
 
-              {authState.role == "Student" && (
+              {authState.role == "Student" ? (
                 <>
+                <Route exact path="/" element={<Profile/>}></Route>
                   <Route
                     path="/appointments"
                     element={<ApointmentDetails />}
                   ></Route>
                   <Route path="/contact" element={<Contact />}></Route>
+                  <Route path="/myResults" element={<EvoResult />}></Route>
+                  <Route path="/myArts" element={<MyArts />}></Route>
+                  <Route path="/myPayments" element={<Payments />}></Route>
+                  
                 </>
+              ) : (
+                <>Loading</>
               )}
 
+
               <Route path="/news" element={<News />}></Route>
-              <Route path="/our-teachers" element={<Ourteachers />}></Route>
 
-              <Route path="/payments" element={<Paymnt />}></Route>
               <Route path="/studentDet" element={<Std />}></Route>
-
-              <Route path="/studentReg" element={<StdReg />}></Route>
-              <Route path="/teacherDet" element={<Teacher />}></Route>
-              <Route path="/teacherReg" element={<TchReg />}></Route>
-
-              <Route
-                path="/teacherattendance"
-                element={<TeacherAttendance />}
-              ></Route>
-
-              <Route path="/classAdd" element={<ClsAdd />}></Route>
-              <Route path="/studentDetails" element={<StdTable />}></Route>
-              <Route path="/teacherDetails" element={<TchTable />}></Route>
-              <Route path="/termEvoluations" element={<TermEvos />}></Route>
-              <Route path="/teacherSalary" element={<Salary />}></Route>
 
               <Route
                 path="/Studentattendance"

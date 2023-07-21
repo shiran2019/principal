@@ -184,9 +184,6 @@ const PdfGen = () => {
  };
 
  setPdfValues(Values);
- 
-
-
 
 
 };

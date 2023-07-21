@@ -84,7 +84,12 @@ function NavigationBar() {
                 )}
 
              
-           
+<Nav.Link
+                      href="/"
+                      style={{ fontSize: "20px", marginRight: "8px" }}
+                    >
+                      profile
+                    </Nav.Link>
              
               
 
@@ -113,6 +118,24 @@ function NavigationBar() {
                 >
                   Art Gallery
                 </Nav.Link>
+
+                <NavDropdown
+                      style={{ fontSize: "20px", marginRight: "8px" }}
+                      title="Students"
+                      id="collasible-nav-dropdown"
+                    >
+                      <NavDropdown.Item href="/studentDetails">
+                        Our students
+                      </NavDropdown.Item>
+                     
+                      <NavDropdown.Item href="/termEvoluations">
+                        Term evaluations
+                      </NavDropdown.Item>
+                      <NavDropdown.Item href="/Studentattendance">
+                        Attendance
+                      </NavDropdown.Item>
+                    </NavDropdown>
+                
                   </>
                 )}
 
@@ -133,28 +156,26 @@ function NavigationBar() {
                 >
                   Art Gallery
                 </Nav.Link>
-                  </>
-                )}
 
-
-
-
-                {authState.role === "Student" && (
-                  <>
-                    <Nav.Link
-                      href="/appointments"
+                <NavDropdown
                       style={{ fontSize: "20px", marginRight: "8px" }}
+                      title="Teachers"
+                      id="collasible-nav-dropdown"
                     >
-                      Appointments
-                    </Nav.Link>
-                  </>
-                )}
+                      <NavDropdown.Item href="/teacherDetails">
+                        Our teachers
+                      </NavDropdown.Item>
+                      <NavDropdown.Item href="/teacherReg">
+                        Teacher Registration
+                      </NavDropdown.Item>
+                      <NavDropdown.Item href="/teacherattendance">
+                        Attendance
+                      </NavDropdown.Item>
+                      <NavDropdown.Item href="/teacherSalary">
+                        Salary
+                      </NavDropdown.Item>
+                    </NavDropdown>
 
-
-
-
-                {authState.status && (
-                  <>
                     <NavDropdown
                       style={{ fontSize: "20px", marginRight: "8px" }}
                       title="Students"
@@ -176,28 +197,60 @@ function NavigationBar() {
                         Payment Details
                       </NavDropdown.Item>
                     </NavDropdown>
+
+                    <Nav.Link
+                      href="/classAdd"
+                      style={{ fontSize: "20px", marginRight: "8px" }}
+                    >
+                      Classes
+                    </Nav.Link>
+                
                   </>
                 )}
+
+
+
+
+                {authState.role === "Student" && (
+                  <>
+                    <Nav.Link
+                      href="/appointments"
+                      style={{ fontSize: "20px", marginRight: "8px" }}
+                    >
+                      Appointments
+                    </Nav.Link>
+                    <Nav.Link
+                      href="/myResults"
+                      style={{ fontSize: "20px", marginRight: "8px" }}
+                    >
+                      Term evaluations
+                    </Nav.Link>
+                    <Nav.Link
+                      href="/myArts"
+                      style={{ fontSize: "20px", marginRight: "8px" }}
+                    >
+                      My Arts
+                    </Nav.Link>
+                    <Nav.Link
+                      href="/myPayments"
+                      style={{ fontSize: "20px", marginRight: "8px" }}
+                    >
+                      Payments
+                    </Nav.Link>
+
+
+
+                  </>
+
+                )}
+
+
+
+
+             
                 {authState.status && (
                   <>
-                    <NavDropdown
-                      style={{ fontSize: "20px", marginRight: "8px" }}
-                      title="Teachers"
-                      id="collasible-nav-dropdown"
-                    >
-                      <NavDropdown.Item href="/teacherDetails">
-                        Our teachers
-                      </NavDropdown.Item>
-                      <NavDropdown.Item href="/teacherReg">
-                        Teacher Registration
-                      </NavDropdown.Item>
-                      <NavDropdown.Item href="/teacherattendance">
-                        Attendance
-                      </NavDropdown.Item>
-                      <NavDropdown.Item href="/teacherSalary">
-                        Salary
-                      </NavDropdown.Item>
-                    </NavDropdown>
+                   
                   </>
                 )}
 
@@ -208,8 +261,10 @@ function NavigationBar() {
                 >
                   <NavDropdown.Item href="/news">News</NavDropdown.Item>
                   <NavDropdown.Item href="/contact">Contacts</NavDropdown.Item>
-                  <NavDropdown.Item href="/classAdd">Classes</NavDropdown.Item>
+                 
                 </NavDropdown>
+
+
               </Nav>
 
               <table>

@@ -22,7 +22,7 @@ function Login() {
         localStorage.setItem("accessToken", response.data);
         setAuthState(true);
 
-        navigate("/");
+        window.location = "/";
       }
     });
   };
