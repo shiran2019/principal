@@ -33,6 +33,11 @@ import { EvoResult } from "./Main pages/Student/Other/EvoResult";
 import { MyArts } from "./Main pages/Student/Other/MyArts";
 import { Payments } from "./Main pages/Student/Other/Payments";
 import { BestKid } from "./Main pages/Teacher/BestKid";
+import { Talent } from "./Main pages/Student/Other/Talent";
+import { Announcement } from "./Main pages/Teacher/Announcement";
+import { DisplayAnnouncement } from "./Main pages/Student/Other/DisplayAnnouncement";
+import { GuestMeetings } from "./Main pages/Admin/GuestMeetings";
+import STDToday from "./Main pages/Student/Today/Today";
 
 export default function Paths() {
   const [authState, setAuthState] = useState({
@@ -89,7 +94,7 @@ export default function Paths() {
              
 
               <Route path="/talent-page" element={<TalentPage />}></Route>
-              <Route path="/today" element={<Today />}></Route>
+           
 
               {authState.role === "Admin" && (
                 <>
@@ -118,6 +123,9 @@ export default function Paths() {
                   <Route path="/termEvoluations" element={<TermEvos />}></Route>
                   <Route path="/" element={<AdminProf/>}></Route>
                   <Route path="/bestKids" element={<BestKid/>}></Route>
+                  <Route path="/announcement" element={<Announcement/>}></Route>
+                  <Route path="/meetings" element={<GuestMeetings/>}></Route>
+                  <Route path="/today" element={<Today />}></Route>
                 </>
               )}
 
@@ -135,6 +143,8 @@ export default function Paths() {
                   <Route path="/termEvoluations" element={<TermEvos />}></Route>
                   <Route path="/" element={<TchProfile/>}></Route>
                   <Route path="/bestKids" element={<BestKid/>}></Route>
+                  <Route path="/announcement" element={<DisplayAnnouncement/>}></Route>
+                  <Route path="/today" element={<Today />}></Route>
                 </>
               )}
 
@@ -149,7 +159,9 @@ export default function Paths() {
                   <Route path="/myResults" element={<EvoResult />}></Route>
                   <Route path="/myArts" element={<MyArts />}></Route>
                   <Route path="/myPayments" element={<Payments />}></Route>
-                  
+                  <Route path="/talents" element={<Talent />}></Route>
+                  <Route path="/announcement" element={<DisplayAnnouncement/>}></Route>
+                  <Route path="/today" element={<STDToday/>}></Route>
                 </>
               ) : (
                 <>Loading</>
@@ -164,7 +176,7 @@ export default function Paths() {
                 path="/Studentattendance"
                 element={<StudentAttendance />}
               ></Route>
-              <Route path="*" element={"FUCK OFF"}></Route>
+              <Route path="*" element={" Web page not found "}></Route>
             </Routes>
           </Router>
         </div>

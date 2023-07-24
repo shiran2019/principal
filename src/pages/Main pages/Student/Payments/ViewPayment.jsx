@@ -1,7 +1,7 @@
 
 import axios from "axios";
 import Box from '@mui/material/Box';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid ,GridToolbar} from '@mui/x-data-grid';
 import { Row, Col } from "react-bootstrap";
 import React, { useState, useEffect } from "react";
 
@@ -13,21 +13,29 @@ const columns = [
     field: 'StudentId',
     headerName: 'Student Id',
     width: 150,
-    editable: true,
+    editable: false,
   },
   {
     field: 'Day',
     headerName: 'Paid Day',
     type: 'Date',
     width: 150,
-    editable: true,
+    editable: false,
   },
+  ,
    {
     field: 'Month',
     headerName: 'Month',
-    width: 100,
+    width: 150,
     editable: true,
-  },{
+  },
+   {
+    field: 'Payment',
+    headerName: 'Payment',
+    width: 150,
+    editable: true,
+  },
+  {
     field: 'Note',
     headerName: 'Notes',
     width: 100,
@@ -57,14 +65,26 @@ export default function ViewPayment() {
 
       
   }, []);
+  const mySaveOnServerFunction = (params) => {
+    
 
+    // Make an API call to update the changed value in the database
+    axios
+      .put(`http://localhost:3001/StudentPayment/upd/${params.id}`,params )
+      .then((response) => {
+        alert("done");
+      })
+      .catch((error) => {
+        console.error("An error occurred:", error);
+      });
+  };
 
   return (
     <>
      
      <Row>
     
-     <center> <Col lg={7}>
+     <center> <Col lg={9}>
 
      <h1>Payments List,</h1>
       <Box sx={{ height: 400, width: '100%' }}>
@@ -81,6 +101,12 @@ export default function ViewPayment() {
         pageSizeOptions={[5]}
         checkboxSelection
         disableRowSelectionOnClick
+        processRowUpdate={(updatedRow, originalRow) =>
+          mySaveOnServerFunction(updatedRow)
+        }
+        slots={{
+          toolbar: GridToolbar,
+        }}
       />
     </Box>
       </Col></center>

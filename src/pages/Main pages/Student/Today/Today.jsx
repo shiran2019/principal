@@ -5,10 +5,11 @@ import axios from "axios";
 import { Alert } from "react-bootstrap";
 import { Button } from "react-bootstrap";
 import "./Today.css";
-import NavigationBar from "../..//src/components/Navbar";
+import NavigationBar from "../../../../components/Navbar";
 
 
-const Today = () => {
+
+const STDToday = () => {
 
   const labelStyle = {
     marginBottom: "8px",
@@ -100,9 +101,6 @@ const Today = () => {
 
 
 
-  useEffect(() => {
-    deleteEvent(localStorage.getItem("deleted"));
-  }, [deleted]);
 
   useEffect(() => {
     UpdCalender();
@@ -110,56 +108,6 @@ const Today = () => {
   }, []);
 
 
-
-  useEffect(() => {
-    console.log("updatedEvents", updatedEvents);
-    updatedEvents.forEach(async (item) => {
-      const data = {
-        start: item.start,
-        end: item.end,
-        id: item.id,
-        text: item.text,
-        backColor: item.backColor,
-      };
-
-      try {
-        const response = await axios.post("http://localhost:3001/today/Today", data);
-        UpdCalender();
-      } catch (error) {
-        console.error("An error occurred:", error);
-      }
-    });
-  }, [updatedEvents, events]);
-
-  const onSubmit = async (data) => {
-    console.log("data", data);
-
-    const updateDETA = {
-      start: data.start.value,
-      end: data.end.value,
-      id: data.id,
-      text: data.text,
-      backColor: data.backColor,
-      
-    };
-
-    try {
-      const response = await axios.post("http://localhost:3001/today/Today", updateDETA);
-      
-      UpdCalender();
-    } catch (error) {
-      console.error("An error occurred:", error);
-    }
-  };
-
-  const deleteEvent = async (event) => {
-    try {
-      await axios.delete(`http://localhost:3001/today/Today/${localStorage.getItem("deleted")}`);
-      setDeleted("");
-    } catch (error) {
-      console.error("An error occurred:", error);
-    }
-  };
 
   const onBeforeEventRender = (args) => {
     if (args.div) {
@@ -170,7 +118,7 @@ const Today = () => {
         if (window.confirm("Are you sure you want to delete this event?")) {
           const eventToDelete = events.find((e) => e.id === args.e.id());
           if (eventToDelete) {
-            deleteEvent(eventToDelete);
+            
           }
         }
       });
@@ -183,119 +131,25 @@ const Today = () => {
     }
   };
 
-  const contextMenu = new DayPilot.Menu({
-    items: [
-      {
-        text: "Delete",
-        onClick: (args) => {
-          const e = args.source;
-          calendarRef.current.control.events.remove(e);
-          localStorage.setItem("deleted", e.cache.id);
-          setDeleted(e.cache.id);
-        },
-      },
-      {
-        text: "-",
-      },
-      {
-        text: "Blue",
-        icon: "icon icon-blue",
-        color: "#3d85c6",
-        onClick: (args) => updateColor(args.source, args.item.color),
-      },
-      {
-        text: "Green",
-        icon: "icon icon-green",
-        color: "#6aa84f",
-        onClick: (args) => updateColor(args.source, args.item.color),
-      },
-      {
-        text: "Yellow",
-        icon: "icon icon-yellow",
-        color: "#ecb823",
-        onClick: (args) => updateColor(args.source, args.item.color),
-      },
-      {
-        text: "Red",
-        icon: "icon icon-red",
-        color: "#d5663e",
-        onClick: (args) => updateColor(args.source, args.item.color),
-      },
-      {
-        text: "Purple",
-        icon: "icon icon-purple",
-        color: null,
-        onClick: (args) => updateColor(args.source, args.item.color),
-      },
-    ],
-  });
-
-  const updateColor = (e, color) => {
-    e.data.backColor = color;
-    calendarRef.current.control.events.update(e);
-    console.log(e.data);
-    onSubmit(e.data);
-  };
+  
 
   const calendarConfig = {
     
     durationBarVisible: false,
    
     onTimeRangeSelected: async (args) => {
-      const dp = calendarRef.current.control;
-      const modal = await DayPilot.Modal.prompt("Create a new event:", "Event 1");
-
-      dp.clearSelection();
-      if (!modal.result) {
-        return;
-      }
-
-      const newEvent = {
-        start: args.start,
-        end: args.end,
-        id: DayPilot.guid(),
-        text: modal.result,
-        backColor: "#3d85c6",
-      };
-      setEvents([...events, newEvent]);
-      onSubmit(newEvent);
+      
+  
     },
-    onEventClick: async (args) => {
-      const dp = calendarRef.current.control;
-      const modal = await DayPilot.Modal.prompt("Edit event text:", args.e.text());
-
-      if (!modal.result) {
-        return;
-      }
-
-      const updatedEvent = {
-        start: args.e.start(),
-        end: args.e.end(),
-        id: args.e.id(),
-        text: modal.result,
-        backColor: args.e.data.backColor,
-      };
-      setEvents((prevEvents) => {
-        const index = prevEvents.findIndex((e) => e.id === args.e.id());
-        const newEvents = [...prevEvents];
-        newEvents[index] = updatedEvent;
-        return newEvents;
-      });
-      dp.events.update(args.e, updatedEvent);
-      onSubmit(updatedEvent);
-      console.log("updatedEvent", updatedEvent);
-    },
-    onBeforeEventRender,
-    contextMenu,
+    
+    
   };
 
   const navigatorConfig = {
     selectMode: "day",
   
     onTimeRangeSelected: (args) => {
-      const dp = calendarRef.current.control;
-      dp.startDate = args.start;
-      dp.update();
+     
     },
   };
 
@@ -337,6 +191,6 @@ const Today = () => {
 </>
   );
 };
-export default Today;
+export default STDToday;
 
 

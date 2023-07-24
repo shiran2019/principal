@@ -1,6 +1,6 @@
 import axios from "axios";
 import Box from '@mui/material/Box';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid ,GridToolbar} from '@mui/x-data-grid';
 import { Row, Col } from "react-bootstrap";
 import React, { useState, useEffect } from "react";
 import NavigationBar from "../../../components/Navbar";
@@ -13,7 +13,7 @@ const columns = [
     field: 'teacherId',
     headerName: 'Teacher Id',
     width: 150,
-    editable: true,
+    editable: false,
   },
   {
     field: 'fName',
@@ -72,6 +72,24 @@ export default function TchTable() {
       
   }, []);
 
+  const mySaveOnServerFunction = (params) => {
+    alert("The changed value is: ");
+    
+
+
+    // Make an API call to update the changed value in the database
+    axios
+      .put(`http://localhost:3001/teachers/upd/${params.teacherId}`,params )
+      .then((response) => {
+        alert("done");
+      })
+      .catch((error) => {
+        console.error("An error occurred:", error);
+      });
+  };
+
+
+
 
   return (
     <>
@@ -98,6 +116,12 @@ export default function TchTable() {
         pageSizeOptions={[5]}
         checkboxSelection
         disableRowSelectionOnClick
+        processRowUpdate={(updatedRow, originalRow) =>
+          mySaveOnServerFunction(updatedRow)
+        }
+        slots={{
+          toolbar: GridToolbar,
+        }}
       />
     </Box>
       </Col></center>

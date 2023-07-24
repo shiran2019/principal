@@ -12,12 +12,18 @@ import {
 } from "firebase/storage";
 import { storage } from "../../../Firebase";
 
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import Box from "@mui/material/Box";
+import { DataGrid, GridCellModes }from "@mui/x-data-grid";
 
+import { Formik, Form, Field, ErrorMessage } from "formik";
 import { Row, Col, Alert } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import Table from "react-bootstrap/Table";
 import "bootstrap/dist/css/bootstrap.min.css";
+
+
+
+
 
 // Popup Component
 const PopupComponent = ({
@@ -26,6 +32,7 @@ const PopupComponent = ({
   handleClosePopup,
   fName,
   className,
+  Reload
 }) => {
 
     const [progress, setProgress] = useState(0);
@@ -65,6 +72,7 @@ const PopupComponent = ({
         
         alert("Added new class successfully");
         handleClosePopup();
+        Reload();
         
         
       })
@@ -285,6 +293,47 @@ export const BestKid = () => {
   const [isShow, setIsShow] = useState(false);
   const [imageUrls, setImageUrls] = useState({});
 
+  const [filteredArray, setFilteredArray] = useState([]);
+
+  const columns = [
+    { field: 'id', headerName: 'ID', width: 90 },
+    {
+      field: 'stdName',
+      headerName: 'Student Name',
+      width: 150,
+      editable: false,
+    },
+    {
+      field: 'className',
+      headerName: 'Class name',
+      width: 150,
+      editable: true,
+    },
+    {
+      field: 'eventName',
+      headerName: 'Event Name',
+      width: 150,
+      editable: true,
+    },
+    {
+      field: 'Day',
+      headerName: 'Date',
+      width: 200,
+      editable: true,
+      
+    
+    },
+    {
+      field: 'Delete',
+      width: 150,
+      renderCell: (row) => (
+        <button onClick={()=>DeleteCard(row.id)}>delete</button>
+      )
+    },
+   
+  ];
+
+
   const retrieveImage = (id) => {
     if (id) {
       const storageRef = ref(storage, `images/${id}`);
@@ -314,15 +363,23 @@ export const BestKid = () => {
     setIsShow(false);
   };
 
-  useEffect(() => {
+  const Reload = () => {
     axios
-      .get("http://localhost:3001/students")
-      .then((response) => {
-        setArray(response.data);
-      })
-      .catch((error) => {
-        console.error("An error occurred:", error);
-      });
+    .get("http://localhost:3001/students")
+    .then((response) => {
+      setArray(response.data);
+      return  axios.get("http://localhost:3001/bestKid")
+    })
+    .then((response) => {
+      setFilteredArray(response.data);
+    })
+    .catch((error) => {
+      console.error("An error occurred:", error);
+    });
+  };
+
+  useEffect(() => {
+    Reload();
   }, []);
 
   useEffect(() => {
@@ -356,6 +413,7 @@ export const BestKid = () => {
     setFilteredTableArray(filteredData);
   };
 
+
   const labelStyle = {
     marginBottom: "8px",
     fontSize: "14px",
@@ -378,6 +436,18 @@ export const BestKid = () => {
     setIsShow(true);
   };
 
+
+  const DeleteCard = (x) => {
+    axios
+      .delete(`http://localhost:3001/bestKid/ann/${x}`)
+      .then((response) => {
+        alert("Deleted successfully");
+        Reload();
+      })
+      .catch((error) => {
+        console.error("An error occurred:", error);
+      });
+  };
   return (
     <>
       <div className="App">
@@ -465,8 +535,30 @@ export const BestKid = () => {
             fName={selectedCardname}
             storage={storage}
             className={selectedCardclass}
+            Reload={Reload}
+
           />
         </Row>
+      </div>
+      <div>
+
+      <Box sx={{ height: 400, width: '100%' }}>
+      <DataGrid
+        rows={filteredArray}
+        columns={columns}
+        initialState={{
+          pagination: {
+            paginationModel: {
+              pageSize: 5,
+            },
+          },
+        }}
+        pageSizeOptions={[5]}
+        checkboxSelection
+        disableRowSelectionOnClick
+       
+      />
+    </Box>
       </div>
     </>
   );

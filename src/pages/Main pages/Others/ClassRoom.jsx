@@ -6,6 +6,27 @@ import { useParams } from "react-router-dom";
 import Table from "react-bootstrap/Table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import NavigationBar from "../../../components/Navbar";
+import Box from '@mui/material/Box';
+import { DataGrid ,GridToolbar} from '@mui/x-data-grid';
+
+const columns = [
+  { field: 'ClassId', headerName: 'ID', width: 250},
+  {
+    field: 'teacherId',
+    headerName: 'teacher Id',
+    width: 250,
+    editable: false,
+  },
+  
+   {
+    field: 'className',
+    headerName: 'Class room',
+    width: 250,
+    editable: true,
+   
+  
+  },
+];
 
 export default function ClsAdd() {
   const [teacherArray, setTeacherArray] = useState([]);
@@ -41,12 +62,18 @@ export default function ClsAdd() {
         }
       });
   };
-
+  
   const tableData = () => {
     axios
     .get(`http://localhost:3001/classes/clsDetails`)
     .then((response) => {
-      setClassArray(response.data);
+      
+      const modifiedData = response.data.map((row) => ({
+        ...row,
+        id: row.ClassId, // Set `EvoId` as the `id` property
+      }));
+     setClassArray(modifiedData);
+     console.log(modifiedData);
     })
     .catch((error) => {
       console.error("An error occurred:", error);
@@ -111,6 +138,20 @@ export default function ClsAdd() {
     }
   };
 
+  const mySaveOnServerFunction = (params) => {
+    
+
+    // Make an API call to update the changed value in the database
+    axios
+      .put(`http://localhost:3001/classes/upd/${params.ClassId}`,params )
+      .then((response) => {
+        alert("done");
+      })
+      .catch((error) => {
+        console.error("An error occurred:", error);
+      });
+  };
+
   return (
     <>
      <div className="App">
@@ -118,29 +159,35 @@ export default function ClsAdd() {
       </div>
       <div>
         <Row>
-
-          <Col lg={12}>
-          <center>
+        <center>
                 {" "}
                 <h2 style={{ paddingBottom: "10px" }}>Teacher allocations</h2>
               </center>
+          <Col lg={10} style={{paddingLeft:"19%"}}>
+         
 
-            <Table style={formStyle}>
-              <thead>
-                <tr>
-                  <th>Class name</th>
-                  <th>Teacher ID</th>
-                </tr>
-              </thead>
-              <tbody>
-                {clsaaArray.map((item) => (
-                  <tr key={item.className}>
-                    <td>{item.className}</td>
-                    <td>{item.teacherId}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
+         <Box sx={{ height: 400, width: '100%' }}>
+      <DataGrid
+        rows={clsaaArray}
+        columns={columns}
+        initialState={{
+          pagination: {
+            paginationModel: {
+              pageSize: 5,
+            },
+          },
+        }}
+        pageSizeOptions={[5]}
+        checkboxSelection
+        disableRowSelectionOnClick
+        processRowUpdate={(updatedRow, originalRow) =>
+          mySaveOnServerFunction(updatedRow)
+        }
+        slots={{
+          toolbar: GridToolbar,
+        }}
+      />
+    </Box>  
           </Col>
          
         </Row>

@@ -5,6 +5,27 @@ import { Row, Col, Alert } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import Table from "react-bootstrap/Table";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { DataGrid ,GridToolbar} from '@mui/x-data-grid';
+import Box from "@mui/material/Box";
+
+const columns = [
+  { field: 'id', headerName: 'ID', width: 90 },
+  {
+    field: 'StudentId',
+    headerName: 'Student Id',
+    width: 150,
+    editable: false,
+  },
+  {
+    field: 'Mark',
+    headerName: 'Marks',
+    width: 150,
+    editable: true,
+    type: "singleSelect",
+    valueOptions: ["Very Good", "Good","Medium", "Bad","Very Bad"]
+  },
+  
+];
 
 
 export default function TermEvo() {
@@ -70,6 +91,22 @@ export default function TermEvo() {
     setFilteredTableArray(filteredData);
   }, [searchTerm, array]);
 
+  const mySaveOnServerFunction = (params) => {
+    alert("The changed value is: ");
+    
+
+
+    // Make an API call to update the changed value in the database
+    axios
+      .put(`http://localhost:3001/termEvoluations/upd/${params.id}`,params )
+      .then((response) => {
+        alert("done");
+      })
+      .catch((error) => {
+        console.error("An error occurred:", error);
+      });
+  };
+
   return (
     <>
        
@@ -111,26 +148,41 @@ export default function TermEvo() {
             </tbody>
           </Table>
         </Col>
+    
+  
+        
         <Col xs={12} lg={6}>
-        <label style={labelStyle}>Student Marks</label>
-          {lists.length > 0 && (
-            <Table striped bordered hover>
-              <thead>
-                <tr>
-                  <th>Student ID</th>
-                  <th>Mark</th>
-                </tr>
-              </thead>
-              <tbody>
-                {lists.map((item) => (
-                  <tr key={item.id}>
-                    <td>{item.StudentId}</td>
-                    <td>{item.Mark}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          )}
+        <label style={labelStyle}>Term Evaluation Results</label>
+        <Box sx={{ height: 400, width: '100%' }}>
+                <DataGrid
+                  rows={lists}
+                  columns={columns}
+               //  onCellEditStop={handleCellEditChange} // Attach the event handler
+                  initialState={{
+                    pagination: {
+                      paginationModel: {
+                        pageSize: 5,
+                      },
+                    },
+                  }}
+                  pageSizeOptions={[5]}
+                  checkboxSelection
+                  disableSelectionOnClick
+                  processRowUpdate={(updatedRow, originalRow) =>
+                    mySaveOnServerFunction(updatedRow)
+                  }
+                  slots={{
+                    toolbar: GridToolbar,
+                  }}
+
+
+                  
+                  
+
+                />
+              </Box>
+
+     
         </Col>
        
       </Row>

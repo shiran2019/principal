@@ -84,12 +84,7 @@ function NavigationBar() {
                 )}
 
              
-<Nav.Link
-                      href="/"
-                      style={{ fontSize: "20px", marginRight: "8px" }}
-                    >
-                      profile
-                    </Nav.Link>
+
              
               
 
@@ -106,6 +101,12 @@ function NavigationBar() {
 
                 {authState.role === "Teacher" && (
                   <>
+                  <Nav.Link
+                      href="/"
+                      style={{ fontSize: "20px", marginRight: "8px" }}
+                    >
+                      profile
+                    </Nav.Link>
                     <Nav.Link
                       href="/appointmentsTeacher"
                       style={{ fontSize: "20px", marginRight: "8px" }}
@@ -138,6 +139,14 @@ function NavigationBar() {
                         Attendance
                       </NavDropdown.Item>
                     </NavDropdown>
+
+                    <Nav.Link
+                      href="/announcement"
+                      style={{ fontSize: "20px", marginRight: "8px" }}
+                    >
+                      Announcements
+                    </Nav.Link>
+                    
                 
                   </>
                 )}
@@ -147,6 +156,12 @@ function NavigationBar() {
 
                 {authState.role === "Admin" && (
                   <>
+                  <Nav.Link
+                      href="/"
+                      style={{ fontSize: "20px", marginRight: "8px" }}
+                    >
+                      Dashboard
+                    </Nav.Link>
                     <Nav.Link
                       href="/adminAppointments"
                       style={{ fontSize: "20px", marginRight: "8px" }}
@@ -197,6 +212,9 @@ function NavigationBar() {
                       <NavDropdown.Item href="/bestKids">
                         Best kids
                       </NavDropdown.Item>
+                      <NavDropdown.Item href="/art-gallery">
+                        Talents
+                      </NavDropdown.Item>
                       <NavDropdown.Item href="/Studentattendance">
                         Attendance
                       </NavDropdown.Item>
@@ -211,6 +229,18 @@ function NavigationBar() {
                     >
                       Classes
                     </Nav.Link>
+                    <Nav.Link
+                      href="/announcement"
+                      style={{ fontSize: "20px", marginRight: "8px" }}
+                    >
+                      Announcements
+                    </Nav.Link>
+                    <Nav.Link
+                      href="/meetings"
+                      style={{ fontSize: "20px", marginRight: "8px" }}
+                    >
+                      Meetings
+                    </Nav.Link>
                 
                   </>
                 )}
@@ -220,6 +250,12 @@ function NavigationBar() {
 
                 {authState.role === "Student" && (
                   <>
+                  <Nav.Link
+                      href="/"
+                      style={{ fontSize: "20px", marginRight: "8px" }}
+                    >
+                      profile
+                    </Nav.Link>
                     <Nav.Link
                       href="/appointments"
                       style={{ fontSize: "20px", marginRight: "8px" }}
@@ -240,6 +276,9 @@ function NavigationBar() {
                       <NavDropdown.Item href="/myArts">
                         My arts
                       </NavDropdown.Item>
+                      <NavDropdown.Item href="/talents">
+                        Talented kids
+                      </NavDropdown.Item>
                     </NavDropdown>
                     <Nav.Link
                       href="/myPayments"
@@ -248,7 +287,12 @@ function NavigationBar() {
                       Payments
                     </Nav.Link>
 
-
+                    <Nav.Link
+                      href="/announcement"
+                      style={{ fontSize: "20px", marginRight: "8px" }}
+                    >
+                      Announcements
+                    </Nav.Link>
 
                   </>
 
@@ -258,22 +302,8 @@ function NavigationBar() {
 
 
              
-                {authState.status && (
-                  <>
-                   
-                  </>
-                )}
 
-                <NavDropdown
-                  style={{ fontSize: "20px", marginRight: "8px" }}
-                  title="About"
-                  id="collasible-nav-dropdown"
-                >
-                  <NavDropdown.Item href="/news">News</NavDropdown.Item>
-                  <NavDropdown.Item href="/contact">Contacts</NavDropdown.Item>
-                 
-                </NavDropdown>
-
+               
 
               </Nav>
 
