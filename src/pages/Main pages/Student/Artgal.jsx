@@ -286,6 +286,7 @@ export default function Artgal() {
             if (!imageUrls[cardImageId]) {
               retrieveImage(cardImageId);
             }
+  
             return (
               <Col key={Item.StudentId} xs={12} md={6} lg={3} style={{ padding: "1% 1%" }}>
               <Card onClick={() => handleCardClick(Item.StudentId)}>

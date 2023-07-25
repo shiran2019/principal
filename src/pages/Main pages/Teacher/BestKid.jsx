@@ -40,7 +40,7 @@ const PopupComponent = ({
     const [imageId, setImageId] = useState('');
     const [imageUrls, setImageUrls] = useState([]);
 
-    const [day, setDay] = useState("");
+    const [day, setDay] = useState(new Date().toLocaleDateString("en-US").substr(0, 10));
     const [eventName, setEventName] = useState("");
 
     const buttonStyle = {
@@ -54,6 +54,17 @@ const PopupComponent = ({
         align: "right",
       };
   const onSubmit = (data, resetForm ) => {
+
+if(!day){
+  alert("Please select date");
+  return;
+}
+
+if(!eventName){
+  alert("Please enter talent");
+  return;
+}
+
 
     console.log(data);
 
@@ -82,7 +93,21 @@ const PopupComponent = ({
       })
     };
 
-
+    const validate = (value) => {
+      let error;
+      if (!value) {
+        error = "fill this field";
+      }
+      return error;
+    };
+  
+    const validatee = (value) => {
+      let error;
+      if (!value) {
+        error = "fill this field";
+      }
+      return error;
+    };
 
   const initialValues = {
     stdName: "",
@@ -215,10 +240,13 @@ const PopupComponent = ({
                     Date :
                   </label>
                   <input
-                    type="date"
+
+                  editable = {false}
+                    
                     name="Day"
-                    onChange={(e) => setDay(e.target.value)}
+                    
                     className="form-control"
+                    value = {day}
                     style={{
                       padding: "10px",
                       marginBottom: "50px",
@@ -249,6 +277,7 @@ const PopupComponent = ({
                     as = "textarea"
                     name="eventName"
                     className="form-control"
+                    validate={validatee}
                   onChange={(e) => setEventName(e.target.value)}
                     style={{
                       padding: "10px",

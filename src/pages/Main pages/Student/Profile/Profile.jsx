@@ -9,6 +9,7 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import pr from "../../../..//images/pr.jpg";
 import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Annualreport } from '../../Annualreport';
 
 export default function Profile() {
   const [stdArray, setStdArray] = useState([]);
@@ -190,6 +191,7 @@ export default function Profile() {
         <NavigationBar />
       </div>
 
+
       <div style={{ padding: "0px 50px" }}>
         <Row>
           <Col lg={2} xs={8}>
@@ -224,6 +226,9 @@ export default function Profile() {
             ) : (
               <div>Loading...</div>
             )}
+          </Col >
+          <Col style={{backgroundColor:"#c8cccc" , borderRadius:"2%" }} lg={4}>
+          <Annualreport/>
           </Col>
         </Row>
         

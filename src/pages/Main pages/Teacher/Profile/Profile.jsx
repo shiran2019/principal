@@ -9,6 +9,7 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import pr from "../../../..//images/pr.jpg";
 import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Annualreport } from '../../Annualreport';
 
 export default function TchProfile() {
   const [stdArray, setStdArray] = useState([]);
@@ -224,6 +225,10 @@ export default function TchProfile() {
             ) : (
               <div>Loading...</div>
             )}
+          </Col>
+          
+          <Col style={{backgroundColor:"#c8cccc" , borderRadius:"2%" }} lg={4}>
+          <Annualreport/>
           </Col>
         </Row>
         

@@ -17,8 +17,9 @@ export default function AddPayment() {
   const [Day, setDay] = useState({}); // Updated marks state
   const [Note, setNote] = useState({}); // Updated marks state
 
+
   
-  const [idd, SetIdd] = useState("");
+  const [idd, SetIdd] = useState(new Date().toLocaleDateString("en-US").substr(0, 10));
   const [array, setArray] = useState([]);
   const [temp, setTemp] = useState("");
   const { id } = useParams();
@@ -131,7 +132,7 @@ export default function AddPayment() {
       const data = {
        
         Month: Month[student.StudentId],
-        Day: Day[student.StudentId],
+        Day: idd,
         Note: Note[student.StudentId],
         StudentId: student.StudentId,
         Payment: Payment[student.StudentId],
@@ -249,25 +250,20 @@ export default function AddPayment() {
                     
                     <td>
                     <Field
-               
+                        editable={false}
                         id="inputCreatePost"
-                        type ="Date"
-                        name={`Day[${student.StudentId}]`}
+                        
+                        name={`Day`}
                         style={{ width:"120px", height: "30px"}}
                        // validate={validate3}
-                        value={Day[student.StudentId] || ""} // Accessed the mark value from the marks object using the student ID
-                        onChange={(e) =>
-                          setDay({
-                            ...Day,
-                            [student.StudentId]: e.target.value, // Updated the specific mark value in the marks object using the student ID
-                          })
-                        }
+                        value={idd} // Accessed the mark value from the marks object using the student ID
+                        
                       >
                        
                       </Field>
 
                       <ErrorMessage
-                        name={`Day[${student.StudentId}]`}
+                        name={`Day`}
                         component="div"
                         style={{ color: "red" }}
                       />

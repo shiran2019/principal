@@ -38,6 +38,7 @@ import { Announcement } from "./Main pages/Teacher/Announcement";
 import { DisplayAnnouncement } from "./Main pages/Student/Other/DisplayAnnouncement";
 import { GuestMeetings } from "./Main pages/Admin/GuestMeetings";
 import STDToday from "./Main pages/Student/Today/Today";
+import { Annualreport } from "./Main pages/Annualreport";
 
 export default function Paths() {
   const [authState, setAuthState] = useState({
@@ -145,6 +146,8 @@ export default function Paths() {
                   <Route path="/bestKids" element={<BestKid/>}></Route>
                   <Route path="/announcement" element={<DisplayAnnouncement/>}></Route>
                   <Route path="/today" element={<Today />}></Route>
+                  <Route path="/AnnualReport" element={<Annualreport />}></Route>
+
                 </>
               )}
 
@@ -162,6 +165,7 @@ export default function Paths() {
                   <Route path="/talents" element={<Talent />}></Route>
                   <Route path="/announcement" element={<DisplayAnnouncement/>}></Route>
                   <Route path="/today" element={<STDToday/>}></Route>
+                  <Route path="/AnnualReport" element={<Annualreport />}></Route>
                 </>
               ) : (
                 <>Loading</>

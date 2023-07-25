@@ -55,6 +55,7 @@ export default function Salary() {
   };
 
   useEffect(() => {
+    
     setEpfRate(localStorage.getItem("epfRate"));
     setAllowance(localStorage.getItem("allowance"));
     setBasic(localStorage.getItem("basic"));
@@ -226,7 +227,7 @@ const PdfGen = () => {
   };
 
   const validate = (values) => {
-    if (!values) {
+    if (!teacherrId) {
       return "Required";
     }
   };
@@ -235,24 +236,42 @@ const PdfGen = () => {
     if (!basic) {
       return "Required";
     }
+    if (isNaN(basic)) {
+      return "basic must be a valid number";
+    }
+  
+    return null; // Return null if validation passes
   };
 
   const validateAllowance = () => {
     if (!allowance) {
       return "Required";
     }
+    if (isNaN(allowance)) {
+      return "allowance must be a valid number";
+    }
+  
+    return null; // Return null if validation passes
   };
-
   const validateEPF = () => {
     if (!epfRate) {
       return "Required";
     }
+    
+    if (isNaN(epfRate)) {
+      return "EPF rate must be a valid number";
+    }
+  
+    return null; // Return null if validation passes
   };
 
-  const validateSalary = () => {
-    if (!salary) {
-      return "Calculate Salary before submit";
+  const validateSalary = (salary) => {
+    
+    if (isNaN(salary)) {
+      return "Salary must be a valid number";
     }
+  
+    return null; // Return null if validation passes
   };
 
   const validateMonth = () => {
@@ -292,6 +311,7 @@ const PdfGen = () => {
                     id="inputCreatePost"
                     name="teacherId"
                     value={teacherrId}
+                    validate={validate}
                     style={inputStyle}
                     onChange={(e) => {
                       const teacherId = e.target.value;

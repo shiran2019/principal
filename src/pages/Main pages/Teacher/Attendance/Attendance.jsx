@@ -11,7 +11,7 @@ import { FormControl } from "react-bootstrap";
 
 const Attendance = () => {
   const [attendance, setAttendance] = useState({}); // Updated marks state
-  const [idd, SetIdd] = useState("");
+  const [idd, SetIdd] = useState(new Date().toLocaleDateString("en-US").substr(0, 10));
   const [array, setArray] = useState([]);
   const [temp, setTemp] = useState("");
   const { id } = useParams();
@@ -29,18 +29,34 @@ const Attendance = () => {
   };
 
   const onSubmit = (data, resetForm, resetAllForms) => {
+
+
+    if (!idd) {
+      alert("Day is required");
+      return;
+    }
+    // Check if any attendance value is null or empty
+    const hasNullAttendance = Object.values(data.Attendance).some(
+      (attendanceValue) => !attendanceValue
+    );
+  
+    if (hasNullAttendance) {
+      alert("Please select attendance for all teachers before submitting.");
+      return; 
+    }
+  
     axios
       .post("http://localhost:3001/TeacherAttendance", data)
       .then((response) => {
         console.log(response.data.error);
-
-        if(response.data.error==="Attendance for the given student and day already exists."){
-          alert("Attendance already added for this student on this day");}
-        else{
-        setSubmissionStatus("success");
-        resetForm();
-        alert("Added new class successfully");
-        //setMarks({}); // Reset the marks object
+  
+        if (response.data.error) {
+          alert(response.data.error);
+        } else {
+          
+          resetForm();
+          alert("Added new deta successfully");
+          //setMarks({}); // Reset the marks object
         }
       })
       .catch((error) => {
@@ -49,12 +65,13 @@ const Attendance = () => {
         alert("Error: " + error.message);
       })
       .finally(() => {
-       
         resetAllForms(); // Reset all the forms after submission
       });
   };
-
+  
   useEffect(() => {
+
+
     axios
       .get("http://localhost:3001/teachers/teacherList")
       .then((response) => {
@@ -65,7 +82,6 @@ const Attendance = () => {
       });
   }, []);
 
-  
 
  
 
@@ -108,22 +124,29 @@ const Attendance = () => {
   };
 
 
-  // const validate3 = (idd) => {
-  //   let error;
-  //   if (!idd) {
-  //     error = "Type is required";
-  //   }
-  //   return error;
-  // };
+  const validate3 = () => {
+    let error;
+    if (!idd) {
+      error = "Day is required";
+    }
+    return error;
+  };
 
   const handleAddAll = () => {
     // Iterate over each student and submit their marks
     array.forEach((teacher) => {
+
+      if (!attendance[teacher.teacherId]) {
+        alert("Please mark attendance for"+teacher.teacherId);
+        return; // Prevent form submission if attendance is not selected for all teachers
+      }
+
       const data = {
         Attendance: attendance[teacher.teacherId], // Accessed the mark value from the marks object using the student ID
         Day:idd,
         teacherId: teacher.teacherId,
       };
+      
       onSubmit(data, () => {}, () => {}); // Pass empty resetForm and resetAllForms functions as placeholders
     });
   };
@@ -138,13 +161,13 @@ const Attendance = () => {
             <Col xs={12} lg={4}>
               <label style={labelStyle}>Date:</label>
               <Field
-                type="date"
+                editable={false}
                 id="inputCreatePost"
                 name="Day"
                 style={inputStyle}
                 value={idd}
-               //validate={validateBirthday}
-               onChange={(e) => SetIdd(e.target.value)}
+               validate={validate3}
+              // onChange={(e) => SetIdd(e.target.value)}
                
               />
               <ErrorMessage
@@ -180,7 +203,7 @@ const Attendance = () => {
 
                         name={`Attendance[${teacher.teacherId}]`}
                         style={{ width:"120px", height: "30px"}}
-                     //  validate={validate3}
+                    //  validate={validateGender}
                         value={attendance[teacher.teacherId] || ""} // Accessed the mark value from the marks object using the student ID
                         onChange={(e) =>
                           setAttendance({

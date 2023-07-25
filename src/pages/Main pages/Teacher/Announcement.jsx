@@ -5,19 +5,34 @@ import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import axios from "axios";
+import { storage } from "../../../Firebase";
 
+import {
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+  listAll,
+} from "@firebase/storage";
 
 export const Announcement = () => {
 
     const [reqArray, setReqArray] = useState([]);
-    
+    const [idd, SetIdd] = useState(new Date().toLocaleDateString("en-US").substr(0, 10));
 
+    const [progress, setProgress] = useState(0);
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [imageId, setImageId] = useState("");
+    const [imageUrl, setImageUrl] = useState("");
+    const [imageUrl2, setImageUrl2] = useState("");
+
+    const [regYear, setRegYear] = useState("");
     
     const onSubmit = (data, { resetForm }) => {
 
         const data1 = {
           ...data,
           state: "active",
+          Day: idd,
         };
         console.log(data1);
         axios
@@ -37,6 +52,77 @@ export const Announcement = () => {
             ShowRequests();
         }, []);
        
+
+
+        const fileChangeHandler = (e) => {
+          setSelectedFile(e.target.files[0]);
+        };
+      
+        const formSubmitHandler = async (e) => {
+          e.preventDefault();
+          if (selectedFile) {
+            uploadFile(selectedFile);
+          } else {
+            console.log("No file selected.");
+            alert("No file selected.");
+          }
+        };
+
+        const uploadFile = (file) => {
+          // const imageId = generateImageId(studenttId);
+          // setImageId(imageId);
+          if (!regYear) {
+            alert("Please select a registration year.");
+            return;
+          }
+
+          const storageRef = ref(storage, `report/${regYear}/${file.name}`);
+          const uploadTask = uploadBytesResumable(storageRef, file);
+        
+          uploadTask.on(
+            "state_changed",
+            (snapshot) => {
+              const prog = Math.round(
+                (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+              );
+              setProgress(prog);
+            },
+            (error) => console.log(error),
+            () => {
+              getDownloadURL(uploadTask.snapshot.ref)
+                .then((url) => {
+                  setImageUrl(url);
+                  console.log(url);
+                  alert("File uploaded successfully");
+                  setSelectedFile(null); // Clear the selected file
+                  
+      
+                })
+                .catch((error) => console.log(error));
+            }
+          );
+        };
+        
+ const retrieveImage = () => {
+    if (regYear) {
+      const storageRef = ref(storage, `report/${regYear}`);
+      listAll(storageRef)
+        .then((res) => {
+          res.items.forEach((itemRef) => {
+            getDownloadURL(itemRef)
+              .then((url) => {
+                setImageUrl(url);
+                console.log(url);
+
+              })
+              .catch((error) => console.log(error));
+          });
+        })
+        .catch((error) => console.log(error));
+    } else {
+      console.log("No File ID found.");
+    }
+  };
 
             const ShowRequests = () => {
                 axios
@@ -100,6 +186,18 @@ export const Announcement = () => {
     align: "right",
   };
 
+  const buttonStyles = {
+    marginTop: "10px",
+    padding: "6px 20px",
+    backgroundColor: "#007bff",
+    color: "#fff",
+    border: "none",
+    borderRadius: "4px",
+    fontSize: "16px",
+    cursor: "pointer",
+    align: "right",
+  };
+
   const buttonStyle2 = {
     padding: "8px 20px",
     backgroundColor: "#fa4362",
@@ -121,7 +219,29 @@ export const Announcement = () => {
     backgroundColor: "#f9f9f9",
   };
 
+  const validate3 = (value) => {
+    let error;
+    if (!value) {
+      error = "Fill the field";
+    }
+    return error;
+  };
 
+  function renderYearOptions() {
+    const currentYear = new Date().getFullYear() + 5;
+    const years = [];
+
+    // Generate options for the last 10 years (adjust as needed)
+    for (let i = currentYear; i >= currentYear - 10; i--) {
+      years.push(
+        <option key={i} value={i}>
+          {i}
+        </option>
+      );
+    }
+
+    return years;
+  }
 
   return (
 
@@ -129,13 +249,17 @@ export const Announcement = () => {
     <div>
         <NavigationBar />
     </div>
-    <div>
+    <div style={{paddingRight:"5%"}}>
 
         <Formik initialValues={initialValues} onSubmit={onSubmit}>
             <Form>
-                <h1 style={{padding:"0px  10%" , marginBottom:"20px"}}>Add Announcement, </h1>
+               
+                <Row>
+               
+                  <Col lg ={7}>
                 <Row style={{padding:"0px  10%"}}>
-            <Col xs={12} lg={4}>
+                <h3 style={{ marginBottom:"20px"}}>Add Announcement, </h3>
+            <Col xs={12} lg={6}>
                   <label
                     style={{
                       marginBottom: "8px",
@@ -150,7 +274,7 @@ export const Announcement = () => {
                     name="role"
                     component="select" // Use the select component
                     style={inputStyle}
-                    //validate={validateMonth}
+                    validate={validate3}
                     //value={month}
                     
                   >
@@ -166,7 +290,7 @@ export const Announcement = () => {
                     style={{ color: "red" }}
                   />
                 </Col>
-                <Col xs={12} lg={4}>
+                <Col xs={12} lg={6}>
                   <label
                     style={{
                       marginBottom: "8px",
@@ -177,9 +301,10 @@ export const Announcement = () => {
                     Date :
                   </label>
                   <Field
-                    type="date"
+                    editable={false}
                     name="Day"
                     className="form-control"
+                    value= {idd}
                     style={{
                       padding: "10px",
                       marginBottom: "50px",
@@ -195,7 +320,9 @@ export const Announcement = () => {
                     style={{ color: "red" }}
                   />
                 </Col>
-                <Col xs={12} lg={8}>
+
+              
+                <Col xs={12} lg={12}>
                   <label
                     style={{
                       marginBottom: "8px",
@@ -209,6 +336,7 @@ export const Announcement = () => {
                     as="textarea"
                     name="Note"
                     className="form-control"
+                    validate={validate3}
                     style={{
                       padding: "10px",
                       marginBottom: "50px",
@@ -235,10 +363,69 @@ export const Announcement = () => {
                 </Col>
                 </Row>
                 <Row style={{padding:"0px  10%"}}>
-                    <Col lg={8}>
+                    <Col lg={12}>
                 <hr style={{marginTop:"10px"}}></hr>
                 </Col>
 
+                </Row>
+                </Col>
+                <Col lg ={5}>
+                <h3 style={{  marginBottom:"20px"}}>Upload Annual plan, </h3>
+                <Row style={{backgroundColor:"#c8cccc"}}>
+
+
+                <Col xs={12} lg={8} >
+              <label style={labelStyle}>Year:</label>
+              <Field
+                as="select"
+                id="inputCreatePost"
+                name="regyear"
+                style={inputStyle}
+                onChange={(e) => setRegYear(e.target.value)}
+                // validate={validateRegistrationYear}
+              >
+                <option value="">Select Year</option>
+                {renderYearOptions()}
+              </Field>
+              <ErrorMessage
+                name="regyear"
+                component="div"
+                style={{ color: "red" }}
+              />
+            </Col>
+            <label style={labelStyle}>Upload annual plan :   </label>
+                <Col xs={12} lg={6}>
+                     
+                   
+                   <input type="file"  className="input" onChange={fileChangeHandler} />
+
+                   </Col>
+                    <Col xs={12} lg={6}>
+                    <h6>Uploaded {progress} %</h6>
+                    </Col>
+                    <Col xs={12} lg={12}>
+                  <button style={buttonStyles} onClick={formSubmitHandler}>Upload</button>
+            
+              
+            
+              {imageUrl && (
+           <div>
+             <a href={imageUrl} download>
+               Download File
+             </a>
+           </div>
+         )}
+                 
+                           </Col>
+                            <Col xs={12} lg={12}>
+                              <h1></h1>
+                              </Col>
+
+                </Row>
+                
+                
+                
+                </Col>
                 </Row>
 
                 </Form>

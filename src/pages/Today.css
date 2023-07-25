@@ -1,5 +1,5 @@
 .calendar_default_event_inner {
-    background: #d62eaf; 
+    background: #C39BD3  ; 
     color: #040404; 
     border: none;
     border-radius: 5px;
@@ -36,8 +36,8 @@
     content: '';
 }
 
-.icon-blue:before { background-color: #3c78d8; }
+.icon-blue:before { background-color: #AED6F1; }
 .icon-green:before { background-color: #6aa84f; }
 .icon-yellow:before { background-color: #e69138; }
 .icon-red:before { background-color: #cc0000; }
-.icon-purple:before { background-color: #d62eaf; }
+.icon-purple:before { background-color: #C39BD3 ; }

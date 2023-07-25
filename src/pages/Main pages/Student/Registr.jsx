@@ -396,11 +396,14 @@ return;
     return error;
   };
 
+
+
+
   const validateFathertNIC = (value) => {
     let error;
     if (!value) {
       error = "Parent NIC is required";
-    } else if (!/^[0-9]{9}[vV]$/.test(value)) {
+    } else if (!/^\d{9}([vV]|\d{3})$/.test(value)) {
       error = "Invalid NIC format";
     }
     return error;
@@ -410,7 +413,7 @@ return;
     let error;
     if (!value) {
       error = "Parent NIC is required";
-    } else if (!/^[0-9]{9}[vV]$/.test(value)) {
+   } else if (!/^\d{9}([vV]|\d{3})$/.test(value)) {
       error = "Invalid NIC format";
     } else if (
       allValues &&

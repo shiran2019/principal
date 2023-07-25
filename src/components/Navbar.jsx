@@ -101,12 +101,7 @@ function NavigationBar() {
 
                 {authState.role === "Teacher" && (
                   <>
-                  <Nav.Link
-                      href="/"
-                      style={{ fontSize: "20px", marginRight: "8px" }}
-                    >
-                      profile
-                    </Nav.Link>
+                  
                     <Nav.Link
                       href="/appointmentsTeacher"
                       style={{ fontSize: "20px", marginRight: "8px" }}
@@ -250,12 +245,7 @@ function NavigationBar() {
 
                 {authState.role === "Student" && (
                   <>
-                  <Nav.Link
-                      href="/"
-                      style={{ fontSize: "20px", marginRight: "8px" }}
-                    >
-                      profile
-                    </Nav.Link>
+                
                     <Nav.Link
                       href="/appointments"
                       style={{ fontSize: "20px", marginRight: "8px" }}

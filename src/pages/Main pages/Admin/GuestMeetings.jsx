@@ -55,8 +55,14 @@ export const GuestMeetings = () => {
         .post("http://localhost:3001/guestMeetings", data)
         .then((response) => {
           alert("Added new class successfully");
+          ShowRequests();
           resetForm();
           ShowRequests();
+          
+        }).then((response) => {
+          
+          resetForm();
+        
           
         })
         .catch((error) => {
@@ -131,6 +137,18 @@ export const GuestMeetings = () => {
     backgroundColor: "#f9f9f9",
   };
 
+
+
+  const validate3 = (value) => {
+    let error;
+    if (!value) {
+      error = "Fill the field";
+    }
+    return error;
+  };
+
+
+
   const mySaveOnServerFunction = (params) => {
    
     
@@ -170,9 +188,11 @@ export const GuestMeetings = () => {
             
                     name="meetingType"
                     className="form-control"
+                    validate = {validate3}
                     style={{
+            
                       padding: "10px",
-                      marginBottom: "50px",
+                      
                       width: "100%",
                       border: "1px solid #ccc",
                       borderRadius: "4px",
@@ -200,10 +220,11 @@ export const GuestMeetings = () => {
                   <Field
                     type="date"
                     name="Day"
+                    validate = {validate3}
                     className="form-control"
                     style={{
                       padding: "10px",
-                      marginBottom: "50px",
+                     
                       width: "100%",
                       border: "1px solid #ccc",
                       borderRadius: "4px",
@@ -228,11 +249,12 @@ export const GuestMeetings = () => {
                   </label>
                   <Field
                     as="textarea"
+                    validate = {validate3}
                     name="guestNames"
                     className="form-control"
                     style={{
                       padding: "10px",
-                      marginBottom: "50px",
+                    
                       width: "100%",
                       border: "1px solid #ccc",
                       borderRadius: "4px",
@@ -258,11 +280,12 @@ export const GuestMeetings = () => {
                   </label>
                   <Field
                     as="textarea"
+                    validate = {validate3}
                     name="Discription"
                     className="form-control"
                     style={{
                       padding: "10px",
-                      marginBottom: "50px",
+                     
                       width: "100%",
                       border: "1px solid #ccc",
                       borderRadius: "4px",
@@ -272,7 +295,7 @@ export const GuestMeetings = () => {
                   <ErrorMessage
                     name="Discription"
                     component="span"
-                    style={{ color: "red" }}
+                    style={{color: "red" }}
                   />
                 </Col>
                 </Row>
@@ -300,14 +323,14 @@ export const GuestMeetings = () => {
    
     <Row style={{padding:"0px  10%"}}>
 
-    <Box sx={{ height: 400, width: '100%' }}>
+    <Box sx={{ height: 500, width: '100%' }}>
       <DataGrid
         rows={reqArray}
         columns={columns}
         initialState={{
           pagination: {
             paginationModel: {
-              pageSize: 5,
+              pageSize: 8,
             },
           },
         }}

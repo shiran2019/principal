@@ -11,7 +11,7 @@ import { FormControl } from "react-bootstrap";
 
 const Attendance = () => {
   const [attendance, setAttendance] = useState({}); // Updated marks state
-  const [idd, SetIdd] = useState("");
+  const [idd, SetIdd] = useState(new Date().toLocaleDateString("en-US").substr(0, 10));
   const [array, setArray] = useState([]);
   const [temp, setTemp] = useState("");
   const { id } = useParams();
@@ -120,7 +120,17 @@ const Attendance = () => {
 
   const handleAddAll = () => {
     // Iterate over each student and submit their marks
+
+
+
+
     filteredTableArray.forEach((student) => {
+
+      if(!attendance[student.StudentId]){
+        alert("Please mark attendance for " +student.StudentId);
+      return;
+      }
+      
       const data = {
         Attendance: attendance[student.StudentId], // Accessed the mark value from the marks object using the student ID
         Day:idd,
@@ -149,13 +159,13 @@ const Attendance = () => {
             <Col xs={12} lg={6}>
               <label style={labelStyle}>Date:</label>
               <Field
-                type="date"
+                editable={false}
                 id="inputCreatePost"
                 name="Day"
                 style={inputStyle}
                 value={idd}
                //validate={validateBirthday}
-               onChange={(e) => SetIdd(e.target.value)}
+              // onChange={(e) => SetIdd(e.target.value)}
                
               />
               <ErrorMessage

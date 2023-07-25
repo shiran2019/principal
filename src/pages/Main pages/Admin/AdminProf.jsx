@@ -11,8 +11,10 @@ export const AdminProf = () => {
   const [pwd2, setPwd2] = useState("");
   const [pwd3, setPwd3] = useState("");
   const [classCountArray, setClassCountArray] = useState([]);
-
+  const [yearCountArray, setYearCountArray] = useState([]);
+  const [adminCountArray, setAdminCountArray] = useState([]);
  const [chartarr, setChartarr] = useState([]);
+ const [chartarrr, setChartarrr] = useState([]);
 
  useEffect(() => {
    onPageCount();
@@ -118,12 +120,32 @@ export const AdminProf = () => {
         value: item.count,
         label: item.className
       }));
+
+      const respons = await axios.get(`http://localhost:3001/students/yearCount`);
+      const classCountDat = respons.data;
+  
+      const chartDat = classCountDat.map((item) => ({
+        value: item.count,
+        label: item.regyear
+      }));
+      const respon = await axios.get(`http://localhost:3001/users/admins`);
+      const classCountDa = respon.data;
+  
+      const chartDa = classCountDa.map((item) => ({
+        value: item.count,
+        label: item.regyear
+      }));
+      setAdminCountArray(classCountDa);
+      setChartarrr(chartDa);
   
       setClassCountArray(classCountData);
+      setYearCountArray(classCountDat);
       setChartarr(chartData);
+      setChartarrr(chartDat);
+      
     } catch (error) {
       console.error("An error occurred:", error);
-    }
+    } 
   };
 
 
@@ -133,10 +155,46 @@ export const AdminProf = () => {
       <div className="App">
         <NavigationBar />
       </div>
-      <div  >
-        <Row>
+      <div  style={{marginLeft:"6%" , marginRight:"5%"}}>
+      <h2 style={{   marginBottom: "2%",}}>STUDENT COUNT</h2>
+        <Row style={{backgroundColor:"#c8cccc", borderRadius:"2%"}}>
+       
+       
           <Col lg={6}>
-            <h2 style={{ marginBottom: "10%" }}>Student Count :</h2>
+          <h4 style={{ marginBottom: "10%" }}>According to the Registration year :</h4>
+            <Table>
+                <thead>
+                  <tr>
+                    <th>Registration year</th>
+                    <th>Student count</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {yearCountArray.map((item) => (
+                    <tr key={item.regyear}>
+                      <td>{item.regyear}</td>
+                      <td>{item.count}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+          </Col>
+          <Col lg={6} style={{ padding: "6% 0%" }}>
+          <PieChart
+      series={[
+        {
+          data: chartarrr,
+        },
+      ]}
+      width={400}
+      height={200}
+    />
+          </Col>
+        </Row>
+        <hr></hr>
+        <Row style={{backgroundColor:"#c8cccc" , borderRadius:"2%"}}>
+          <Col lg={6}>
+            <h4 style={{ marginBottom: "10%" }}>According to the Class room :</h4>
             <Table>
                 <thead>
                   <tr>
@@ -154,6 +212,7 @@ export const AdminProf = () => {
                 </tbody>
               </Table>
           </Col>
+          
           <Col lg={6} style={{ padding: "6% 0%" }}>
           <PieChart
       series={[
@@ -166,10 +225,11 @@ export const AdminProf = () => {
     />
           </Col>
         </Row>
-       
       </div>
       <hr></hr>
-      <div style={{ maxWidth: "50%", padding: "0% 10%" }}>
+
+      <Row style={{  padding: "0% 10%" }}>
+        <Col lg={4}>
         <h2 style={{ marginBottom: "10%" }}>Add another Admin</h2>
         <Formik initialValues={initialValues} onSubmit={onSubmit}>
           <Form>
@@ -178,7 +238,7 @@ export const AdminProf = () => {
               <Field
                 id="inputCreatePost"
                 name="user"
-                placeholder="Father's Name"
+                placeholder=" Enter user name"
                 style={inputStyle}
                 validate={validateParentName}
               />
@@ -225,7 +285,27 @@ export const AdminProf = () => {
             </button>
           </Form>
         </Formik>
-      </div>
+        </Col>
+        <Col lg={4} style={{marginLeft:"5%", marginTop:"4%"}}>
+        <h4 style={{ marginBottom: "10%" }}></h4>
+            <Table>
+                <thead>
+                  <tr>
+                    <th>Admins</th>
+                    
+                  </tr>
+                </thead>
+                <tbody>
+                  {adminCountArray.map((item) => (
+                    <tr key={item.user}>
+                      <td>{item.user}</td>
+                     
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+          </Col>
+      </Row>
     </>
   );
 };

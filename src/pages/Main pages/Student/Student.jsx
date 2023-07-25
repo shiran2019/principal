@@ -99,7 +99,7 @@ export default function StdTable() {
           <center>
             <Col lg={10}>
               <h1>Our students</h1>
-              <Box sx={{ height: 400, width: '100%' }}>
+              <Box sx={{ height: 600, width: '100%' }}>
                 <DataGrid
                   rows={stdArray}
                   columns={columns}
@@ -107,7 +107,7 @@ export default function StdTable() {
                   initialState={{
                     pagination: {
                       paginationModel: {
-                        pageSize: 5,
+                        pageSize: 10,
                       },
                     },
                   }}

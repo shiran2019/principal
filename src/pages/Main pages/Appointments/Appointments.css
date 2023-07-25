@@ -36,8 +36,8 @@
     content: '';
 }
 
-.icon-blue:before { background-color: #3c78d8; }
-.icon-green:before { background-color: #6aa84f; }
-.icon-yellow:before { background-color: #e69138; }
-.icon-red:before { background-color: #cc0000; }
-.icon-purple:before { background-color: #d62eaf; }
+.icon-blue:before { background-color: #85C1E9; }
+.icon-green:before { background-color: #76D7C4; }
+.icon-yellow:before { background-color: #F7DC6F; }
+.icon-red:before { background-color: #F1948A; }
+.icon-purple:before { background-color: #C39BD3; }
