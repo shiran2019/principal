@@ -48,6 +48,19 @@ export default function StdReg() {
   };
 
   const uploadFile = (file) => {
+    // Check the file type
+    if (file.type !== 'image/png' && file.type !== 'image/jpeg') {
+      alert('Only PNG and JPEG files are allowed.');
+      return;
+    }
+  
+    // Check the file size (in bytes)
+    const maxSize = 5 * 1024 * 1024; // 5 MB
+    if (file.size > maxSize) {
+      alert('File size exceeds the allowed limit (5 MB).');
+      return;
+    }
+  
     const imageId = generateImageId(teacherrId);
     setImageId(imageId);
   
@@ -55,25 +68,27 @@ export default function StdReg() {
     const uploadTask = uploadBytesResumable(storageRef, file);
   
     uploadTask.on(
-      "state_changed",
+      'state_changed',
       (snapshot) => {
-        const prog = Math.round(
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-        );
+        const prog = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
         setProgress(prog);
       },
-      (error) => console.log(error),
+      (error) => {
+        console.log(error);
+        alert('Error occurred during image upload.');
+      },
       () => {
         getDownloadURL(uploadTask.snapshot.ref)
           .then((url) => {
             setImageUrl(url);
             console.log(url);
-            alert("Image uploaded successfully");
+            alert('Image uploaded successfully');
             setSelectedFile(null); // Clear the selected file
-            
-
           })
-          .catch((error) => console.log(error));
+          .catch((error) => {
+            console.log(error);
+            alert('Error occurred while fetching the image URL.');
+          });
       }
     );
   };
@@ -140,6 +155,7 @@ export default function StdReg() {
     const teacherData = {
       ...data,
       teacherId: teacherrId,
+      status: "Active",
     };
   
     // Check if email, NIC, and contact number already exist
@@ -178,7 +194,8 @@ export default function StdReg() {
           return;
         }
   
-        // If no existing records found, proceed with submission
+       
+
         axios
           .post("http://localhost:3001/teachers", teacherData)
           .then((response) => {
@@ -188,12 +205,16 @@ export default function StdReg() {
                 password: password,
                 role: "Teacher",
                 user: teacherrId,
+                
               };
               return axios.post("http://localhost:3001/users", reg);
             })
               .then(() => {
             setSubmissionStatus("success");
             resetForm();
+            setProgress(0)
+            setImageUrl("")
+    
             onPageRefresh();
             console.log("Teacher details submitted successfully");
             alert("Teacher Id: " + String(teacherrId) + " submitted successfully");

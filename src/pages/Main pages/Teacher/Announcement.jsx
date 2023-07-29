@@ -13,6 +13,7 @@ import {
   getDownloadURL,
   listAll,
 } from "@firebase/storage";
+import ConfirmationPopup from "../../../components/ConfirmationPopup";
 
 export const Announcement = () => {
 
@@ -26,6 +27,25 @@ export const Announcement = () => {
     const [imageUrl2, setImageUrl2] = useState("");
 
     const [regYear, setRegYear] = useState("");
+
+    const [showConfirmation, setShowConfirmation] = useState(false);
+    const [selectedRequestId, setSelectedRequestId] = useState(""); 
+
+    const handleRejectConfirmation = (requestId) => {
+      
+      setSelectedRequestId(requestId);
+      setShowConfirmation(true);
+    };
+  
+    const handleRejectConfirmationCancel = () => {
+      setShowConfirmation(false);
+    };
+  
+    const handleRejectConfirmationConfirm = () => {
+      DeleteCard(selectedRequestId);
+      setShowConfirmation(false);
+    };
+  
     
     const onSubmit = (data, { resetForm }) => {
 
@@ -38,7 +58,7 @@ export const Announcement = () => {
         axios
         .post("http://localhost:3001/announcements", data1)
         .then((response) => {
-          alert("Added new class successfully");
+          
           resetForm();
           ShowRequests();
           
@@ -139,7 +159,7 @@ export const Announcement = () => {
                 axios
                   .delete(`http://localhost:3001/announcements/ann/${x}`)
                   .then((response) => {
-                    alert("Deleted successfully");
+                    
                     ShowRequests();
                   })
                   .catch((error) => {
@@ -451,7 +471,7 @@ export const Announcement = () => {
               <Card.Text>
                {requests.Day}        
               </Card.Text>
-              <button style={buttonStyle2} onClick={()=> DeleteCard(requests.id)}>Delete</button>
+              <button style={buttonStyle2} onClick={()=> handleRejectConfirmation(requests.id)}>Delete</button>
               
               
             </Card.Body>
@@ -461,6 +481,13 @@ export const Announcement = () => {
     </Row>
 
     </div>
+    {showConfirmation && (
+        <ConfirmationPopup
+          message="Are you sure you want to reject this Announcement?"
+          onConfirm={handleRejectConfirmationConfirm}
+          onCancel={handleRejectConfirmationCancel}
+        />
+      )}
 
     </>
   )

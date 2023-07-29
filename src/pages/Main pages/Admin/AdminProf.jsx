@@ -157,7 +157,7 @@ export const AdminProf = () => {
       </div>
       <div  style={{marginLeft:"6%" , marginRight:"5%"}}>
       <h2 style={{   marginBottom: "2%",}}>STUDENT COUNT</h2>
-        <Row style={{backgroundColor:"#c8cccc", borderRadius:"2%"}}>
+        <Row style={{backgroundColor:"#c8cccc", borderRadius:"15px"}}>
        
        
           <Col lg={6}>
@@ -192,7 +192,7 @@ export const AdminProf = () => {
           </Col>
         </Row>
         <hr></hr>
-        <Row style={{backgroundColor:"#c8cccc" , borderRadius:"2%"}}>
+        <Row style={{backgroundColor:"#c8cccc" , borderRadius:"15px"}}>
           <Col lg={6}>
             <h4 style={{ marginBottom: "10%" }}>According to the Class room :</h4>
             <Table>

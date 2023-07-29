@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import axios from "axios";
@@ -8,55 +7,39 @@ import Table from "react-bootstrap/Table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FormControl } from "react-bootstrap";
 
-
 const Attendance = () => {
-  const [attendance, setAttendance] = useState({}); // Updated marks state
-  const [idd, SetIdd] = useState(new Date().toLocaleDateString("en-US").substr(0, 10));
+  const [attendance, setAttendance] = useState({});
+  const [idd, SetIdd] = useState(
+    new Date().toLocaleDateString("en-US").substr(0, 10)
+  );
   const [array, setArray] = useState([]);
-  const [temp, setTemp] = useState("");
   const { id } = useParams();
   const [submissionStatus, setSubmissionStatus] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredTableArray, setFilteredTableArray] = useState([]);
-  const [allSubmissionStatus, setAllSubmissionStatus] = useState(null); // Added allSubmissionStatus state
-  
+  const [allSubmissionStatus, setAllSubmissionStatus] = useState(null);
 
   const initialValues = {
     Attendance: "",
     Day: "",
     teacherId: "",
-    
   };
 
   const onSubmit = (data, resetForm, resetAllForms) => {
-
-
-    if (!idd) {
-      alert("Day is required");
-      return;
-    }
-    // Check if any attendance value is null or empty
-    const hasNullAttendance = Object.values(data.Attendance).some(
-      (attendanceValue) => !attendanceValue
-    );
-  
-    if (hasNullAttendance) {
-      alert("Please select attendance for all teachers before submitting.");
-      return; 
-    }
-  
     axios
       .post("http://localhost:3001/TeacherAttendance", data)
       .then((response) => {
         console.log(response.data.error);
-  
+
         if (response.data.error) {
-          alert(response.data.error);
+         
+          document.getElementById("btnn").style.backgroundColor = "#910a1a";
+          document.getElementById("btnn").innerHTML = "Data already exist";
         } else {
-          
+          document.getElementById("btnn").style.backgroundColor = "#1b8c37";
+          document.getElementById("btnn").innerHTML = "Submitted";
           resetForm();
-          alert("Added new deta successfully");
-          //setMarks({}); // Reset the marks object
+          
         }
       })
       .catch((error) => {
@@ -65,13 +48,11 @@ const Attendance = () => {
         alert("Error: " + error.message);
       })
       .finally(() => {
-        resetAllForms(); // Reset all the forms after submission
+        resetAllForms();
       });
   };
-  
+
   useEffect(() => {
-
-
     axios
       .get("http://localhost:3001/teachers/teacherList")
       .then((response) => {
@@ -81,9 +62,6 @@ const Attendance = () => {
         console.error("An error occurred:", error);
       });
   }, []);
-
-
- 
 
   const labelStyle = {
     marginBottom: "8px",
@@ -101,7 +79,6 @@ const Attendance = () => {
   };
 
   const buttonStyle = {
-    
     padding: "8px 10px",
     backgroundColor: "#007bff",
     color: "#fff",
@@ -112,17 +89,14 @@ const Attendance = () => {
     textAlign: "right",
   };
 
-    const formStyle = {
-
+  const formStyle = {
     margin: "0 auto",
     padding: "20px",
     border: "1px solid #ddd",
     borderRadius: "4px",
-    //maxWidth: "60%",
     marginTop: "30px",
     backgroundColor: "#f9f9f9",
   };
-
 
   const validate3 = () => {
     let error;
@@ -133,113 +107,112 @@ const Attendance = () => {
   };
 
   const handleAddAll = () => {
-    // Iterate over each student and submit their marks
+    const missingAttendanceTeachers = [];
+
     array.forEach((teacher) => {
-
       if (!attendance[teacher.teacherId]) {
-        alert("Please mark attendance for"+teacher.teacherId);
-        return; // Prevent form submission if attendance is not selected for all teachers
+        missingAttendanceTeachers.push(teacher.teacherId);
       }
+    });
 
+    if (missingAttendanceTeachers.length > 0) {
+      alert(
+        "Please mark attendance for the following teachers: " +
+          missingAttendanceTeachers.join(", ")
+      );
+      return;
+    }
+
+    array.forEach((teacher) => {
       const data = {
-        Attendance: attendance[teacher.teacherId], // Accessed the mark value from the marks object using the student ID
-        Day:idd,
+        Attendance: attendance[teacher.teacherId],
+        Day: idd,
         teacherId: teacher.teacherId,
       };
-      
-      onSubmit(data, () => {}, () => {}); // Pass empty resetForm and resetAllForms functions as placeholders
+      onSubmit(data, () => {}, () => {});
     });
   };
 
   return (
     <>
-    <h1>Teacher,</h1>
- <div><Formik initialValues={initialValues} onSubmit={onSubmit}>
-        <Form>
-          <Row>
-           
-            <Col xs={12} lg={4}>
-              <label style={labelStyle}>Date:</label>
-              <Field
-                editable={false}
-                id="inputCreatePost"
-                name="Day"
-                style={inputStyle}
-                value={idd}
-               validate={validate3}
-              // onChange={(e) => SetIdd(e.target.value)}
-               
-              />
-              <ErrorMessage
-                name="Day"
-                component="div"
-                style={{ color: "red" }}
-              />
-            </Col>
-           
-          </Row>
-          <Row >
-           
-            <Table style={formStyle} >
-              <thead>
-                <tr>
-                  <th>Teacher ID</th>
-                  <th>First Name</th>
-                 
-                  <th>Attendance</th>
-                </tr>
-              </thead>
-              <tbody>
-                {array.map((teacher, index) => (
-                  <tr key={teacher.teacherId}>
-                    <td>{teacher.teacherId}</td>
-                    <td>{teacher.fName}</td>
-                    
-
-                    <td>
-                      <Field
-                        as="select" // Render the field as a select dropdown
-                        id="inputCreatePost"
-
-                        name={`Attendance[${teacher.teacherId}]`}
-                        style={{ width:"120px", height: "30px"}}
-                    //  validate={validateGender}
-                        value={attendance[teacher.teacherId] || ""} // Accessed the mark value from the marks object using the student ID
-                        onChange={(e) =>
-                          setAttendance({
-                            ...attendance,
-                            [teacher.teacherId]: e.target.value, // Updated the specific mark value in the marks object using the student ID
-                          })
-                        }
-                      >
-                        <option value="">Select</option>
-                        <option value="Present">Present</option>
-                        <option value="Absent">Absent</option>
-                     
-                      </Field>
-
-                      <ErrorMessage
-                        name={`Attendance[${teacher.teacherId}]`}
-                        component="div"
-                        style={{ color: "red" }}
-                      />
-                    </td>
+      <h1>Teacher,</h1>
+      <div>
+        <Formik initialValues={initialValues} onSubmit={onSubmit}>
+          <Form>
+            <Row>
+              <Col xs={12} lg={4}>
+                <label style={labelStyle}>Date:</label>
+                <Field
+                  editable={false}
+                  id="inputCreatePost"
+                  name="Day"
+                  style={inputStyle}
+                  value={idd}
+                  validate={validate3}
+                />
+                <ErrorMessage
+                  name="Day"
+                  component="div"
+                  style={{ color: "red" }}
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Table style={formStyle}>
+                <thead>
+                  <tr>
+                    <th>Teacher ID</th>
+                    <th>First Name</th>
+                    <th>Attendance</th>
                   </tr>
-                ))}
-              </tbody>
-            </Table>
-            <button
-              type="button"
-              style={buttonStyle}
-              onClick={handleAddAll} // Call handleAddAll function on button click
-            >
-              Add All
-            </button>
-         
-          </Row>
-        </Form>
-      </Formik></div>
-      </>
+                </thead>
+                <tbody>
+                  {array.map((teacher, index) => (
+                    <tr key={teacher.teacherId}>
+                      <td>{teacher.teacherId}</td>
+                      <td>{teacher.fName}</td>
+                      <td>
+                        <Field
+                          as="select"
+                          id="inputCreatePost"
+                          name={`Attendance[${teacher.teacherId}]`}
+                          style={{ width: "120px", height: "30px" }}
+                          value={attendance[teacher.teacherId] || ""}
+                          onChange={(e) =>
+                            setAttendance({
+                              ...attendance,
+                              [teacher.teacherId]: e.target.value,
+                            })
+                          }
+                        >
+                          <option value="">Select</option>
+                          <option value="Present">Present</option>
+                          <option value="Absent">Absent</option>
+                        </Field>
+                        <ErrorMessage
+                          name={`Attendance[${teacher.teacherId}]`}
+                          component="div"
+                          style={{ color: "red" }}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+              <button
+              id ="btnn"
+                type="button"
+                style={buttonStyle}
+                onClick={handleAddAll}
+              >
+                Add All
+              </button>
+            </Row>
+          </Form>
+        </Formik>
+      </div>
+    </>
   );
-}
-export default Attendance
+};
+
+export default Attendance;

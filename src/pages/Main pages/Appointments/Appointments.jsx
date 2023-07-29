@@ -5,8 +5,9 @@ import Table from "react-bootstrap/Table";
 import axios from "axios";
 import { Alert } from "react-bootstrap";
 import { Button } from "react-bootstrap";
-import ConfirmationPopup from "./ConfirmationPopup"; 
+
 import NavigationBar from "../../../components/Navbar";
+import ConfirmationPopup from "../../../components/ConfirmationPopup";
 
 
 
@@ -37,8 +38,8 @@ const Appointments = () => {
 
   const calendarRef = useRef();
 
-  const [showConfirmation, setShowConfirmation] = useState(false); // State for showing/hiding the confirmation popup
-  const [selectedRequestId, setSelectedRequestId] = useState(""); // State for tracking the selected request ID
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [selectedRequestId, setSelectedRequestId] = useState(""); 
 
 
   const [viewEvent, setViewEvent] = useState([]);
@@ -127,6 +128,7 @@ const data = {
     .post(`http://localhost:3001/appointmentRequest/${x}/updateStatus`, data)
     .then((response) => {
       alert("updated successfully");
+      ShowRequests();
     })
     .catch((error) => {
         alert("Network error: Data not updated");
@@ -137,6 +139,7 @@ const data = {
   const DeleteRequests = async (x) => {
     try {
       await axios.delete(`http://localhost:3001/appointmentRequest/delete/${x}`);
+      ShowRequests();
       alert("Deleted successfully");
     } catch (error) {
       console.error("An error occurred:", error);
@@ -367,6 +370,9 @@ const data = {
     window.location.reload();
   };
 
+  
+ 
+
   return (
     <>
 
@@ -376,7 +382,7 @@ const data = {
     <div>
      
       <center>
-        <h2 style={{ color: "#5b5ea6" }}>Teacher Name   : {localStorage.getItem("Teachername")},</h2>
+        <h2 >Teacher Name   : {localStorage.getItem("Teachername")},</h2>
       </center>
       <div style={{ display: "flex" }}>
         <div style={{ marginRight: "10px" }}>
@@ -405,9 +411,8 @@ const data = {
         </div>
       </div>
     </div>
-
     <div>
-      <h3 style={{ color: "#5b5ea6", marginTop:"5%", marginBottom:"3%" }}>Requests</h3>
+      <h3 style={{  marginTop:"5%", marginBottom:"3%" }}>Requests</h3>
       <center>
     <Table  >
               <thead>
@@ -428,7 +433,6 @@ const data = {
                     <td>{requests.Day}</td>
                     <td>{requests.time}</td>
                     <td>{requests.Note}</td>
-
                     <td>
                     <Button
                     variant="primary"
@@ -440,8 +444,7 @@ const data = {
            <Button
                       variant="primary"
                       style={{ backgroundColor: "red", textAlign: "center" }}
-                      onClick={() => handleRejectConfirmation(requests.id)} // Call handleRejectConfirmation instead of DeleteRequests
-                    >
+                      onClick={() => handleRejectConfirmation(requests.id)}>
                       Reject
                     </Button>
 
@@ -462,6 +465,7 @@ const data = {
       )}
 </>
   );
+
 };
 
 export default Appointments;

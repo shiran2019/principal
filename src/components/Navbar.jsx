@@ -24,6 +24,7 @@ function NavigationBar() {
         if (response.data.error) {
           setAuthState({ ...authState, status: false });
         } else if (response.data.role == "Student") {
+          document.getElementById("nav").style.backgroundColor = "#34568b";
           setAuthState({
             user: response.data.user,
             status: true,
@@ -31,6 +32,7 @@ function NavigationBar() {
             role: response.data.role,
           });
         } else if (response.data.role == "Admin") {
+          document.getElementById("nav").style.backgroundColor = "#9b2335";
           setAuthState({
             user: response.data.user,
             status: true,
@@ -38,6 +40,7 @@ function NavigationBar() {
             role: response.data.role,
           });
         } else if (response.data.role == "Teacher") {
+          document.getElementById("nav").style.backgroundColor = "#5b5ea6";
           setAuthState({
             user: response.data.user,
             status: true,
@@ -59,6 +62,7 @@ function NavigationBar() {
         <Navbar
           collapseOnSelect
           expand="xl"
+          id="nav"
           style={{
             backgroundColor: "#5b5ea6",
             zIndex: 2,
@@ -108,12 +112,7 @@ function NavigationBar() {
                     >
                       Appointments
                     </Nav.Link>
-                    <Nav.Link
-                  href="/art-gallery"
-                  style={{ fontSize: "20px", marginRight: "8px" }}
-                >
-                  Art Gallery
-                </Nav.Link>
+                
                 
                 <NavDropdown
                       style={{ fontSize: "20px", marginRight: "8px" }}
@@ -129,6 +128,9 @@ function NavigationBar() {
                       </NavDropdown.Item>
                       <NavDropdown.Item href="/bestKids">
                         Best kids
+                      </NavDropdown.Item>
+                      <NavDropdown.Item href="/art-gallery">
+                      Art Gallery
                       </NavDropdown.Item>
                       <NavDropdown.Item href="/Studentattendance">
                         Attendance
@@ -157,18 +159,7 @@ function NavigationBar() {
                     >
                       Dashboard
                     </Nav.Link>
-                    <Nav.Link
-                      href="/adminAppointments"
-                      style={{ fontSize: "20px", marginRight: "8px" }}
-                    >
-                      Appointments
-                    </Nav.Link>
-                    <Nav.Link
-                  href="/art-gallery"
-                  style={{ fontSize: "20px", marginRight: "8px" }}
-                >
-                  Art Gallery
-                </Nav.Link>
+                   
 
                 <NavDropdown
                       style={{ fontSize: "20px", marginRight: "8px" }}
@@ -181,7 +172,9 @@ function NavigationBar() {
                       <NavDropdown.Item href="/teacherReg">
                         Teacher Registration
                       </NavDropdown.Item>
-
+                      <NavDropdown.Item href="/adminAppointments">
+                      Appointments
+                      </NavDropdown.Item>
                       <NavDropdown.Item href="/teacherattendance">
                         Attendance
                       </NavDropdown.Item>
@@ -208,7 +201,7 @@ function NavigationBar() {
                         Best kids
                       </NavDropdown.Item>
                       <NavDropdown.Item href="/art-gallery">
-                        Talents
+                      Art Gallery
                       </NavDropdown.Item>
                       <NavDropdown.Item href="/Studentattendance">
                         Attendance
@@ -236,7 +229,14 @@ function NavigationBar() {
                     >
                       Meetings
                     </Nav.Link>
-                
+                    
+                    <Nav.Link
+                      href="/daycareadmin"
+                      style={{ fontSize: "20px", marginRight: "8px" }}
+                    >
+                      Daycare
+                    </Nav.Link>
+
                   </>
                 )}
 
@@ -283,23 +283,34 @@ function NavigationBar() {
                     >
                       Announcements
                     </Nav.Link>
+                    <Nav.Link
+                      href="/daycare"
+                      style={{ fontSize: "20px", marginRight: "8px" }}
+                    >
+                      Daycare
+                    </Nav.Link>
 
                   </>
 
                 )}
-
-
-
-
-             
-
-               
 
               </Nav>
 
               <table>
                 <Nav>
                   <tr>
+                  <td>
+                      {authState.status && (
+                        <>
+                          <Nav.Link
+                            // href="/profile"
+                            style={{ fontSize: "20px", marginRight: "8px" , fontWeight:"bold" }}
+                          >
+                            {authState.role}
+                          </Nav.Link>
+                        </>
+                      )}
+                    </td>
                     <td>
                       <NavDropdown
                         title={authState.user}
@@ -320,24 +331,13 @@ function NavigationBar() {
                         )}
                       </NavDropdown>
                     </td>
-                    <td>
-                      {authState.status && (
-                        <>
-                          <Nav.Link
-                            href="/profile"
-                            style={{ fontSize: "20px", marginRight: "8px" }}
-                          >
-                            {authState.role}
-                          </Nav.Link>
-                        </>
-                      )}
-                    </td>
-                    <td>
+                  
+                    {/* <td>
                       <Nav.Link
                         href="/appointments"
                         style={{ fontSize: "20px" }}
                       >
-                        <svg
+                        <svgs
                           xmlns="http://www.w3.org/2000/svg"
                           width="16"
                           height="16"
@@ -348,7 +348,7 @@ function NavigationBar() {
                           <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z" />
                         </svg>{" "}
                       </Nav.Link>
-                    </td>
+                    </td> */}
                   </tr>
                 </Nav>
               </table>

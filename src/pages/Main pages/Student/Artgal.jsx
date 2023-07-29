@@ -31,19 +31,35 @@ const PopupComponent = ({ show, cardId, handleClosePopup }) => {
   };
 
   const uploadFile = (file) => {
+    // Check the file type
+    if (file.type !== 'image/png' && file.type !== 'image/jpeg') {
+      alert('Only PNG and JPEG files are allowed.');
+      return;
+    }
+  
+    // Check the file size (in bytes)
+    const maxSize = 5 * 1024 * 1024; // 5 MB
+    if (file.size > maxSize) {
+      alert('File size exceeds the allowed limit (5 MB).');
+      return;
+    }
+  
     const imageId = generateImageId(cardId);
     setImageId(imageId);
-
+  
     const storageRef = ref(storage, `images/${imageId}/${imageId}/${file.name}`);
     const uploadTask = uploadBytesResumable(storageRef, file);
-
+  
     uploadTask.on(
       'state_changed',
       (snapshot) => {
         const prog = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
         setProgress(prog);
       },
-      (error) => console.log(error),
+      (error) => {
+        console.log(error);
+        alert('Error occurred during image upload.');
+      },
       () => {
         getDownloadURL(uploadTask.snapshot.ref)
           .then((url) => {
@@ -52,10 +68,14 @@ const PopupComponent = ({ show, cardId, handleClosePopup }) => {
             alert('Image uploaded successfully');
             setSelectedFile(null); // Clear the selected file
           })
-          .catch((error) => console.log(error));
+          .catch((error) => {
+            console.log(error);
+            alert('Error occurred while fetching the image URL.');
+          });
       }
     );
   };
+  
 
   const retrieveImages = async () => {
     if (cardId) {

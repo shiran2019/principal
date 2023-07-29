@@ -75,6 +75,7 @@ const RequestAppointment = () => {
     fontSize: "16px",
     cursor: "pointer",
     align: "right",
+    marginLeft: "10px",
   };
 
   const formStyle = {
@@ -98,7 +99,10 @@ const RequestAppointment = () => {
 
   const onSubmit = (data, { resetForm }) => {
 
-  
+  if (localStorage.getItem("TeacherId") == null) {
+      alert("Please select a teacher first");
+      return;
+    }
  const data1 = {
 ...data,
       StudentId: authState.user,
@@ -365,10 +369,21 @@ const RequestAppointment = () => {
 
   return (
     <>
-      <div>
+    <div>
+      <a href="#sec1">
+      <button style={buttonStyle}>
+      Appointments Schedules
+      </button></a>
+      <a href="#sec2">
+      <button style={buttonStyle}>
+      New request 
+      </button></a>
+      </div>
+      <hr></hr>
+      <div id ="sec1">
         <Row>
         <Col lg={5}>
-          <h4 style={{ color: "#5b5ea6", marginTop: "5%" }}>Select Teacher</h4>
+          <h4 style={{  marginTop: "5%" }}>Select Teacher</h4>
           <select
             style={inputStyle}
   
@@ -415,8 +430,9 @@ const RequestAppointment = () => {
         </div>
       </div>
 
-      <div>
-        <h4 style={{ color: "#5b5ea6", marginTop: "5%" }}>
+      <div
+      id ="sec2">
+        <h4 style={{  marginTop: "5%" }}>
           Request for Appointment
         </h4>
         <Formik initialValues={initialValues} onSubmit={onSubmit}>

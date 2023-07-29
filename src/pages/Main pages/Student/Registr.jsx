@@ -6,6 +6,7 @@ import Table from "react-bootstrap/Table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import NavigationBar from "../../../components/Navbar";
 import { storage } from "../../../Firebase";
+import Alert from '@mui/material/Alert';
 
 import {
   ref,
@@ -42,11 +43,33 @@ export default function StdReg() {
       uploadFile(selectedFile);
     } else {
       console.log("No file selected.");
-      alert("No file selected.");
+      <Alert variant="filled" severity="warning">
+        No file selected
+      </Alert>
+    
     }
   };
 
   const uploadFile = (file) => {
+    // Check the file type
+    if (file.type !== 'image/png' && file.type !== 'image/jpeg') {
+      <Alert variant="filled" severity="warning">
+      Only PNG and JPEG files are allowed
+    </Alert>
+      return;
+    }
+  
+    // Check the file size (in bytes)
+    const maxSize = 5 * 1024 * 1024; // 5 MB
+    if (file.size > maxSize) {
+      <Alert variant="filled" severity="warning">
+     File size exceeds the allowed limit - 5 MB
+    </Alert>
+     
+      
+      return;
+    }
+  
     const imageId = generateImageId(studenttId);
     setImageId(imageId);
   
@@ -54,11 +77,9 @@ export default function StdReg() {
     const uploadTask = uploadBytesResumable(storageRef, file);
   
     uploadTask.on(
-      "state_changed",
+      'state_changed',
       (snapshot) => {
-        const prog = Math.round(
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-        );
+        const prog = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
         setProgress(prog);
       },
       (error) => console.log(error),
@@ -67,10 +88,11 @@ export default function StdReg() {
           .then((url) => {
             setImageUrl(url);
             console.log(url);
-            alert("Image uploaded successfully");
-            setSelectedFile(null); // Clear the selected file
+            <Alert variant="filled" severity="success">
+     Uploaded
+    </Alert>
             
-
+            setSelectedFile(null); // Clear the selected file
           })
           .catch((error) => console.log(error));
       }
@@ -128,24 +150,35 @@ export default function StdReg() {
     regyear: "",
     password: "",
     confirmPassword: "",
+    dayCare: "",
+    
   };
 
   const onSubmit = (data, { resetForm }) => {
     const { password, confirmPassword } = data;
   
 if(progress !== 100){ 
-alert("Please upload the image");
+
+<Alert variant="filled" severity="warning">
+Please upload the image
+</Alert>
 
 return;
 }
 
     if (password !== confirmPassword) {
-      alert("Passwords do not match");
+     
+      <Alert variant="filled" severity="warning">
+Passwords do not match
+</Alert>
       return;
     }
   
     if (data.motherNIC === data.fatherNIC) {
-      alert("Mother's NIC and Father's NIC cannot be the same");
+     
+      <Alert variant="filled" severity="warning">
+Mother's NIC and Father's NIC cannot be the same
+</Alert>
       return; // Stop execution if the NICs are the same
     }
   
@@ -153,6 +186,7 @@ return;
       .post("http://localhost:3001/parents", data)
       .then((response) => {
         setSubmissionStatus("success");
+        
         // resetForm();
   
         return axios.get("http://localhost:3001/parents/lastId");
@@ -165,6 +199,7 @@ return;
           ...data,
           parentId: lastParentId,
           StudentId: studenttId,
+          status: "Active",
         };
         console.log("Student Data:", studentData);
         return axios.post("http://localhost:3001/students", studentData);
@@ -174,6 +209,7 @@ return;
           password: password,
           role: "Student",  
           user: studenttId,
+        
         };
         return axios.post("http://localhost:3001/users", reg);
       })
@@ -188,12 +224,15 @@ return;
         onPageCount();
   
         console.log("Student and parent data submitted successfully");
-        alert("Student Id :" + String(studenttId) + " submitted successfully");
+      
+        <Alert variant="filled" severity="success">
+Submitted
+</Alert>
       })
       .catch((error) => {
         setSubmissionStatus("error");
         console.log(error);
-        alert("Error : ");
+       
       });
   };
   
@@ -326,6 +365,7 @@ return;
     }
     return error;
   };
+  
 
   const validateGender = (value) => {
     let error;
@@ -346,6 +386,14 @@ return;
     let error;
     if (!value) {
       error = "Address is required";
+    }
+    return error;
+  };
+
+  const validate = (value) => {
+    let error;
+    if (!value) {
+      error = "select a option";
     }
     return error;
   };
@@ -624,6 +672,25 @@ return;
                 style={{ color: "red" }}
               />
             </Col>
+            <Col xs={12} lg={6}>
+            <label style={labelStyle}>Afternoon Care Arrangement for the Chield :</label>
+            <Field
+                        as="select" 
+                        id="inputCreatePost"
+                        style={inputStyle}
+                        name="dayCare"
+                        validate={validate}
+                      >
+                        <option value="">Select</option>
+                        <option value="DayCare">Day Care</option>
+                        <option value="Pickup by Guardian">Pickup by Guardian</option>
+                     
+                      </Field> <ErrorMessage
+                name="dayCare"
+                component="div"
+                style={{ color: "red" }}
+              />
+              </Col>
           </Row>
 
           <hr />

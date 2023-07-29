@@ -1,0 +1,35 @@
+.confirmation-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #9a9a9a;
+    border: 1px solid #000000;
+    padding: 20px;
+    width: 500px;
+    height: 150px;
+    text-align: center;
+    border-radius: "15px";
+  }
+  
+  .confirmation-popup .message {
+    margin-bottom: 50px;
+  }
+  
+  .confirmation-popup .buttons button {
+    margin-right: 30px;
+  }
+  
+  .yes {
+    background-color: #4CAF50;
+    color: white;
+    width: 100px;
+    height: 40px;
+  }
+
+  .no {
+    background-color: #f44336;
+    color: white;
+    width: 100px;
+    height: 40px;
+  }

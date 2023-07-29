@@ -6,8 +6,8 @@ const ConfirmationPopup = ({ message, onConfirm, onCancel }) => {
     <div className="confirmation-popup">
       <div className="message">{message}</div>
       <div className="buttons">
-        <button onClick={onConfirm}>Yes</button>
-        <button onClick={onCancel}>No</button>
+        <button className="yes" onClick={onConfirm}>Yes</button>
+        <button className="no" onClick={onCancel}>No</button>
       </div>
     </div>
   );

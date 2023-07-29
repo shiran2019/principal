@@ -10,7 +10,7 @@ import Row from 'react-bootstrap/Row';
 
 import { getDownloadURL, listAll, ref } from "firebase/storage";
 import { storage } from "../..//Firebase";
-import NavigationBar from "../../components/Navbar";
+
 
 
 
@@ -96,9 +96,7 @@ export const Annualreport = () => {
 
   return (
     <>
-    <div>
-      <NavigationBar />
-    </div>
+   
       
 
        <Row style={{paddingLeft:"4%", paddingRight:"4%"}}>

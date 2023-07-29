@@ -52,6 +52,14 @@ const columns = [
     width: 150,
     editable: true,
   },
+  {
+    field: 'status',
+    headerName: 'Status',
+    width: 110,
+    editable: true,
+    type: "singleSelect",
+  valueOptions: ["Active", "Inactive"]
+  },
   
 ];
 
@@ -61,7 +69,7 @@ export default function TchTable() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3001/teachers/teacherList`)
+      .get(`http://localhost:3001/teachers/teacherListAdmin`)
       .then((response) => {
         setStdArray(response.data);
       })
@@ -73,7 +81,7 @@ export default function TchTable() {
   }, []);
 
   const mySaveOnServerFunction = (params) => {
-    alert("The changed value is: ");
+    
     
 
 

@@ -69,7 +69,7 @@ export default function ViewAttendance() {
     axios
       .put(`http://localhost:3001/StudentAttendance/upd/${params.StudentId}/${params.Day}`,params )
       .then((response) => {
-        alert("done");
+      
       })
       .catch((error) => {
         console.error("An error occurred:", error);

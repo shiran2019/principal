@@ -7,7 +7,7 @@ import Box from "@mui/material/Box";
 import NavigationBar from "../../../components/Navbar";
 import Appointments from "./Appointments";
 import RequestAppointment from "./RequestAppointment";
-import ConfirmationPopup from "./ConfirmationPopup";
+
 import AproveReq from "./AprovedRequests";
 import { AuthContext } from "../../../helpers/AuthContext";
 import axios from "axios";

@@ -7,7 +7,7 @@ import { Alert } from "react-bootstrap";
 import { Button } from "react-bootstrap";
 import NavigationBar from "../../../components/Navbar";
 import { AuthContext } from "../../../helpers/AuthContext";
-import ConfirmationPopup from "./ConfirmationPopup"; 
+import ConfirmationPopup from "../../../components/ConfirmationPopup"; 
 
 
 
@@ -101,12 +101,56 @@ const TeacherApp = () => {
   const [reqArray, setReqArray] = useState([]);
 
   const [showConfirmation, setShowConfirmation] = useState(false); // State for showing/hiding the confirmation popup
-  const [selectedRequestId, setSelectedRequestId] = useState(""); // State for tracking the selected request ID
+  const [selectedRequestId, setSelectedRequestId] = useState("");
 
+  const [formattedDateTime, setFormattedDateTime] = useState("");
+  const [formattedDateTimePlusOneHour, setFormattedDateTimePlusOneHour] = useState("");
+  
   const handleRejectConfirmation = (requestId) => {
     setSelectedRequestId(requestId);
     setShowConfirmation(true);
   };
+
+  const ReqUpdt = (dat, tim) => {
+    const date = new Date(dat);
+    const time = tim;
+    const [hours, minutes] = time.split(':');
+    date.setHours(hours);
+    date.setMinutes(minutes);
+    
+    const formattedDateTime = date.toISOString().slice(0, 19);
+    
+    // Create a new Date object for the current date and time
+    const currentDate = new Date();
+    
+    // Set the hours and minutes from the input date and time
+    currentDate.setHours(hours);
+    currentDate.setMinutes(minutes);
+    
+    // Add one hour to the current date
+    const oneHourLater = new Date(currentDate.getTime() + 0.5* 60 * 60 * 1000);
+    
+    const formattedDateTimePlusOneHour = oneHourLater.toISOString().slice(0, 19);
+    
+    // Add 5.5 hours to formattedDateTime
+    const hoursToAdd = 5.5;
+    const fiveAndHalfHoursLater = new Date(date.getTime() + hoursToAdd * 60 * 60 * 1000);
+    const formattedDateTimePlusFiveAndHalfHours = fiveAndHalfHoursLater.toISOString().slice(0, 19);
+  
+    // Add 5.5 hours to formattedDateTimePlusOneHour
+    const fiveAndHalfHoursLaterPlusOneHour = new Date(oneHourLater.getTime() + hoursToAdd * 60 * 60 * 1000);
+    const formattedDateTimePlusOneHourPlusFiveAndHalfHours = fiveAndHalfHoursLaterPlusOneHour.toISOString().slice(0, 19);
+    
+    console.log("Formatted Date and Time:", formattedDateTime);
+    console.log("Formatted Date and Time + 1 Hour:", formattedDateTimePlusOneHour);
+    console.log("Formatted Date and Time + 5.5 Hours:", formattedDateTimePlusFiveAndHalfHours);
+    console.log("Formatted Date and Time + 1 Hour + 5.5 Hours:", formattedDateTimePlusOneHourPlusFiveAndHalfHours);
+    
+    localStorage.setItem("time", formattedDateTimePlusFiveAndHalfHours);
+    localStorage.setItem("time2", formattedDateTimePlusOneHourPlusFiveAndHalfHours);
+  };
+  
+
 
   const handleRejectConfirmationCancel = () => {
     setShowConfirmation(false);
@@ -128,7 +172,7 @@ useEffect(() => {
 
 
   const UpdCalender = () => {
-    
+    ShowRequests();
     
     axios
       .get(`http://localhost:3001/appointments/Appointments/${localStorage.getItem("user")}`)
@@ -142,18 +186,25 @@ useEffect(() => {
           backColor: item.backColor,
         }));
         setEvents(newEvents);
+     
       })
       .catch((error) => {
         console.error("An error occurred:", error);
       });
+
+      
   };
 
 
-  const ShowRequests = () => {
-    axios
-    .get(`http://localhost:3001/appointmentRequest`)
+  const ShowRequests = async() => {
+   
+   await axios
+    .get(`http://localhost:3001/appointmentRequest/tch/${localStorage.getItem("user")}`)
     .then((response) => {
+      
       setReqArray(response.data);
+      console.log(response.data);
+  
     })
     .catch((error) => {
       console.error("An error occurred:", error);
@@ -162,13 +213,17 @@ useEffect(() => {
 
   
 
-  const UpdateRequests = (x) => {
+  const UpdateRequests = (id , date , time , note) => {
+
 const data = {
   Status: "Approved",
 };
     axios
-    .post(`http://localhost:3001/appointmentRequest/${x}/updateStatus`, data)
+    .post(`http://localhost:3001/appointmentRequest/${id}/updateStatus`, data)
     .then((response) => {
+      ReqUpdt(date , time);
+      onSubmitt(note);
+     
       ShowRequests();
     })
     .catch((error) => {
@@ -180,11 +235,11 @@ const data = {
   const DeleteRequests = async (x) => {
     try {
       await axios.delete(`http://localhost:3001/appointmentRequest/delete/${x}`);
-      alert("Deleted successfully");
-      ShowRequests();
+     
     } catch (error) {
       console.error("An error occurred:", error);
     }
+    ShowRequests();
   };
 
 
@@ -207,7 +262,7 @@ const data = {
 
       try {
         const response = await axios.post("http://localhost:3001/appointments/Appointments", data);
-        
+       
         UpdCalender(authState.user);
       } catch (error) {
         console.error("An error occurred:", error);
@@ -236,6 +291,30 @@ const data = {
     }
   };
 
+  const onSubmitt = async (text) => {
+
+    const updateDETA = {
+      start: localStorage.getItem("time"),
+      end: localStorage.getItem("time2"),
+      id: DayPilot.guid(),
+      text: text,
+      backColor: "#e8762a",
+      teacherId: authState.user,
+    };
+
+    try {
+      const response = await axios.post("http://localhost:3001/appointments/Appointments", updateDETA);
+      
+      
+      UpdCalender(authState.user);
+      ShowRequests();
+      
+    } catch (error) {
+      console.error("An error occurred:", error);
+    }
+   ShowRequests();
+  };
+
   const deleteEvent = async (event) => {
     try {
       await axios.delete(`http://localhost:3001/appointments/Appointments/${localStorage.getItem("deleted")}`);
@@ -244,6 +323,7 @@ const data = {
       console.error("An error occurred:", error);
     }
   };
+  
 
   const onBeforeEventRender = (args) => {
     if (args.div) {
@@ -400,12 +480,13 @@ const data = {
     <>
      <AuthContext.Provider value={{ authState, setAuthState }}>
      <div style={{padding:"2% 2%"}}>
-      <h3 style={{ color: "#5b5ea6", marginBottom:"3%" }}>Requests</h3>
+      <h3 style={{ marginBottom:"3%" }}>Requests</h3>
       <center>
     <Table style={{  marginBottom:"3%" }} >
               <thead>
                 <tr>
                   <th>Student ID</th>
+                  <th>Name</th>
                   <th>Date</th>
                   <th>Time</th>
                   <th>Note</th>
@@ -416,7 +497,7 @@ const data = {
                 {reqArray.map((requests) => (
                   <tr key={requests.id}>
                     <td>{requests.StudentId}</td>
-                   
+                    <td>{requests.fName}</td>
                     <td>{requests.Day}</td>
                     <td>{requests.time}</td>
                     <td>{requests.Note}</td>
@@ -425,7 +506,7 @@ const data = {
                     <Button
                     variant="primary"
                     style={{backgroundColor: "green" , marginRight: "10px", textAlign: "center"}}
-                    onClick={() => UpdateRequests(requests.id)}
+                    onClick={() => UpdateRequests(requests.id, requests.Day, requests.time, requests.Note)}
                   >
                     Accept
                   </Button>

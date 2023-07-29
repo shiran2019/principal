@@ -227,7 +227,7 @@ export default function TchProfile() {
             )}
           </Col>
           
-          <Col style={{backgroundColor:"#c8cccc" , borderRadius:"2%" }} lg={4}>
+          <Col style={{backgroundColor:"#c8cccc" , borderRadius:"15px" }} lg={4}>
           <Annualreport/>
           </Col>
         </Row>

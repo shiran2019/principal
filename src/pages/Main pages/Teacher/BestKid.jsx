@@ -20,6 +20,7 @@ import { Row, Col, Alert } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import Table from "react-bootstrap/Table";
 import "bootstrap/dist/css/bootstrap.min.css";
+import ConfirmationPopup from "../../../components/ConfirmationPopup";
 
 
 
@@ -81,7 +82,7 @@ if(!eventName){
       .post("http://localhost:3001/bestKid", data1)
       .then((response) => {
         
-        alert("Added new class successfully");
+        
         handleClosePopup();
         Reload();
         
@@ -324,6 +325,25 @@ export const BestKid = () => {
 
   const [filteredArray, setFilteredArray] = useState([]);
 
+  const [showConfirmation, setShowConfirmation] = useState(false);
+    const [selectedRequestId, setSelectedRequestId] = useState(""); 
+
+    const handleRejectConfirmation = (requestId) => {
+      
+      setSelectedRequestId(requestId);
+      setShowConfirmation(true);
+    };
+  
+    const handleRejectConfirmationCancel = () => {
+      setShowConfirmation(false);
+    };
+  
+    const handleRejectConfirmationConfirm = () => {
+      DeleteCard(selectedRequestId);
+      setShowConfirmation(false);
+    };
+  
+
   const columns = [
     { field: 'id', headerName: 'ID', width: 90 },
     {
@@ -356,7 +376,7 @@ export const BestKid = () => {
       field: 'Delete',
       width: 150,
       renderCell: (row) => (
-        <button onClick={()=>DeleteCard(row.id)}>delete</button>
+        <button style={buttonStyle} onClick={()=>handleRejectConfirmation(row.id)}>delete</button>
       )
     },
    
@@ -465,7 +485,16 @@ export const BestKid = () => {
     setIsShow(true);
   };
 
-
+  const buttonStyle = {
+    padding: "10px 40px",
+    backgroundColor: "#dd4124",
+    color: "#fff",
+    border: "none",
+    borderRadius: "4px",
+    fontSize: "16px",
+    cursor: "pointer",
+    align: "right",
+  };
   const DeleteCard = (x) => {
     axios
       .delete(`http://localhost:3001/bestKid/ann/${x}`)
@@ -589,6 +618,13 @@ export const BestKid = () => {
       />
     </Box>
       </div>
+      {showConfirmation && (
+        <ConfirmationPopup
+          message="Are you sure you want to reject this ?"
+          onConfirm={handleRejectConfirmationConfirm}
+          onCancel={handleRejectConfirmationCancel}
+        />
+      )}
     </>
   );
 };
