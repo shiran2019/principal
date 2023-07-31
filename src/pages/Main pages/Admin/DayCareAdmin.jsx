@@ -7,6 +7,9 @@ import { useEffect, useState } from "react";
 import { DataGrid ,GridToolbar} from '@mui/x-data-grid';
 import Box from "@mui/material/Box";
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const columns = [
     { field: 'id', headerName: 'ID', width: 150 },
     {
@@ -103,7 +106,11 @@ export const DayCareAdmin = () => {
           </center>
         </Row>
       </div>
-    
+      <ToastContainer 
+style={{marginTop:"7%"}}  
+position="top-center" 
+autoClose={3000} />
+
     </>
   
   )

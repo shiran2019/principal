@@ -9,6 +9,10 @@ import NavigationBar from "../../../components/Navbar";
 import Box from '@mui/material/Box';
 import { DataGrid ,GridToolbar} from '@mui/x-data-grid';
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
 const columns = [
   { field: 'ClassId', headerName: 'ID', width: 250},
   {
@@ -50,15 +54,18 @@ export default function ClsAdd() {
         setSubmissionStatus("success");
         resetForm();
         tableData();
-        alert("Added new class successfully");
+        toast.success("done");
       })
       .catch((error) => {
         if (error.response && error.response.status === 400) {
-          alert("Teacher already asigned.");
+          
+          toast.warn("Teacher already asigned");
         } else {
           console.log(error);
           setSubmissionStatus("error");
-          alert("Network error: Data not submitted");
+          
+          toast.error("Data not submitted");
+
         }
       });
   };
@@ -145,25 +152,47 @@ export default function ClsAdd() {
     axios
       .put(`http://localhost:3001/classes/upd/${params.ClassId}`,params )
       .then((response) => {
-        alert("done");
+        toast.success("Updated");
       })
       .catch((error) => {
         console.error("An error occurred:", error);
       });
   };
 
+  const buttonStylex = {
+    padding: "10px 40px",
+    backgroundColor: "#f59e42",
+    color: "#fff",
+    border: "none",
+    borderRadius: "4px",
+    fontSize: "16px",
+    cursor: "pointer",
+    align: "right",
+    marginLeft: "10px",
+  };
   return (
     <>
      <div className="App">
         <NavigationBar />
       </div>
       <div>
+<a href="#sec1">
+<button style={buttonStylex}>
+Teacher allocations
+</button></a>
+<a href="#sec2">
+<button style={buttonStylex}>
+Add new Class room
+</button></a>
+</div>
+<hr></hr>
+      <div id ="sec1">
         <Row>
         <center>
                 {" "}
-                <h2 style={{ paddingBottom: "10px" }}>Teacher allocations</h2>
+                <h2  style={{ paddingBottom: "10px" }}>Teacher allocations for class room</h2>
               </center>
-          <Col lg={10} style={{paddingLeft:"19%"}}>
+          <Col  lg={10} style={{paddingLeft:"19%"}}>
          
 
          <Box sx={{ height: 400, width: '100%' }}>
@@ -207,7 +236,7 @@ export default function ClsAdd() {
               </center>
 
               <Row >
-                <Col xs={12} lg={6}>
+                <Col id ="sec2" xs={12} lg={6}>
                   <label style={labelStyle}>Class Name :</label>
                   <Field
                     id="inputCreatePost"
@@ -245,7 +274,7 @@ export default function ClsAdd() {
                   />
                 </Col>
 
-                <Row>
+                <Row >
                   <Col lg={6}>
                     <Table>
                       <thead>
@@ -286,6 +315,11 @@ export default function ClsAdd() {
           </Formik>
         </Row>
       </div>
+      <ToastContainer 
+style={{marginTop:"7%"}}  
+position="top-center" 
+autoClose={3000} />
+
     </>
   );
 }

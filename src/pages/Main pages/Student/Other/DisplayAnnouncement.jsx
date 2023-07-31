@@ -76,7 +76,7 @@ export const DisplayAnnouncement = () => {
     <>
     <div><NavigationBar/></div>
     <div>
-    <h2 style={{padding:"25px  10%" , marginBottom:"20px"}}>Today Announcements, </h2>
+    <h2 style={{padding:"25px  10%" , marginBottom:"20px"}}>Today Announcements </h2>
     <Row style={{padding:"0px  10%"}}>
     {reqArray.map((requests) => (
         <Col xs={12} md={6} lg={3}

@@ -22,6 +22,10 @@ import Table from "react-bootstrap/Table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import ConfirmationPopup from "../../../components/ConfirmationPopup";
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
 
 
 
@@ -57,12 +61,14 @@ const PopupComponent = ({
   const onSubmit = (data, resetForm ) => {
 
 if(!day){
-  alert("Please select date");
+
+  toast.warn("Please select date")
   return;
 }
 
 if(!eventName){
-  alert("Please enter talent");
+ 
+  toast.warn("Please enter talent")
   return;
 }
 
@@ -85,6 +91,7 @@ if(!eventName){
         
         handleClosePopup();
         Reload();
+        toast.success("done")
         
         
       })
@@ -499,21 +506,47 @@ export const BestKid = () => {
     axios
       .delete(`http://localhost:3001/bestKid/ann/${x}`)
       .then((response) => {
-        alert("Deleted successfully");
+      
+        toast.info("Deleted")
+
         Reload();
       })
       .catch((error) => {
         console.error("An error occurred:", error);
       });
   };
+
+  const buttonStylex = {
+    padding: "10px 40px",
+    backgroundColor: "#f59e42",
+    color: "#fff",
+    border: "none",
+    borderRadius: "4px",
+    fontSize: "16px",
+    cursor: "pointer",
+    align: "right",
+    marginLeft: "10px",
+  };
+
   return (
     <>
       <div className="App">
         <NavigationBar />
       </div>
+      <div style={{ padding: "0% 5%" }}>
+<a href="#sec1">
+<button style={buttonStylex}>
+Add new Best Kid for today
+</button></a>
+<a href="#sec2">
+<button style={buttonStylex}>
+Best Kids list for Today
+</button></a>
+</div>
+<hr></hr>
 
       <div>
-        <Row style={{ padding: "1% 5%" }}>
+        <Row id ="sec1" style={{ padding: "1% 5%" }}>
           <Col xs={12} lg={4}>
             <label style={labelStyle}>Search Class Room:</label>
             <FormControl
@@ -598,9 +631,10 @@ export const BestKid = () => {
           />
         </Row>
       </div>
-      <div>
+      <div id ="sec2">
+        <label style={{marginTop:"3%" , fontSize:"28px", padding:"0% 5%"}}>Best Kids list of the day </label>
 
-      <Box sx={{ height: 400, width: '100%' }}>
+      <Box sx={{ height: 400, width: '100%' , padding:"0% 5%"}}>
       <DataGrid
         rows={filteredArray}
         columns={columns}
@@ -625,6 +659,10 @@ export const BestKid = () => {
           onCancel={handleRejectConfirmationCancel}
         />
       )}
+      <ToastContainer 
+style={{marginTop:"7%"}}  
+position="top-center" 
+autoClose={3000} />
     </>
   );
 };

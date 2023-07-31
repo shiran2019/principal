@@ -5,6 +5,8 @@ import { DataGrid ,GridToolbar} from '@mui/x-data-grid';
 import { Row, Col } from "react-bootstrap";
 import React, { useState, useEffect } from "react";
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 const columns = [
@@ -70,6 +72,7 @@ export default function ViewAttendance() {
       .put(`http://localhost:3001/StudentAttendance/upd/${params.StudentId}/${params.Day}`,params )
       .then((response) => {
       
+toast.success("Updated");
       })
       .catch((error) => {
         console.error("An error occurred:", error);
@@ -107,6 +110,10 @@ export default function ViewAttendance() {
     </Box>
       </Col></center>
      </Row>
+     <ToastContainer 
+style={{marginTop:"7%"}}  
+position="top-center" 
+autoClose={3000} />
    
      </>
    

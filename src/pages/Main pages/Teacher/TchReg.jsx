@@ -11,6 +11,9 @@ import {
   getDownloadURL,
   listAll,
 } from "@firebase/storage";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 export default function StdReg() {
   const [classArray, setClassArray] = useState([]);
@@ -43,21 +46,24 @@ export default function StdReg() {
       uploadFile(selectedFile);
     } else {
       console.log("No file selected.");
-      alert("No file selected.");
+     
+      toast.warn("No file selected")
     }
   };
 
   const uploadFile = (file) => {
     // Check the file type
     if (file.type !== 'image/png' && file.type !== 'image/jpeg') {
-      alert('Only PNG and JPEG files are allowed.');
+      toast.warn("Only PNG and JPEG files are allowed");
+     
       return;
     }
   
     // Check the file size (in bytes)
     const maxSize = 5 * 1024 * 1024; // 5 MB
     if (file.size > maxSize) {
-      alert('File size exceeds the allowed limit (5 MB).');
+     
+      toast.warn("File size exceeds the allowed limit (5 MB)");
       return;
     }
   
@@ -75,19 +81,22 @@ export default function StdReg() {
       },
       (error) => {
         console.log(error);
-        alert('Error occurred during image upload.');
+
+        toast.warn("Error occurred during image upload");
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref)
           .then((url) => {
             setImageUrl(url);
             console.log(url);
-            alert('Image uploaded successfully');
+          
+            toast.success("Image Uploaded");
             setSelectedFile(null); // Clear the selected file
           })
           .catch((error) => {
             console.log(error);
-            alert('Error occurred while fetching the image URL.');
+           
+            toast.warn("Error occurred while fetching the image URL");
           });
       }
     );
@@ -144,11 +153,13 @@ export default function StdReg() {
     const { password, confirmPassword } = data;
 
     if(progress !== 100){ 
-      alert("Please upload the image");
+ 
+      toast.warn("Please upload the image");
       return;}
   
     if (password !== confirmPassword) {
-      alert("Passwords do not match");
+    
+      toast.warn("Passwords do not match");
       return;
     } 
 
@@ -180,17 +191,20 @@ export default function StdReg() {
         );
   
         if (existingEmail) {
-          alert("Teacher with this email already exists.");
+       
+          toast.warn("Teacher with this email already exists");
           return;
         }
   
         if (existingNIC) {
-          alert("Teacher with this NIC already exists.");
+     
+          toast.warn("Teacher with this NIC already exists");
           return;
         }
   
         if (existingContactNo) {
-          alert("Teacher with this contact number already exists.");
+      
+          toast.warn("Teacher with this contact number already exists");
           return;
         }
   
@@ -217,7 +231,8 @@ export default function StdReg() {
     
             onPageRefresh();
             console.log("Teacher details submitted successfully");
-            alert("Teacher Id: " + String(teacherrId) + " submitted successfully");
+       
+            toast.success("submitted");
           })
           .catch((error) => {
             setSubmissionStatus("error");
@@ -601,14 +616,7 @@ export default function StdReg() {
               style={{ color: "red" }}
             />
           </Row>
-          <Row>
-            {" "}
-            <div style={{ textAlign: "center", marginTop: "20px" }}>
-              <button type="submit" style={buttonStyle}>
-                Submit
-              </button>
-            </div>
-          </Row>
+         
 
           <Row>
          
@@ -651,6 +659,7 @@ export default function StdReg() {
         </Form>
       </Formik>
     </div>
+    <ToastContainer style={{marginTop:"7%"}}  position="top-center" autoClose={3000} />
     </>
   );
 }

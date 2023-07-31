@@ -10,6 +10,11 @@ import axios from "axios";
 import { Row, Col, Button } from "react-bootstrap";
 import { AuthContext } from "../../../helpers/AuthContext";
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
+
 const RequestAppointment = () => {
   const initialValues = {
     StudentId: "",
@@ -100,7 +105,8 @@ const RequestAppointment = () => {
   const onSubmit = (data, { resetForm }) => {
 
   if (localStorage.getItem("TeacherId") == null) {
-      alert("Please select a teacher first");
+      
+      toast.warn("Please select a teacher first")
       return;
     }
  const data1 = {
@@ -115,11 +121,13 @@ const RequestAppointment = () => {
       .then((response) => {
         resetForm();
         
-        alert("Added new class successfully");
+       
+        toast.success("done")
       })
       .catch((error) => {
        
-          alert("Network error: Data not submitted");
+      
+          toast.warn("Network error: Data not submitted")
       
       });
 
@@ -366,17 +374,28 @@ const RequestAppointment = () => {
     localStorage.removeItem("user");
     window.location.reload();
   };
+  const buttonStylex = {
+    padding: "10px 40px",
+    backgroundColor: "#f59e42",
+    color: "#fff",
+    border: "none",
+    borderRadius: "4px",
+    fontSize: "16px",
+    cursor: "pointer",
+    align: "right",
+    marginLeft: "10px",
+  };
 
   return (
     <>
     <div>
       <a href="#sec1">
-      <button style={buttonStyle}>
+      <button style={buttonStylex}>
       Appointments Schedules
       </button></a>
       <a href="#sec2">
-      <button style={buttonStyle}>
-      New request 
+      <button style={buttonStylex}>
+      New appointment request 
       </button></a>
       </div>
       <hr></hr>
@@ -519,6 +538,8 @@ const RequestAppointment = () => {
           </AuthContext.Provider>
         </Formik>
       </div>
+      <ToastContainer style={{marginTop:"7%"}}  position="top-center" autoClose={3000} />
+    
     </>
   );
 };

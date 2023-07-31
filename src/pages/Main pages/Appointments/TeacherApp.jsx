@@ -9,6 +9,8 @@ import NavigationBar from "../../../components/Navbar";
 import { AuthContext } from "../../../helpers/AuthContext";
 import ConfirmationPopup from "../../../components/ConfirmationPopup"; 
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 const TeacherApp = () => {
@@ -128,7 +130,7 @@ const TeacherApp = () => {
     currentDate.setMinutes(minutes);
     
     // Add one hour to the current date
-    const oneHourLater = new Date(currentDate.getTime() + 0.5* 60 * 60 * 1000);
+    const oneHourLater = new Date(currentDate.getTime() + 1* 60 * 60 * 1000);
     
     const formattedDateTimePlusOneHour = oneHourLater.toISOString().slice(0, 19);
     
@@ -213,7 +215,7 @@ useEffect(() => {
 
   
 
-  const UpdateRequests = (id , date , time , note) => {
+  const UpdateRequests = (id , date , time , note,std,name) => {
 
 const data = {
   Status: "Approved",
@@ -222,12 +224,13 @@ const data = {
     .post(`http://localhost:3001/appointmentRequest/${id}/updateStatus`, data)
     .then((response) => {
       ReqUpdt(date , time);
-      onSubmitt(note);
+      onSubmitt(note,std,name);
      
       ShowRequests();
     })
     .catch((error) => {
-        alert("Network error: Data not updated");
+      
+        toast.warn("Network error: Data not updated")
     });
   };
 
@@ -291,13 +294,13 @@ const data = {
     }
   };
 
-  const onSubmitt = async (text) => {
+  const onSubmitt = async (note,std,name) => {
 
     const updateDETA = {
       start: localStorage.getItem("time"),
       end: localStorage.getItem("time2"),
       id: DayPilot.guid(),
-      text: text,
+      text: "Meeting with " + std + " - " + name + "'s parent",
       backColor: "#e8762a",
       teacherId: authState.user,
     };
@@ -475,12 +478,34 @@ const data = {
     localStorage.removeItem("user");
     window.location.reload();
   };
-
+  const buttonStylex = {
+    padding: "10px 40px",
+    backgroundColor: "#f59e42",
+    color: "#fff",
+    border: "none",
+    borderRadius: "4px",
+    fontSize: "16px",
+    cursor: "pointer",
+    align: "right",
+    marginLeft: "10px",
+  };
   return (
     <>
+<div style={{padding:"0% 2%"}}>
+<a href="#sec1">
+<button style={buttonStylex}>
+Appointment requests
+</button></a>
+<a href="#sec2">
+<button style={buttonStylex}>
+My appointment sheadule
+</button></a>
+</div>
+<hr></hr>
+
      <AuthContext.Provider value={{ authState, setAuthState }}>
-     <div style={{padding:"2% 2%"}}>
-      <h3 style={{ marginBottom:"3%" }}>Requests</h3>
+     <div id="sec1" style={{padding:"2% 2%"}}>
+      <h3  style={{ marginBottom:"3%" }}>Requests</h3>
       <center>
     <Table style={{  marginBottom:"3%" }} >
               <thead>
@@ -506,7 +531,7 @@ const data = {
                     <Button
                     variant="primary"
                     style={{backgroundColor: "green" , marginRight: "10px", textAlign: "center"}}
-                    onClick={() => UpdateRequests(requests.id, requests.Day, requests.time, requests.Note)}
+                    onClick={() => UpdateRequests(requests.id, requests.Day, requests.time, requests.Note, requests.StudentId, requests.fName)}
                   >
                     Accept
                   </Button>
@@ -528,6 +553,7 @@ const data = {
       <div className="App">
         <NavigationBar />
       </div>
+      <h3 id="sec2" style={{ marginLeft:"2%" }}>My appointment sheadule</h3>
     <div style={{padding:"2% 2%"}}>
      
       <center>
@@ -535,7 +561,7 @@ const data = {
       <div style={{ display: "flex" }}>
         <div style={{ marginRight: "10px" }}>
           <div>
-           
+         
           </div>
           <DayPilotNavigator {...navigatorConfig} />
         </div>
@@ -555,6 +581,8 @@ const data = {
           onCancel={handleRejectConfirmationCancel}
         />
       )}
+        <ToastContainer style={{marginTop:"7%"}}  position="top-center" autoClose={3000} />
+    
 </>
   );
 };

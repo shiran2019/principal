@@ -89,7 +89,7 @@ ShowRequests(authState.user);
     <Row style={{padding:"15px 10px"}}>
     {reqArray.map((requests) => (
         <Col xs={12} md={6} lg={3} >
-          <Card style={{backgroundColor:"#cbf5cb"}}>
+          <Card style={{backgroundColor:"#cbf5cb" , padding:"15px 10px"}}>
             <Card.Body> 
               <Card.Title>Teacher : {requests.fName}</Card.Title>
               <hr></hr>

@@ -7,6 +7,10 @@ import Table from "react-bootstrap/Table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FormControl } from "react-bootstrap";
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
 export default function AddPayment() {
   const [Payment, setPayment] = useState({});
   const [Month, setMonth] = useState({});
@@ -122,11 +126,14 @@ export default function AddPayment() {
     const noteValue = Note[studentId];
 
     if (isNaN(paymentValue) || paymentValue === "" || Number(paymentValue) <= 0) {
-      alert(`Please fill a valid positive number in the Payment cell for Student ID: ${studentId}`);
+     
+      toast.warn(`Please fill a valid positive number in the Payment cell for Student ID: ${studentId}`);
       return;
+   
     }
     if (!monthValue) {
-      alert(`Please select a month for Student ID: ${studentId}`);
+     
+      toast.warn(`Please select a month for Student ID: ${studentId}`);
       return;
     }
 
@@ -318,6 +325,11 @@ export default function AddPayment() {
           </Form>
         </Formik>
       </div>
+      <ToastContainer 
+style={{marginTop:"7%"}}  
+position="top-center" 
+autoClose={3000} />
+
     </>
   );
 }

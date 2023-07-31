@@ -7,6 +7,11 @@ import Table from "react-bootstrap/Table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FormControl } from "react-bootstrap";
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
+
 export default function Marks() {
   const [marks, setMarks] = useState({});
   const [idd, SetIdd] = useState("");
@@ -29,7 +34,8 @@ export default function Marks() {
     console.log(data);
 
     if (isNaN(data.EvoId)) {
-      alert("Please select a Term Evaluation");
+     
+      toast.warn("Please select a Term Evaluation")
       return;
     }
 
@@ -38,7 +44,8 @@ export default function Marks() {
       .then((response) => {
         if (response.data.error) {
           setSubmissionStatus("error");
-          alert(response.data.error);
+       
+          toast.error(response.data.error)
 
           // Update the submission status for the specific student
           setFilteredTableArray(prevTable => prevTable.map(s => {
@@ -50,7 +57,8 @@ export default function Marks() {
         } else {
           setSubmissionStatus("success");
           resetForm();
-          alert("Added marks successfully");
+          toast.success("done")
+
 
           // Update the submission status for the specific student
           setFilteredTableArray(prevTable => prevTable.map(s => {
@@ -64,7 +72,9 @@ export default function Marks() {
       .catch((error) => {
         setSubmissionStatus("error");
         console.log(error);
-        alert("Error: " + error.message);
+        
+        toast.error("Error: " + error.message)
+
       })
       .finally(() => {
         resetAllForms();
@@ -155,7 +165,8 @@ export default function Marks() {
   const handleAdd = (student) => {
     const mark = marks[student.StudentId];
     if (mark === null || mark === undefined || mark.trim() === "") {
-      alert(`Marks for Student ID ${student.StudentId} is required.`);
+     
+      toast.warn(`Marks for Student ID ${student.StudentId} is required.`);
       return;
     }
 
@@ -170,6 +181,7 @@ export default function Marks() {
   };
 
   return (
+    <>
     <Formik initialValues={initialValues} onSubmit={onSubmit}>
       <Form>
         <Row>
@@ -300,5 +312,8 @@ export default function Marks() {
         </Row>
       </Form>
     </Formik>
+    <div>     <ToastContainer style={{marginTop:"7%"}}  position="top-center" autoClose={3000} />
+    </div>
+    </>
   );
 }

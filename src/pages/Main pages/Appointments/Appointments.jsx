@@ -9,6 +9,9 @@ import { Button } from "react-bootstrap";
 import NavigationBar from "../../../components/Navbar";
 import ConfirmationPopup from "../../../components/ConfirmationPopup";
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 
 const Appointments = () => {
@@ -55,7 +58,7 @@ const Appointments = () => {
   const [reqArray, setReqArray] = useState([]);
  
   const handleRejectConfirmation = (requestId) => {
-    alert(requestId);
+  
     
     setSelectedRequestId(requestId);
     setShowConfirmation(true);
@@ -127,11 +130,13 @@ const data = {
     axios
     .post(`http://localhost:3001/appointmentRequest/${x}/updateStatus`, data)
     .then((response) => {
-      alert("updated successfully");
+     
+      toast.success("done")
       ShowRequests();
     })
     .catch((error) => {
-        alert("Network error: Data not updated");
+   
+        toast.warn("Network error: Data not updated")
     });
   };
 
@@ -140,7 +145,8 @@ const data = {
     try {
       await axios.delete(`http://localhost:3001/appointmentRequest/delete/${x}`);
       ShowRequests();
-      alert("Deleted successfully");
+     
+      toast.info("Deleted")
     } catch (error) {
       console.error("An error occurred:", error);
     }
@@ -371,7 +377,18 @@ const data = {
   };
 
   
- 
+  const buttonStylex = {
+    padding: "10px 40px",
+    backgroundColor: "#f59e42",
+    color: "#fff",
+    border: "none",
+    borderRadius: "4px",
+    fontSize: "16px",
+    cursor: "pointer",
+    align: "right",
+    marginLeft: "10px",
+  };
+
 
   return (
     <>
@@ -380,12 +397,22 @@ const data = {
         <NavigationBar />
       </div>
     <div>
-     
+    <div style={{marginLeft:"5%"}}>
+<a href="#sec1">
+<button style={buttonStylex}>
+Appointment Schedules
+</button></a>
+<a href="#sec2">
+<button style={buttonStylex}>
+Requests
+</button></a>
+</div>
+<hr></hr>
       <center>
         <h2 >Teacher Name   : {localStorage.getItem("Teachername")},</h2>
       </center>
-      <div style={{ display: "flex" }}>
-        <div style={{ marginRight: "10px" }}>
+      <div  id ="sec1"  style={{ display: "flex" }}>
+        <div style={{ marginLeft:"5%" ,marginRight:"1%" }}>
           <div>
             <label style={labelStyle}>Select Teacher:</label>
             <select
@@ -406,15 +433,16 @@ const data = {
           </div>
           <DayPilotNavigator {...navigatorConfig} />
         </div>
-        <div style={{ flexGrow: "1" }}>
+        <div style={{ flexGrow: "1" ,marginRight:"5%"}}>
           <DayPilotCalendar {...calendarConfig} ref={calendarRef} events={events} />
         </div>
       </div>
     </div>
-    <div>
+
+    <div id ="sec2" style={{marginLeft:"5%",marginRight:"5%"}}>
       <h3 style={{  marginTop:"5%", marginBottom:"3%" }}>Requests</h3>
       <center>
-    <Table  >
+       <Table  >
               <thead>
                 <tr>
                   <th>Student ID</th>
@@ -425,7 +453,7 @@ const data = {
                   <th>Status</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody >
                 {reqArray.map((requests) => (
                   <tr key={requests.id}>
                     <td>{requests.StudentId}</td>
@@ -463,6 +491,8 @@ const data = {
           onCancel={handleRejectConfirmationCancel}
         />
       )}
+       <ToastContainer style={{marginTop:"7%"}}  position="top-center" autoClose={3000} />
+    
 </>
   );
 

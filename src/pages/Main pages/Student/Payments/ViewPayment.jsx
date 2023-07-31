@@ -8,6 +8,9 @@ import React, { useState, useEffect } from "react";
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import Popper from '@mui/material/Popper';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 
 const columns = [
@@ -173,12 +176,10 @@ export default function ViewPayment() {
   }, []);
   const mySaveOnServerFunction = (params) => {
     
-
-    // Make an API call to update the changed value in the database
     axios
-      .put(`http://localhost:3001/StudentPayment/upd/${params.id}`,params )
+      .put(`http://localhost:3001/StudentPayment/upd/${params.StudentId}/${params.Month}`,params )
       .then((response) => {
-        alert("done");
+        toast.success("Updated");
       })
       .catch((error) => {
         console.error("An error occurred:", error);
@@ -217,6 +218,11 @@ export default function ViewPayment() {
     </Box>
       </Col></center>
      </Row>
+     <ToastContainer 
+style={{marginTop:"7%"}}  
+position="top-center" 
+autoClose={3000} />
+
    
      </>
    

@@ -13,6 +13,10 @@ import Paper from '@mui/material/Paper';
 import Popper from '@mui/material/Popper';
 
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
 
 const columns = [
   { field: 'EvoId', headerName: 'ID', width: 90 },
@@ -171,20 +175,24 @@ export default function AddEvo() {
       .post("http://localhost:3001/createEvoluations", data,{headers :{accessToken :sessionStorage.getItem("accessToken")}} )
       .then((response) => {
         if (response.data.error) {
-          alert(response.data.error);
+         
+          toast.warn(response.data.error)
           setSubmissionStatus("error");
         }else
         {
         setSubmissionStatus("success");
         resetForm();
         tableData();
-        alert("Added new class successfully");
+        
+        toast.success("Success")
+
         }
       })
       .catch((error) => {
         setSubmissionStatus("error");
         console.log(error);
-        alert("Error: " + error.message);
+      
+        toast.warn("Error: " + error.message)
       });
   };
 
@@ -226,7 +234,8 @@ export default function AddEvo() {
     axios
       .put(`http://localhost:3001/createEvoluations/upd/${params.EvoId}`,params )
       .then((response) => {
-        alert("done");
+    
+        toast.success("Updated")
       })
       .catch((error) => {
         console.error("An error occurred:", error);
@@ -301,14 +310,35 @@ export default function AddEvo() {
     }
     return error;
   };
+  const buttonStylex = {
+    padding: "10px 40px",
+    backgroundColor: "#f59e42",
+    color: "#fff",
+    border: "none",
+    borderRadius: "4px",
+    fontSize: "16px",
+    cursor: "pointer",
+    align: "right",
+    marginLeft: "10px",
+  };
   return (
     <>
-       
+       <div>
+<a href="#sec1">
+<button style={buttonStylex}>
+Add new Evoluation type
+</button></a>
+<a href="#sec2">
+<button style={buttonStylex}>
+Pre define Term Evoluations
+</button></a>
+</div>
+<hr></hr>
       <div style={{ padding: "1px 20px" }}>
         <Row>
        
       
-          <Col  xs={12}style={{ paddingBottom: "10px" }}>
+          <Col id = "sec1"  xs={12}style={{ paddingBottom: "10px" }}>
             <center>
               <h2 style={{ paddingTop: "40px" }}>
                 Add new Evoluation type
@@ -317,7 +347,7 @@ export default function AddEvo() {
             <Formik initialValues={initialValues} onSubmit={onSubmit}>
               <Form style={formStyle}>
                 <Row>
-                  <Col xs={12} lg={6}>
+                  <Col  xs={12} lg={6}>
                     <label style={labelStyle}>Type :</label>
                     <Field
                       id="inputCreatePost"
@@ -381,6 +411,8 @@ export default function AddEvo() {
                     />
                   </Col>
                 </Row>
+
+
                 <Row>
                   <Col>
                     <div style={{ textAlign: "right" }}>
@@ -393,12 +425,12 @@ export default function AddEvo() {
               </Form>
             </Formik>
           </Col>
-          <Col  xs={12}>
+          <Col id = "sec2" xs={12}>
             <center>
               <h2 style={{ paddingBottom: "10px" }}>Evoluation types</h2>
             </center>
             <Box sx={{ height: 400, width: '100%' }}>
-      <DataGrid
+           <DataGrid
         rows={tableArray}
         columns={columns}
         initialState={{
@@ -421,8 +453,10 @@ export default function AddEvo() {
     </Box>
           </Col>
     
-          </Row>
+  </Row>
       </div>
+      <ToastContainer style={{marginTop:"7%"}}  position="top-center" autoClose={3000} />
+    
     </>
   );
 }

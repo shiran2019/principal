@@ -49,7 +49,7 @@ const Load = (data) => {
     axios
       .put(`http://localhost:3001/students/upd/${localStorage.getItem("user")}`,data )
       .then((response) => {
-        alert("done");
+       
         Load();
       })
       .catch((error) => {

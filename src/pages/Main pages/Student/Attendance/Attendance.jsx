@@ -7,6 +7,10 @@ import Table from "react-bootstrap/Table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FormControl } from "react-bootstrap";
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
 const Attendance = () => {
   const [attendance, setAttendance] = useState({});
   const [idd, SetIdd] = useState(
@@ -51,7 +55,8 @@ const Attendance = () => {
       .catch((error) => {
         setSubmissionStatus("error");
         console.log(error);
-        alert("Error: " + error.message);
+       
+        toast.error("Error: " + error.message);
       })
       .finally(() => {
         resetAllForms();
@@ -121,10 +126,9 @@ const Attendance = () => {
     });
 
     if (missingAttendanceStudents.length > 0) {
-      alert(
-        "Please mark attendance for the following students: " +
-          missingAttendanceStudents.join(", ")
-      );
+    
+      toast.warn( "Please mark attendance for the following students: " +
+      missingAttendanceStudents.join(", "));
       return;
     }
 
@@ -228,6 +232,12 @@ const Attendance = () => {
           </Form>
         </Formik>
       </div>
+      
+<ToastContainer 
+style={{marginTop:"7%"}}  
+position="top-center" 
+autoClose={3000} />
+
     </>
   );
 };

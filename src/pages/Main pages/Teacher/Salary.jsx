@@ -11,6 +11,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import NavigationBar from "../../../components/Navbar";
 //import { use } from "../../../../../Server/routes/Students";
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
+
 export default function Salary() {
 
   const currentDate = new Date().toLocaleDateString("en-US");
@@ -104,7 +109,8 @@ export default function Salary() {
         setSubmissionStatus("success");
         resetForm();
         setSalary(0);
-        alert("Click Download button to download the salary receipt");
+      
+        toast.info("Click Download button to download the salary receipt")
       })
       .then((response) => {
         PdfGen();
@@ -112,11 +118,13 @@ export default function Salary() {
       })
       .catch((error) => {
         if (error.response && error.response.status === 400) {
-          alert("This data already exists.");
+         
+          toast.warn("This data already exists")
         } else {
           console.log(error);
           setSubmissionStatus("error");
-          alert("Network error: Data not submitted");
+    
+          toast.warn("Data not submitted")
         }
       });
   };
@@ -532,6 +540,8 @@ const PdfGen = () => {
  
         </Row>
       </div>
+      <ToastContainer style={{marginTop:"7%"}}  position="top-center" autoClose={3000} />
+    
     </>
   );
 }

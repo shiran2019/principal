@@ -5,6 +5,9 @@ import { Row, Col } from "react-bootstrap";
 import React, { useState, useEffect } from "react";
 import NavigationBar from "../../../components/Navbar";
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 
 import Typography from '@mui/material/Typography';
@@ -212,7 +215,8 @@ export default function StdTable() {
     axios
       .put(`http://localhost:3001/students/upd/${params.StudentId}`,params )
       .then((response) => {
-        alert("done");
+       
+        toast.success("Updated")
       })
       .catch((error) => {
         console.error("An error occurred:", error);
@@ -260,6 +264,8 @@ export default function StdTable() {
           </center>
         </Row>
       </div>
+      <ToastContainer style={{marginTop:"7%"}}  position="top-center" autoClose={3000} />
+    
     </>
   );
 }

@@ -4,6 +4,9 @@ import { DataGrid ,GridToolbar} from '@mui/x-data-grid';
 import { Row, Col } from "react-bootstrap";
 import React, { useState, useEffect } from "react";
 import NavigationBar from "../../../components/Navbar";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 
 
@@ -89,7 +92,8 @@ export default function TchTable() {
     axios
       .put(`http://localhost:3001/teachers/upd/${params.teacherId}`,params )
       .then((response) => {
-        alert("done");
+       
+        toast.success("Updated")
       })
       .catch((error) => {
         console.error("An error occurred:", error);
@@ -135,6 +139,8 @@ export default function TchTable() {
       </Col></center>
      </Row>
      </div>
+     <ToastContainer style={{marginTop:"7%"}}  position="top-center" autoClose={3000} />
+    
      </>
    
   );

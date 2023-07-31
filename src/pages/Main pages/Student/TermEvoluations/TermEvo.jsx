@@ -8,6 +8,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { DataGrid ,GridToolbar} from '@mui/x-data-grid';
 import Box from "@mui/material/Box";
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
 const columns = [
   { field: 'id', headerName: 'ID', width: 90 },
   {
@@ -22,7 +26,7 @@ const columns = [
     width: 150,
     editable: true,
     type: "singleSelect",
-    valueOptions: ["Very Good", "Good","Medium", "Bad","Very Bad"]
+    valueOptions: ["Very Good", "Good","Medium", "Need to improve"]
   },
   
 ];
@@ -92,7 +96,7 @@ export default function TermEvo() {
   }, [searchTerm, array]);
 
   const mySaveOnServerFunction = (params) => {
-    alert("The changed value is: ");
+    
     
 
 
@@ -100,7 +104,7 @@ export default function TermEvo() {
     axios
       .put(`http://localhost:3001/termEvoluations/upd/${params.id}`,params )
       .then((response) => {
-        alert("done");
+        toast.success("Updated");
       })
       .catch((error) => {
         console.error("An error occurred:", error);
@@ -188,6 +192,10 @@ export default function TermEvo() {
       </Row>
       
       </div>
+      <ToastContainer 
+style={{marginTop:"7%"}}  
+position="top-center" 
+autoClose={3000} />
     </>
   );
 }

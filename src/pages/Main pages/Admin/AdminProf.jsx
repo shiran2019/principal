@@ -5,6 +5,8 @@ import axios from "axios";
 import { Row, Col } from "react-bootstrap";
 import Table from "react-bootstrap/Table";
 import { PieChart } from '@mui/x-charts/PieChart';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const AdminProf = () => {
   const [pwd1, setPwd1] = useState("");
@@ -58,6 +60,18 @@ export const AdminProf = () => {
     cursor: "pointer",
     align: "right",
   };
+  const buttonStylex = {
+    padding: "10px 40px",
+    backgroundColor: "#f59e42",
+    color: "#fff",
+    border: "none",
+    borderRadius: "4px",
+    fontSize: "16px",
+    cursor: "pointer",
+    align: "right",
+    marginLeft: "10px",
+  };
+
   const onSubmit = (data, { resetForm }) => {
     const { password, confirmPassword } = data;
     const submitData = {
@@ -66,14 +80,16 @@ export const AdminProf = () => {
     };
 
     if (password !== confirmPassword) {
-      alert("Passwords do not match");
+     
+      toast.warn("Passwords do not match")
       return;
     }
     axios
       .post("http://localhost:3001/users", submitData)
       .then((response) => {
         resetForm();
-        alert("Added new class successfully");
+      
+        toast.success("Done")
       })
       .catch((error) => {
         console.log(error);
@@ -155,7 +171,18 @@ export const AdminProf = () => {
       <div className="App">
         <NavigationBar />
       </div>
-      <div  style={{marginLeft:"6%" , marginRight:"5%"}}>
+      <div style={{marginLeft:"5%"}}>
+<a href="#sec1">
+<button style={buttonStylex}>
+Student counts
+</button></a>
+<a href="#sec2">
+<button style={buttonStylex}>
+Add another Admin 
+</button></a>
+</div>
+<hr></hr>
+      <div id ="sec1"  style={{marginLeft:"6%" , marginRight:"5%"}}>
       <h2 style={{   marginBottom: "2%",}}>STUDENT COUNT</h2>
         <Row style={{backgroundColor:"#c8cccc", borderRadius:"15px"}}>
        
@@ -228,6 +255,7 @@ export const AdminProf = () => {
       </div>
       <hr></hr>
 
+<div id ="sec2">
       <Row style={{  padding: "0% 10%" }}>
         <Col lg={4}>
         <h2 style={{ marginBottom: "10%" }}>Add another Admin</h2>
@@ -306,6 +334,8 @@ export const AdminProf = () => {
               </Table>
           </Col>
       </Row>
+      </div>
+      <ToastContainer style={{marginTop:"7%"}}  position="top-center" autoClose={3000} />
     </>
   );
 };

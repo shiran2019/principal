@@ -123,7 +123,7 @@ export const Annualreport = () => {
               </Form>
               </Formik>
             </Col>
-            <Col xs={12} md={6} lg={6} style={{ padding: "1% 1%" }}>
+            <Col xs={12} md={6} lg={12} style={{ padding: "1% 1%" }}>
       {imageUrl ? (
         <div>
           <a href={imageUrl} download>
@@ -132,7 +132,7 @@ export const Annualreport = () => {
           
         </div>
       ) : (
-        <div>Annual Plan Not Uploaded</div>
+        <div>Annual Plan Not uploaded for the selected year</div>
       )}
     </Col>
             

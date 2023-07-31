@@ -7,6 +7,11 @@ import Row from 'react-bootstrap/Row';
 import axios from "axios";
 import { storage } from "../../../Firebase";
 
+
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
 import {
   ref,
   uploadBytesResumable,
@@ -16,6 +21,8 @@ import {
 import ConfirmationPopup from "../../../components/ConfirmationPopup";
 
 export const Announcement = () => {
+
+  const allowedFileTypes = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
 
     const [reqArray, setReqArray] = useState([]);
     const [idd, SetIdd] = useState(new Date().toLocaleDateString("en-US").substr(0, 10));
@@ -84,18 +91,24 @@ export const Announcement = () => {
             uploadFile(selectedFile);
           } else {
             console.log("No file selected.");
-            alert("No file selected.");
+    
+            toast.warn("No file selected");
           }
         };
 
+       
+
         const uploadFile = (file) => {
-          // const imageId = generateImageId(studenttId);
-          // setImageId(imageId);
           if (!regYear) {
-            alert("Please select a registration year.");
+            toast.warn("Please select a registration year");
             return;
           }
-
+        
+          if (!allowedFileTypes.includes(file.type)) {
+            toast.warn("Only PDF and Doc files are allowed");
+            return;
+          }
+        
           const storageRef = ref(storage, `report/${regYear}/${file.name}`);
           const uploadTask = uploadBytesResumable(storageRef, file);
         
@@ -113,10 +126,9 @@ export const Announcement = () => {
                 .then((url) => {
                   setImageUrl(url);
                   console.log(url);
-                  alert("File uploaded successfully");
+        
+                  toast.success("Uploaded");
                   setSelectedFile(null); // Clear the selected file
-                  
-      
                 })
                 .catch((error) => console.log(error));
             }
@@ -278,7 +290,7 @@ export const Announcement = () => {
                
                   <Col lg ={7}>
                 <Row style={{padding:"0px  10%"}}>
-                <h3 style={{ marginBottom:"20px"}}>Add Announcement, </h3>
+                <h3 style={{ marginBottom:"20px"}}>Add Announcement </h3>
             <Col xs={12} lg={6}>
                   <label
                     style={{
@@ -390,7 +402,7 @@ export const Announcement = () => {
                 </Row>
                 </Col>
                 <Col lg ={5}>
-                <h3 style={{  marginBottom:"20px"}}>Upload Annual plan, </h3>
+                <h3 style={{  marginBottom:"20px"}}>Upload Annual plan </h3>
                 <Row style={{backgroundColor:"#c8cccc"}}>
 
 
@@ -454,7 +466,7 @@ export const Announcement = () => {
 
     </div>
     <div>
-    <h2 style={{padding:"25px  10%" , marginBottom:"20px"}}>Today Announcements, </h2>
+    <h2 style={{padding:"25px  10%" , marginBottom:"20px"}}>Today Announcements </h2>
     <Row style={{padding:"0px  10%"}}>
     {reqArray.map((requests) => (
         <Col xs={12} md={6} lg={3}
@@ -488,6 +500,11 @@ export const Announcement = () => {
           onCancel={handleRejectConfirmationCancel}
         />
       )}
+
+<ToastContainer 
+style={{marginTop:"7%"}}  
+position="top-center" 
+autoClose={3000} />
 
     </>
   )

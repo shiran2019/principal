@@ -9,6 +9,11 @@ import { getDownloadURL, listAll, ref, uploadBytesResumable, deleteObject } from
 import CircularIndeterminate from "../../../components/Skelton";
 import { storage } from "../../../Firebase";
 
+
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
 // Popup Component
 const PopupComponent = ({ show, cardId, handleClosePopup }) => {
   const [progress, setProgress] = useState(0);
@@ -26,21 +31,24 @@ const PopupComponent = ({ show, cardId, handleClosePopup }) => {
       uploadFile(selectedFile);
     } else {
       console.log('No file selected.');
-      alert('No file selected.');
+  
+      toast.warn("No file selected");
     }
   };
 
   const uploadFile = (file) => {
     // Check the file type
     if (file.type !== 'image/png' && file.type !== 'image/jpeg') {
-      alert('Only PNG and JPEG files are allowed.');
+     
+      toast.warn("Only PNG and JPEG files are allowed");
       return;
     }
   
     // Check the file size (in bytes)
     const maxSize = 5 * 1024 * 1024; // 5 MB
     if (file.size > maxSize) {
-      alert('File size exceeds the allowed limit (5 MB).');
+     
+      toast.warn("File size exceeds the allowed limit (5 MB)");
       return;
     }
   
@@ -58,19 +66,25 @@ const PopupComponent = ({ show, cardId, handleClosePopup }) => {
       },
       (error) => {
         console.log(error);
-        alert('Error occurred during image upload.');
+        
+        toast.error("Error occurred during image upload");
+
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref)
           .then((url) => {
             setImageUrls((prevUrls) => [...prevUrls, url]);
             console.log(url);
-            alert('Image uploaded successfully');
+      
+            toast.success("done");
+
             setSelectedFile(null); // Clear the selected file
           })
           .catch((error) => {
             console.log(error);
-            alert('Error occurred while fetching the image URL.');
+           
+            toast.error("Error occurred while fetching the image URL");
+
           });
       }
     );
@@ -118,7 +132,9 @@ const PopupComponent = ({ show, cardId, handleClosePopup }) => {
     try {
       await deleteObject(imageRef);
       setImageUrls((prevUrls) => prevUrls.filter((url) => url !== imageUrl));
-      console.log('Image deleted successfully');
+    
+      toast.info("Deleted");
+
     } catch (error) {
       console.log(error);
     }
@@ -127,6 +143,27 @@ const PopupComponent = ({ show, cardId, handleClosePopup }) => {
   useEffect(() => {
     retrieveImages();
   }, [imageId, cardId]);
+  const buttonStyle1 = {
+    padding: "10px 40px",
+    backgroundColor: "#4aeb26",
+    color: "#020502",
+    border: "none",
+    borderRadius: "4px",
+    fontSize: "16px",
+    cursor: "pointer",
+    align: "right",
+    
+  };
+  const buttonStyle2 = {
+    padding: "10px 40px",
+    backgroundColor: "#ed961c",
+    color: "#020502",
+    border: "none",
+    borderRadius: "4px",
+    fontSize: "16px",
+    cursor: "pointer",
+    align: "right",
+  };
 
   return (
     <Modal
@@ -141,18 +178,22 @@ const PopupComponent = ({ show, cardId, handleClosePopup }) => {
       </Modal.Header>
       <Modal.Body style={{ width: '100%', maxHeight: '100%' }}>
         <div>
-          <h3>My Gallery,</h3>
+          <h3>My Gallery</h3>
           <form onSubmit={formSubmitHandler}>
             <input type="file" className="input" onChange={fileChangeHandler} />
-            <button type="submit">Upload</button>
+            <button style={buttonStyle1} type="submit">Upload</button>
           </form>
           <hr />
           <h5>Uploaded {progress} %</h5>
           {imageUrls.length > 0 ? (
             imageUrls.map((url, index) => (
               <div key={index}>
+                <Row >
                 <img src={url} style={{ maxWidth: '100%' }} alt="Uploaded" />
-                <button onClick={() => deleteImage(url)}>Delete</button>
+                </Row>
+                <Row>
+                <button style={buttonStyle2} onClick={() => deleteImage(url)}>Delete</button>
+                </Row>
               </div>
             ))
           ) : (
@@ -275,7 +316,8 @@ export default function Artgal() {
       <div className="App">
         <NavigationBar />
       </div>
-
+      <h3 style={{ padding: "0% 5%" }}>Students' Art Galleries</h3>
+      <hr style={{ margin: "0% 5%" }}></hr>
       <div>
         <Row style={{ padding: "1% 5%" }}>
           <Col xs={12} lg={4}>
@@ -346,6 +388,11 @@ export default function Artgal() {
           />
         </Row>
       </div>
+      <ToastContainer 
+style={{marginTop:"7%"}}  
+position="top-center" 
+autoClose={3000} />
+
     </>
   );
 }

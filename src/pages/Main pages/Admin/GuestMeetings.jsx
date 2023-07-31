@@ -14,6 +14,11 @@ import Paper from '@mui/material/Paper';
 import Popper from '@mui/material/Popper';
 
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
+
 const columns = [
   { field: 'id', headerName: 'ID', width: 90 },
   {
@@ -42,7 +47,7 @@ const columns = [
     field: 'Discription',
     headerName: 'Discription',
     editable: true,
-    width: 250,
+    width: 500,
     renderCell: renderCellExpand,
 
 
@@ -257,6 +262,17 @@ export const GuestMeetings = () => {
     return error;
   };
 
+  const buttonStylex = {
+    padding: "10px 40px",
+    backgroundColor: "#f59e42",
+    color: "#fff",
+    border: "none",
+    borderRadius: "4px",
+    fontSize: "16px",
+    cursor: "pointer",
+    align: "right",
+    marginLeft: "10px",
+  };
 
 
   const mySaveOnServerFunction = (params) => {
@@ -268,7 +284,7 @@ export const GuestMeetings = () => {
     axios
       .put(`http://localhost:3001/guestMeetings/upd/${params.id}`,params )
       .then((response) => {
-        alert("done");
+        toast.success("Updated");
       })
       .catch((error) => {
         console.error("An error occurred:", error);
@@ -279,11 +295,23 @@ export const GuestMeetings = () => {
     <>
     <div><NavigationBar/></div>
     <div>
+    <div style={{padding:"0px  10%" }}>
+<a href="#sec1">
+<button style={buttonStylex}>
+Add new record
+</button></a>
+<a href="#sec2">
+<button style={buttonStylex}>
+Meeting records
+</button></a>
+</div>
+<hr></hr>
+
 
         <Formik initialValues={initialValues} onSubmit={onSubmit}>
-            <Form>
-                <h1 style={{padding:"0px  10%" , marginBottom:"20px"}}>Add Record, </h1>
-                <Row style={{padding:"0px  10%"}}>
+            <Form id = "sec1">
+                <h1 style={{padding:"0px  10%" , marginBottom:"20px"}}>Add new record </h1>
+                <Row  style={{padding:"0px  10%"}}>
             <Col xs={12} lg={4}>
                   <label
                     style={{
@@ -428,10 +456,10 @@ export const GuestMeetings = () => {
 
 
     </div>
-    <div>
-    <h2 style={{padding:"25px  10%" , marginBottom:"20px"}}>Meeting Records, </h2>
+    <div id ="sec2">
+    <h2  style={{padding:"25px  10%" , marginBottom:"20px"}}>Meeting Records </h2>
    
-    <Row style={{padding:"0px  10%"}}>
+    <Row  style={{padding:"0px  10%"}}>
 
     <Box sx={{ height: 500, width: '100%' }}>
       <DataGrid
@@ -459,6 +487,11 @@ export const GuestMeetings = () => {
     </Row>
 
     </div>
+
+    <ToastContainer 
+style={{marginTop:"7%"}}  
+position="top-center" 
+autoClose={3000} />
 
     </>
   )

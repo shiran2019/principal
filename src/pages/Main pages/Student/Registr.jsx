@@ -6,7 +6,9 @@ import Table from "react-bootstrap/Table";
 import "bootstrap/dist/css/bootstrap.min.css";
 import NavigationBar from "../../../components/Navbar";
 import { storage } from "../../../Firebase";
-import Alert from '@mui/material/Alert';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 import {
   ref,
@@ -32,6 +34,8 @@ export default function StdReg() {
   const [submissionStatus, setSubmissionStatus] = useState(null);
   const [studenttId, setStudenttId] = useState("PD000001");
 
+  const [showAlert, setShowAlert] = useState(false);
+
 
   const fileChangeHandler = (e) => {
     setSelectedFile(e.target.files[0]);
@@ -42,29 +46,27 @@ export default function StdReg() {
     if (selectedFile) {
       uploadFile(selectedFile);
     } else {
-      console.log("No file selected.");
-      <Alert variant="filled" severity="warning">
-        No file selected
-      </Alert>
-    
+
+
+    toast.warn("No file selected")
+      
+  
     }
   };
 
   const uploadFile = (file) => {
     // Check the file type
     if (file.type !== 'image/png' && file.type !== 'image/jpeg') {
-      <Alert variant="filled" severity="warning">
-      Only PNG and JPEG files are allowed
-    </Alert>
+      
+     toast.warn("Only PNG and JPEG files are allowed")
       return;
     }
   
     // Check the file size (in bytes)
     const maxSize = 5 * 1024 * 1024; // 5 MB
     if (file.size > maxSize) {
-      <Alert variant="filled" severity="warning">
-     File size exceeds the allowed limit - 5 MB
-    </Alert>
+     
+     toast.warn("File size exceeds the allowed limit - 5 MB")
      
       
       return;
@@ -88,9 +90,8 @@ export default function StdReg() {
           .then((url) => {
             setImageUrl(url);
             console.log(url);
-            <Alert variant="filled" severity="success">
-     Uploaded
-    </Alert>
+            
+     toast.success("Uploaded")
             
             setSelectedFile(null); // Clear the selected file
           })
@@ -159,26 +160,23 @@ export default function StdReg() {
   
 if(progress !== 100){ 
 
-<Alert variant="filled" severity="warning">
-Please upload the image
-</Alert>
+
+ toast.warn("Please upload the image")
 
 return;
 }
 
     if (password !== confirmPassword) {
      
-      <Alert variant="filled" severity="warning">
-Passwords do not match
-</Alert>
+      
+ toast.warn("Passwords do not match")
       return;
     }
   
     if (data.motherNIC === data.fatherNIC) {
      
-      <Alert variant="filled" severity="warning">
-Mother's NIC and Father's NIC cannot be the same
-</Alert>
+    
+ toast.warn("Mother's NIC and Father's NIC cannot be the same")
       return; // Stop execution if the NICs are the same
     }
   
@@ -225,9 +223,8 @@ Mother's NIC and Father's NIC cannot be the same
   
         console.log("Student and parent data submitted successfully");
       
-        <Alert variant="filled" severity="success">
-Submitted
-</Alert>
+        
+ toast.success("Submitted")
       })
       .catch((error) => {
         setSubmissionStatus("error");
@@ -952,6 +949,7 @@ Submitted
            
         </Form>
       </Formik>
+      <ToastContainer style={{marginTop:"7%"}}  position="top-center" autoClose={3000} />
     </div>
    
     </>
