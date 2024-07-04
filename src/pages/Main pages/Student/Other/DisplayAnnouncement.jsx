@@ -10,6 +10,7 @@ import { AuthContext } from "../../../../helpers/AuthContext";
 
 export const DisplayAnnouncement = () => {
     const [reqArray, setReqArray] = useState([]);
+    const [reqTchArray, setReqTchArray] = useState([]);
     const [authState, setAuthState] = useState({
         user: "",
         status: false,
@@ -55,6 +56,7 @@ export const DisplayAnnouncement = () => {
       }, []);
     
       useEffect(() => {
+        ShowRequestClass();
             ShowRequests();
         }, [authState.role]);
        
@@ -70,15 +72,75 @@ export const DisplayAnnouncement = () => {
                   });
               };
 
+              const ShowRequestClass = () => {
+                axios
+                  .get(`http://localhost:3001/announcements/class/${authState.user}`)
+                  .then((response) => {
+                    setReqTchArray(response.data);
+                  })
+                  .catch((error) => {
+                    console.error("An error occurred:", error);
+                  });
+              };
+              const buttonStylex = {
+                padding: "10px 40px",
+                backgroundColor: "#f59e42",
+                color: "#fff",
+                border: "none",
+                borderRadius: "4px",
+                fontSize: "16px",
+                cursor: "pointer",
+                align: "right",
+                marginLeft: "10px",
+              };
+            
 
   return (
 
     <>
     <div><NavigationBar/></div>
-    <div>
-    <h2 style={{padding:"25px  10%" , marginBottom:"20px"}}>Today Announcements </h2>
+    <div style={{marginLeft:"5%"}}>
+<a href="#sec1">
+<button style={buttonStylex}>
+Announcements from Principal
+</button></a>
+<a href="#sec2">
+<button style={buttonStylex}>
+Announcements from Teacher 
+</button></a>
+</div>
+<hr></hr>
+    <div id="sec1">
+    <h2 style={{padding:"25px  10%" , marginBottom:"20px"}}>Announcements from Principal </h2>
     <Row style={{padding:"0px  10%"}}>
     {reqArray.map((requests) => (
+        <Col xs={12} md={6} lg={3}
+        style={{marginBottom:"15px"}} >
+          <Card style={{backgroundColor:"#cbf5cb"}}>
+            <Card.Body> 
+             
+              <Card.Text>
+                         <h5> Announcement :</h5>
+              </Card.Text>
+              <Card.Text>
+                        {requests.Note}
+              </Card.Text>
+              <Card.Text>
+               {requests.Day}        
+              </Card.Text>
+              
+              
+            </Card.Body>
+          </Card>
+        </Col>
+      ))}
+    </Row>
+
+    </div>
+    <div  id="sec2">
+    <h2 style={{padding:"25px  10%" , marginBottom:"20px"}}>Announcements from Teacher</h2>
+    <Row style={{padding:"0px  10%"}}>
+    {reqTchArray.map((requests) => (
         <Col xs={12} md={6} lg={3}
         style={{marginBottom:"15px"}} >
           <Card style={{backgroundColor:"#cbf5cb"}}>

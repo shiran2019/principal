@@ -133,7 +133,7 @@ const Load = (data) => {
             <Formik initialValues={initialValues} onSubmit={mySaveOnServerFunction}> 
               <Form style={formStyle}>
                 <label style={labelStyle}>
-                  Afternoon Care Arrangement for the Chield :
+                  Afternoon Care Arrangement for the Child :
                 </label>
                 <Field
                   as="select"
@@ -169,8 +169,8 @@ const Load = (data) => {
                <div style={{borderRadius:"15px" , backgroundColor:"#c8cccc" , height:"200px"}}> 
                <strong style={{ fontSize:"30px" ,paddingTop:"20px", paddingLeft:"10px"}}> For your child safety ,</strong>
               
-               <p style={{paddingTop:"10px", paddingLeft:"10px" , fontSize:"17px"}}>If you want to keep your chield in Daycare after the Pre-School , Select {" "} <strong> "Daycare"</strong> option </p>
-               <p style={{paddingTop:"5px", paddingLeft:"10px" , fontSize:"17px"}}>We will hand over your chield to the guardien only when {" "} <strong> "Pickup by Guardien"</strong> option is selected on this form </p>
+               <p style={{paddingTop:"10px", paddingLeft:"10px" , fontSize:"17px"}}>If you want to keep your child in Daycare after the Pre-School , Select {" "} <strong> "Daycare"</strong> option </p>
+               <p style={{paddingTop:"5px", paddingLeft:"10px" , fontSize:"17px"}}>We will hand over your child to the guardien only when {" "} <strong> "Pickup by Guardian"</strong> option is selected on this form </p>
                <p style={{paddingTop:"5px", paddingLeft:"10px" , fontSize:"17px"}}> Contact No : 0XX XXX XXXX </p>
                </div>
 

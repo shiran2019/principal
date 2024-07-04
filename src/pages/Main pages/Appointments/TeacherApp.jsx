@@ -11,7 +11,7 @@ import ConfirmationPopup from "../../../components/ConfirmationPopup";
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+let aptArray = [];
 
 const TeacherApp = () => {
 
@@ -130,26 +130,23 @@ const TeacherApp = () => {
     currentDate.setMinutes(minutes);
     
     // Add one hour to the current date
-    const oneHourLater = new Date(currentDate.getTime() + 1* 60 * 60 * 1000);
+    const oneHourLater = new Date(currentDate.getTime() + 0.5* 60 * 60 * 1000);
     
     const formattedDateTimePlusOneHour = oneHourLater.toISOString().slice(0, 19);
     
     // Add 5.5 hours to formattedDateTime
     const hoursToAdd = 5.5;
+    const six = 7;
+
     const fiveAndHalfHoursLater = new Date(date.getTime() + hoursToAdd * 60 * 60 * 1000);
     const formattedDateTimePlusFiveAndHalfHours = fiveAndHalfHoursLater.toISOString().slice(0, 19);
+
+    const sixAndHalfHoursLater = new Date(date.getTime() + six * 60 * 60 * 1000);
+    const formattedDateTimePlusSixAndHalfHours = sixAndHalfHoursLater.toISOString().slice(0, 19);
   
-    // Add 5.5 hours to formattedDateTimePlusOneHour
-    const fiveAndHalfHoursLaterPlusOneHour = new Date(oneHourLater.getTime() + hoursToAdd * 60 * 60 * 1000);
-    const formattedDateTimePlusOneHourPlusFiveAndHalfHours = fiveAndHalfHoursLaterPlusOneHour.toISOString().slice(0, 19);
-    
-    console.log("Formatted Date and Time:", formattedDateTime);
-    console.log("Formatted Date and Time + 1 Hour:", formattedDateTimePlusOneHour);
-    console.log("Formatted Date and Time + 5.5 Hours:", formattedDateTimePlusFiveAndHalfHours);
-    console.log("Formatted Date and Time + 1 Hour + 5.5 Hours:", formattedDateTimePlusOneHourPlusFiveAndHalfHours);
-    
+ 
     localStorage.setItem("time", formattedDateTimePlusFiveAndHalfHours);
-    localStorage.setItem("time2", formattedDateTimePlusOneHourPlusFiveAndHalfHours);
+    localStorage.setItem("time2", formattedDateTimePlusSixAndHalfHours);
   };
   
 
@@ -215,23 +212,50 @@ useEffect(() => {
 
   
 
-  const UpdateRequests = (id , date , time , note,std,name) => {
+const UpdateRequests = (id , date , time , note,std,name) => {
+  localStorage.setItem("isOverlaped", false);
+  const newTime = new Date(date+"T"+time+":00");
 
-const data = {
-  Status: "Approved",
-};
-    axios
-    .post(`http://localhost:3001/appointmentRequest/${id}/updateStatus`, data)
-    .then((response) => {
-      ReqUpdt(date , time);
-      onSubmitt(note,std,name);
-     
-      ShowRequests();
-    })
-    .catch((error) => {
-      
-        toast.warn("Network error: Data not updated")
-    });
+  aptArray = [];
+  console.log(newTime)
+  
+  console.log(events)
+  events.forEach((item) => {
+    if (new Date(item.start.value) <= newTime && new Date(item.end.value).setHours(new Date(item.end.value).getHours() + 2) >= newTime ) {
+      localStorage.setItem("isOverlaped", true);
+      //console lo overlapped appointments
+      console.log(item);
+      console.log(localStorage.getItem("isOverlaped"));
+    } 
+  });
+
+  if (localStorage.getItem("isOverlaped")=== "true") {
+    alert("You have another appointment at this time");
+  }else{
+
+    console.log(aptArray);
+
+
+    const data = {
+      Status: "Approved",
+    };
+        axios
+        .post(`http://localhost:3001/appointmentRequest/${id}/updateStatus`, data)
+        .then((response) => {
+          ReqUpdt(date , time);
+          onSubmitt(note,std,name);
+          ShowRequests();
+          UpdCalender();
+
+        })
+        .catch((error) => {
+          
+            toast.warn("Network error: Data not updated")
+        });
+
+       
+  }
+ 
   };
 
 
@@ -489,6 +513,16 @@ const data = {
     align: "right",
     marginLeft: "10px",
   };
+
+  const Run = () => {
+    aptArray = [];
+    console.log(events)
+    events.map((item) => (
+      aptArray.push(item.start.value)
+     ));
+    console.log(aptArray);
+
+  }
   return (
     <>
 <div style={{padding:"0% 2%"}}>
@@ -561,6 +595,7 @@ My appointment sheadule
       <div style={{ display: "flex" }}>
         <div style={{ marginRight: "10px" }}>
           <div>
+            <button style={buttonStylex} onClick={()=>{Run()}}></button>
          
           </div>
           <DayPilotNavigator {...navigatorConfig} />

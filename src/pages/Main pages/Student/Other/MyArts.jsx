@@ -73,7 +73,7 @@ export const MyArts = () => {
 
        <Row style={{paddingLeft:"4%", paddingRight:"4%"}}>
         
-       <h2>My Arts and Crafts,</h2>
+       <h2>My Arts and Crafts</h2>
               
                 {imageUrls.length > 0 ? (
             imageUrls.map((url, index) => (

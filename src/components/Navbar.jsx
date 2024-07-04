@@ -48,7 +48,11 @@ function NavigationBar() {
             role: response.data.role,
           });
         } else console.log("fsgfgfg");
-      });
+      }).catch((error) => {
+        alert(error);
+      }
+      
+      )
   }, []);
 
   const logout = () => {

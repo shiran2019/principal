@@ -1,30 +1,25 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import NavigationBar from "../../../components/Navbar";
-import React, { useState, useEffect } from "react";
+
+import React, { useState, useEffect, useContext } from "react";
 import Card from "react-bootstrap/Card";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import axios from "axios";
-import { storage } from "../../../Firebase";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import NavigationBar from "../../../../components/Navbar";
+import ConfirmationPopup from "../../../../components/ConfirmationPopup";
 
-import {
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-  listAll,
-} from "@firebase/storage";
-import ConfirmationPopup from "../../../components/ConfirmationPopup";
+import { AuthContext } from "../../../../helpers/AuthContext";
 
-export const Announcement = () => {
+export const TchAnn = () => {
   const allowedFileTypes = [
     "application/pdf",
     "application/msword",
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   ];
-
+  const [classArray, setClassArray] = useState([]);
   const [reqArray, setReqArray] = useState([]);
   const [idd, SetIdd] = useState(
     new Date().toLocaleDateString("en-US").substr(0, 10)
@@ -40,6 +35,9 @@ export const Announcement = () => {
 
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [selectedRequestId, setSelectedRequestId] = useState("");
+
+  const { authState } = useContext(AuthContext);
+  const [reqTchArray, setReqTchArray] = useState([]);
 
   const handleRejectConfirmation = (requestId) => {
     setSelectedRequestId(requestId);
@@ -67,6 +65,7 @@ export const Announcement = () => {
       .then((response) => {
         resetForm();
         ShowRequests();
+        ShowRequestClass();
       })
       .catch((error) => {
         console.log(error);
@@ -75,85 +74,26 @@ export const Announcement = () => {
 
   useEffect(() => {
     ShowRequests();
+    ShowRequestClass();
+    ShowClass();
   }, []);
-
-  const fileChangeHandler = (e) => {
-    setSelectedFile(e.target.files[0]);
-  };
-
-  const formSubmitHandler = async (e) => {
-    e.preventDefault();
-    if (selectedFile) {
-      uploadFile(selectedFile);
-    } else {
-      console.log("No file selected.");
-
-      toast.warn("No file selected");
-    }
-  };
-
-  const uploadFile = (file) => {
-    if (!regYear) {
-      toast.warn("Please select a registration year");
-      return;
-    }
-
-    if (!allowedFileTypes.includes(file.type)) {
-      toast.warn("Only PDF and Doc files are allowed");
-      return;
-    }
-
-    const storageRef = ref(storage, `report/${regYear}/${file.name}`);
-    const uploadTask = uploadBytesResumable(storageRef, file);
-
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        const prog = Math.round(
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-        );
-        setProgress(prog);
-      },
-      (error) => console.log(error),
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref)
-          .then((url) => {
-            setImageUrl(url);
-            console.log(url);
-
-            toast.success("Uploaded");
-            setSelectedFile(null); // Clear the selected file
-          })
-          .catch((error) => console.log(error));
-      }
-    );
-  };
-
-  const retrieveImage = () => {
-    if (regYear) {
-      const storageRef = ref(storage, `report/${regYear}`);
-      listAll(storageRef)
-        .then((res) => {
-          res.items.forEach((itemRef) => {
-            getDownloadURL(itemRef)
-              .then((url) => {
-                setImageUrl(url);
-                console.log(url);
-              })
-              .catch((error) => console.log(error));
-          });
-        })
-        .catch((error) => console.log(error));
-    } else {
-      console.log("No File ID found.");
-    }
-  };
 
   const ShowRequests = () => {
     axios
-      .get(`http://localhost:3001/announcements`)
+      .get(`http://localhost:3001/announcements/role/${authState.role}`)
       .then((response) => {
         setReqArray(response.data);
+      })
+      .catch((error) => {
+        console.error("An error occurred:", error);
+      });
+  };
+
+  const ShowClass = () => {
+    axios
+      .get(`http://localhost:3001/classes/cls`)
+      .then((response) => {
+        setClassArray(response.data);
       })
       .catch((error) => {
         console.error("An error occurred:", error);
@@ -165,11 +105,24 @@ export const Announcement = () => {
       .delete(`http://localhost:3001/announcements/ann/${x}`)
       .then((response) => {
         ShowRequests();
+        ShowRequestClass();
       })
       .catch((error) => {
         console.error("An error occurred:", error);
       });
   };
+
+  const ShowRequestClass = () => {
+    axios
+      .get(`http://localhost:3001/announcements/tchCls`)
+      .then((response) => {
+        setReqTchArray(response.data);
+      })
+      .catch((error) => {
+        console.error("An error occurred:", error);
+      });
+  };
+
   const initialValues = {
     role: "",
     Day: "",
@@ -250,6 +203,13 @@ export const Announcement = () => {
     return error;
   };
 
+  const validateclass = (value) => {
+    let error;
+    if (!value) {
+      error = "Class room is required";
+    }
+    return error;
+  };
   function renderYearOptions() {
     const currentYear = new Date().getFullYear() + 5;
     const years = [];
@@ -265,41 +225,89 @@ export const Announcement = () => {
 
     return years;
   }
-
+  const buttonStylex = {
+    padding: "10px 40px",
+    backgroundColor: "#f59e42",
+    color: "#fff",
+    border: "none",
+    borderRadius: "4px",
+    fontSize: "16px",
+    cursor: "pointer",
+    align: "right",
+    marginLeft: "10px",
+  };
   return (
     <>
       <div>
         <NavigationBar />
       </div>
-      <div style={{ paddingRight: "5%" }}>
+      <div style={{ marginLeft: "5%" }}>
+        <a href="#sec1">
+          <button style={buttonStylex}>Today Admin Announcements</button>
+        </a>
+        <a href="#sec2">
+          <button style={buttonStylex}>Add Student Announcement</button>
+        </a>
+        <a href="#sec3">
+          <button style={buttonStylex}>Student Announcements</button>
+        </a>
+      </div>
+      <hr></hr>
+      <div style={{ backgroundColor: "#cccccc" }} id="sec1">
+        <h2 style={{ padding: "25px  5%", marginBottom: "20px" }}>
+          Today Admin Announcements{" "}
+        </h2>
+        <Row style={{ padding: "0px  10%" }}>
+          {reqArray.map((requests) => (
+            <Col xs={12} md={6} lg={3} style={{ marginBottom: "15px" }}>
+              <Card style={{ backgroundColor: "#cbf5cb" }}>
+                <Card.Body>
+                  <Card.Title>PRINCIPAL</Card.Title>
+                  <hr></hr>
+                  <Card.Text>Announcement : {requests.Note}</Card.Text>
+                  <Card.Text>{requests.Day}</Card.Text>
+                  <button
+                    style={buttonStyle2}
+                    onClick={() => handleRejectConfirmation(requests.id)}
+                  >
+                    Delete
+                  </button>
+                </Card.Body>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      </div>
+      <div id="sec2" style={{ paddingRight: "5%" }}>
         <Formik initialValues={initialValues} onSubmit={onSubmit}>
           <Form>
+            <hr></hr>
             <Row>
               <Col lg={7}>
-                <Row style={{ padding: "0px  10%" }}>
-                  <h3 style={{ marginBottom: "20px" }}>Add Announcement </h3>
+                <Row style={{ padding: "25px  10%" }}>
+                  <h2 style={{ marginBottom: "30px" }}>
+                    Add Student Announcement{" "}
+                  </h2>
+
                   <Col xs={12} lg={6}>
-                    <label
-                      style={{
-                        marginBottom: "8px",
-                        fontSize: "14px",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      Announcement for :
-                    </label>
+                    <label style={labelStyle}>Class room:</label>
                     <Field
+                      as="select"
                       id="inputCreatePost"
                       name="role"
-                      component="select" // Use the select component
                       style={inputStyle}
-                      validate={validate3}
-                      //value={month}
+                      validate={validateclass}
                     >
-                      <option value="">Select a role</option>
-                      option
-                      <option value="Student">Student ( for parent )</option>
-                      <option value="Teacher">Teacher</option>
+                      <option value="">Select item</option>
+
+                      {classArray.map((classItem) => (
+                        <option
+                          key={classItem.className}
+                          value={classItem.className}
+                        >
+                          {classItem.className}
+                        </option>
+                      ))}
                     </Field>
                     <ErrorMessage
                       name="role"
@@ -382,74 +390,26 @@ export const Announcement = () => {
                   </Col>
                 </Row>
               </Col>
-              <Col lg={5}>
-                <h3 style={{ marginBottom: "20px" }}>Upload Annual plan </h3>
-                <Row style={{ backgroundColor: "#c8cccc" }}>
-                  <Col xs={12} lg={8}>
-                    <label style={labelStyle}>Year:</label>
-                    <Field
-                      as="select"
-                      id="inputCreatePost"
-                      name="regyear"
-                      style={inputStyle}
-                      onChange={(e) => setRegYear(e.target.value)}
-                      // validate={validateRegistrationYear}
-                    >
-                      <option value="">Select Year</option>
-                      {renderYearOptions()}
-                    </Field>
-                    <ErrorMessage
-                      name="regyear"
-                      component="div"
-                      style={{ color: "red" }}
-                    />
-                  </Col>
-                  <label style={labelStyle}>Upload annual plan : </label>
-                  <Col xs={12} lg={6}>
-                    <input
-                      type="file"
-                      className="input"
-                      onChange={fileChangeHandler}
-                    />
-                  </Col>
-                  <Col xs={12} lg={6}>
-                    <h6>Uploaded {progress} %</h6>
-                  </Col>
-                  <Col xs={12} lg={12}>
-                    <button style={buttonStyles} onClick={formSubmitHandler}>
-                      Upload
-                    </button>
-
-                    {imageUrl && (
-                      <div>
-                        <a href={imageUrl} download>
-                          Download File
-                        </a>
-                      </div>
-                    )}
-                  </Col>
-                  <Col xs={12} lg={12}>
-                    <h1></h1>
-                  </Col>
-                </Row>
-              </Col>
             </Row>
           </Form>
         </Formik>
       </div>
-      <div>
-        <h2 style={{ padding: "25px  10%", marginBottom: "20px" }}>
-          Today Announcements{" "}
-        </h2>
+
+      <div id="sec3">
+        <h3 style={{ padding: "25px  5%", marginBottom: "20px" }}>
+          Sent Announcements
+        </h3>
         <Row style={{ padding: "0px  10%" }}>
-          {reqArray.map((requests) => (
+          {reqTchArray.map((requests) => (
             <Col xs={12} md={6} lg={3} style={{ marginBottom: "15px" }}>
               <Card style={{ backgroundColor: "#cbf5cb" }}>
                 <Card.Body>
-                  <Card.Title>Role : {requests.role}</Card.Title>
-                  <hr></hr>
-                  <Card.Text>Announcement : {requests.Note}</Card.Text>
+                  <Card.Text>
+                    <h5> Announcement :</h5>
+                  </Card.Text>
+                  <Card.Text>{requests.Note}</Card.Text>
                   <Card.Text>{requests.Day}</Card.Text>
+
                   <button
                     style={buttonStyle2}
                     onClick={() => handleRejectConfirmation(requests.id)}

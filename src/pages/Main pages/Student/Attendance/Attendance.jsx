@@ -193,7 +193,7 @@ const Attendance = () => {
                       <td>{student.pNote}</td>
 
                       <td>
-                        <Field
+                        {/* <Field
                           as="select"
                           id="inputCreatePost"
                           name={`Attendance[${student.StudentId}]`}
@@ -209,7 +209,45 @@ const Attendance = () => {
                           <option value="">Select</option>
                           <option value="Present">Present</option>
                           <option value="Absent">Absent</option>
-                        </Field>
+                        </Field> */}
+
+                     
+<div role="group" aria-labelledby="my-radio-group">
+  <label>
+    <Field
+      type="radio"
+      name={`Attendance[${student.StudentId}]`}
+      style={{ width: "120px", height: "30px" }}
+      value="Present"
+      checked={attendance[student.StudentId] === "Present"}
+      onChange={(e) =>
+        setAttendance({
+          ...attendance,
+          [student.StudentId]: e.target.value,
+        })
+      }
+    />
+    Present
+  </label>
+
+  <label>
+    <Field
+      type="radio"
+      name={`Attendance[${student.StudentId}]`}
+      style={{ width: "120px", height: "30px" }}
+      value="Absent"
+      checked={attendance[student.StudentId] === "Absent"}
+      onChange={(e) =>
+        setAttendance({
+          ...attendance,
+          [student.StudentId]: e.target.value,
+        })
+      }
+    />
+    Absent
+  </label>
+</div>
+
                         <ErrorMessage
                           name={`Attendance[${student.StudentId}]`}
                           component="div"

@@ -88,8 +88,8 @@ ShowRequests(authState.user);
     <AuthContext.Provider value={{ authState, setAuthState }}>
     <Row style={{padding:"15px 10px"}}>
     {reqArray.map((requests) => (
-        <Col xs={12} md={6} lg={3} >
-          <Card style={{backgroundColor:"#cbf5cb" , padding:"15px 10px"}}>
+        <Col xs={12} md={6} lg={3} style={{marginBottom:"10px"}} >
+          <Card style={{backgroundColor:"#cbf5cb" , padding:"15px 10px",}}>
             <Card.Body> 
               <Card.Title>Teacher : {requests.fName}</Card.Title>
               <hr></hr>

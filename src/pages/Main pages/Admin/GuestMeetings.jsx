@@ -45,7 +45,7 @@ const columns = [
   },
   {
     field: 'Discription',
-    headerName: 'Discription',
+    headerName: 'Description',
     editable: true,
     width: 500,
     renderCell: renderCellExpand,
@@ -414,7 +414,7 @@ Meeting records
                       fontWeight: "bold",
                     }}
                   >
-                    Discription :
+                    Description :
                   </label>
                   <Field
                     as="textarea"

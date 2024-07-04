@@ -41,6 +41,7 @@ import STDToday from "./Main pages/Student/Today/Today";
 import { Annualreport } from "./Main pages/Annualreport";
 import { DayCare } from "./Main pages/Student/DayCare/DayCare";
 import { DayCareAdmin } from "./Main pages/Admin/DayCareAdmin";
+import { TchAnn } from "./Main pages/Teacher/Announcement/TchAnn";
 
 export default function Paths() {
   const [authState, setAuthState] = useState({
@@ -147,7 +148,7 @@ export default function Paths() {
                   <Route path="/termEvoluations" element={<TermEvos />}></Route>
                   <Route path="/" element={<TchProfile/>}></Route>
                   <Route path="/bestKids" element={<BestKid/>}></Route>
-                  <Route path="/announcement" element={<DisplayAnnouncement/>}></Route>
+                  <Route path="/announcement" element={<TchAnn/>}></Route>
                   <Route path="/today" element={<Today />}></Route>
                   <Route path="/AnnualReport" element={<Annualreport />}></Route>
 

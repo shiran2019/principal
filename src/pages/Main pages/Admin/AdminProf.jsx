@@ -178,8 +178,14 @@ Student counts
 </button></a>
 <a href="#sec2">
 <button style={buttonStylex}>
+Student payments 
+</button></a>
+<a href="#sec3">
+<button style={buttonStylex}>
+
 Add another Admin 
 </button></a>
+
 </div>
 <hr></hr>
       <div id ="sec1"  style={{marginLeft:"6%" , marginRight:"5%"}}>
@@ -254,8 +260,22 @@ Add another Admin
         </Row>
       </div>
       <hr></hr>
+      <Row>
 
-<div id ="sec2">
+<Col>
+
+<Col id = "sec2" style={{padding:"5% 5%"}}>
+<h2 >Student payments</h2>
+  <div style={{ border:"3px solid #00000030" , borderRadius:"15px"}}>
+         
+  <iframe title="dash2" width="1140" height="541.25" src="https://app.powerbi.com/reportEmbed?reportId=99d3b4c3-b6dc-41b9-a90d-17096131524b&autoAuth=true&ctid=aa232db2-7a78-4414-a529-33db9124cba7" frameborder="0" allowFullScreen="true"></iframe>
+          </div>
+          </Col>
+</Col>
+
+      </Row>
+<hr></hr>
+<div id ="sec3">
       <Row style={{  padding: "0% 10%" }}>
         <Col lg={4}>
         <h2 style={{ marginBottom: "10%" }}>Add another Admin</h2>
@@ -333,6 +353,7 @@ Add another Admin
                 </tbody>
               </Table>
           </Col>
+        
       </Row>
       </div>
       <ToastContainer style={{marginTop:"7%"}}  position="top-center" autoClose={3000} />
